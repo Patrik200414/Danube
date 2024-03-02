@@ -3,5 +3,8 @@ package com.danube.danube.repository.user;
 import com.danube.danube.model.user.UserEntity;
 import org.springframework.data.repository.CrudRepository;
 
-public interface UserRepository extends CrudRepository<Long, UserEntity> {
+import java.util.Optional;
+
+public interface UserRepository extends CrudRepository<UserEntity, Long> {
+    Optional<UserEntity> findByEmail(String email);
 }
