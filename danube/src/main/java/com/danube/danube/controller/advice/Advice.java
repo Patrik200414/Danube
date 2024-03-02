@@ -47,6 +47,6 @@ public class Advice {
     }
 
     private UserErrorMessage handleInvalidEmailFormat(){
-        return new UserErrorMessage(String.format("Email is invalid! Please enter a valid email address!", e.getMessage()));
+        return new UserErrorMessage("Email is invalid! Please enter a valid email address!");
     }
 }
