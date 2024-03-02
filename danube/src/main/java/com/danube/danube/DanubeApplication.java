@@ -10,4 +10,8 @@ public class DanubeApplication {
 		SpringApplication.run(DanubeApplication.class, args);
 	}
 
+	public static void test(){
+		System.out.println("Hello");
+	}
+
 }
