@@ -1,6 +1,9 @@
 package com.danube.danube.controller;
 
 import com.danube.danube.controller.advice.Advice;
+import com.danube.danube.custom_exception.InputTooShortException;
+import com.danube.danube.custom_exception.InvalidEmailFormatException;
+import com.danube.danube.custom_exception.RegistrationFieldNullException;
 import com.danube.danube.model.dto.UserRegistrationDTO;
 import com.danube.danube.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
