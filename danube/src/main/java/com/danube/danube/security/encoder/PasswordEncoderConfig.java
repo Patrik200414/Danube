@@ -1,4 +1,4 @@
-package com.danube.danube.security.jwt;
+package com.danube.danube.security.encoder;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
