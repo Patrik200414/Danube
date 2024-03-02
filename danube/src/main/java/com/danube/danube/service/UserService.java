@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.regex.Pattern;
+
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -45,7 +47,7 @@ public class UserService {
             throw new InputTooShortException("password");
         } else if(userRegistrationDTO.lastName().length() < 2){
             throw new InputTooShortException("last name");
-        } else if(!userRegistrationDTO.email().matches("[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}")){
+        } else if(!Pattern.compile(".+\\@.+\\..+").matcher(userRegistrationDTO.email()).matches()){
             throw new InvalidEmailFormatException();
         }
     }
