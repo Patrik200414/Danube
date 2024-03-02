@@ -21,11 +21,11 @@ public class Advice {
         }
     }
 
-    public UserErrorMessage handleSQLIntegrityConstrainViolationException(){
+    private UserErrorMessage handleSQLIntegrityConstrainViolationException(){
         return new UserErrorMessage(String.format("Already existing email!"));
     }
 
-    public UserErrorMessage handleInternalServerError(){
+    private UserErrorMessage handleInternalServerError(){
         return new UserErrorMessage("Unfortunately something went wrong on the server!");
     }
 }
