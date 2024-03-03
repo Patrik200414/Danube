@@ -66,7 +66,7 @@ public class UserController {
 
             return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getUsername(), roles));
         } catch (Exception e){
-            return ResponseEntity.badRequest().body(e);
+            return controllerAdvice.handleException(e);
         }
     }
 }
