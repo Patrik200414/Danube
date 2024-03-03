@@ -15,7 +15,7 @@ function Login(){
             password
         };
 
-        const loginResponseData = await fetch('/api/login', {
+        const loginResponseData = await fetch('/api/user/login', {
             method: 'POST',
             headers: {
                 'Content-type': 'Application/json'
@@ -26,9 +26,9 @@ function Login(){
         const loginResponse = await loginResponseData.json();
 
         if(loginResponseData.ok){
-            console.log(loginResponse);
+            sessionStorage.setItem('USER_JWT', JSON.stringify(loginResponse));
         } else {
-            console.log(loginResponse);
+            setError(loginResponse.errorMessage);
         }
     
     }
@@ -47,6 +47,8 @@ function Login(){
                 <label htmlFor="password">Password: </label>
                 <input type="password" name="password" id="password" placeholder="Passsword" value={password} onChange={e => setPassword(e.target.value)}/>
                 <br />
+
+                <p className="error-message">{error}</p>
 
                 <button>Login</button>
 
