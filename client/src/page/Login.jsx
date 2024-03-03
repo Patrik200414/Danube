@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
 
 function Login(){
     const [email, setEmail] = useState('');
@@ -54,6 +55,7 @@ function Login(){
                 <p className="error-message">{error}</p>
 
                 <button>Login</button>
+                <Link to='/registration'>Create account!</Link>
 
             </form>
         </div>
