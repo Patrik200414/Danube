@@ -1,5 +1,6 @@
 package com.danube.danube.controller.advice;
 
+import com.danube.danube.custom_exception.EmailNotFoundException;
 import com.danube.danube.custom_exception.InputTooShortException;
 import com.danube.danube.custom_exception.InvalidEmailFormatException;
 import com.danube.danube.custom_exception.RegistrationFieldNullException;
@@ -7,6 +8,8 @@ import com.danube.danube.model.error.UserErrorMessage;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -19,12 +22,16 @@ public class Advice {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(
                             handleSQLIntegrityConstrainViolationException()
                     );
+        } else  if(e instanceof InternalAuthenticationServiceException){
+            return ResponseEntity.badRequest().body(handleEmailNotFoundException(e));
         } else if(e instanceof RegistrationFieldNullException){
             return ResponseEntity.badRequest().body(handleFieldIsNullError(e));
         } else if(e instanceof InputTooShortException){
             return ResponseEntity.badRequest().body(handleInputTooShortError(e));
         } else if(e instanceof InvalidEmailFormatException){
             return ResponseEntity.badRequest().body(handleInvalidEmailFormat());
+        } else if(e instanceof BadCredentialsException){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(handleBadCredentialException());
         } else{
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(handleInternalServerError());
         }
@@ -48,5 +55,13 @@ public class Advice {
 
     private UserErrorMessage handleInvalidEmailFormat(){
         return new UserErrorMessage("Email is invalid! Please enter a valid email address!");
+    }
+
+    private UserErrorMessage handleBadCredentialException(){
+        return new UserErrorMessage("Invalid password! This account has different password!");
+    }
+
+    private UserErrorMessage handleEmailNotFoundException(Exception e){
+        return new UserErrorMessage(e.getMessage());
     }
 }
