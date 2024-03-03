@@ -27,6 +27,8 @@ import java.util.regex.Pattern;
 
 @Service
 public class UserService {
+    public static final int MIN_LENGTH_NAME = 2;
+    public static final int MIN_LENGTH_PASSWORD = 6;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -77,12 +79,12 @@ public class UserService {
             throw new RegistrationFieldNullException("password");
         }
 
-        if(userRegistrationDTO.firstName().length() < 2){
-            throw new InputTooShortException("first name");
-        } else if(userRegistrationDTO.password().length() < 2){
-            throw new InputTooShortException("password");
-        } else if(userRegistrationDTO.lastName().length() < 2){
-            throw new InputTooShortException("last name");
+        if(userRegistrationDTO.firstName().length() < MIN_LENGTH_NAME){
+            throw new InputTooShortException("first name", MIN_LENGTH_NAME);
+        } else if(userRegistrationDTO.password().length() < MIN_LENGTH_PASSWORD){
+            throw new InputTooShortException("password", MIN_LENGTH_PASSWORD);
+        } else if(userRegistrationDTO.lastName().length() < MIN_LENGTH_NAME){
+            throw new InputTooShortException("last name", MIN_LENGTH_NAME);
         }
 
         validateEmail(userRegistrationDTO.email());

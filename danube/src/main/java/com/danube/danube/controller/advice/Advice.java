@@ -50,7 +50,9 @@ public class Advice {
     }
 
     private UserErrorMessage handleInputTooShortError(Exception e){
-        return new UserErrorMessage(String.format("Input at %s field is too short! Input should be at least 2 character long!", e.getMessage()));
+        String fieldName = e.getMessage().split("-")[0];
+        String minLength = e.getMessage().split("-")[1];
+        return new UserErrorMessage(String.format("Input at %s field is too short! Input should be at least %s character long!", fieldName, minLength));
     }
 
     private UserErrorMessage handleInvalidEmailFormat(){

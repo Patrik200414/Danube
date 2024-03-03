@@ -64,7 +64,7 @@ function Registration(){
 
                 <label htmlFor="password">Password: </label>
                 <input type="password" name="password" id="password" placeholder="Passsword" value={password} onChange={e => setPassword(e.target.value)}/>
-                <i>Password should be at least 2 characters!</i>
+                <i>Password should be at least 6 characters!</i>
                 <br />
 
                 <label htmlFor="reEnterPassword">Re-enter password: </label>
