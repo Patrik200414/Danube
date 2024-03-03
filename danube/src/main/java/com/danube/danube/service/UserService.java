@@ -47,6 +47,8 @@ public class UserService {
     }
 
     public JwtResponse loginUser(UserLoginDTO userLoginDTO){
+        validateEmail(userLoginDTO.email());
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(userLoginDTO.email(), userLoginDTO.password())
         );
@@ -81,7 +83,13 @@ public class UserService {
             throw new InputTooShortException("password");
         } else if(userRegistrationDTO.lastName().length() < 2){
             throw new InputTooShortException("last name");
-        } else if(!Pattern.compile(".+\\@.+\\..+").matcher(userRegistrationDTO.email()).matches()){
+        }
+
+        validateEmail(userRegistrationDTO.email());
+    }
+
+    private void validateEmail(String email){
+        if(!Pattern.compile(".+\\@.+\\..+").matcher(email).matches()){
             throw new InvalidEmailFormatException();
         }
     }
