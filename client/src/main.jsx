@@ -6,7 +6,11 @@ import Login from './page/Login';
 
 const router = createBrowserRouter([
   {
-    path: "/login",
+    path: '/',
+    element: <h1>Main</h1>
+  },
+  {
+    path: '/login',
     element: <Login />
   }
 ])

@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
 function Login(){
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const navigate = useNavigate();
 
 
     async function handleSubmit(e){
@@ -27,6 +29,7 @@ function Login(){
 
         if(loginResponseData.ok){
             sessionStorage.setItem('USER_JWT', JSON.stringify(loginResponse));
+            navigate('/');
         } else {
             setError(loginResponse.errorMessage);
         }
