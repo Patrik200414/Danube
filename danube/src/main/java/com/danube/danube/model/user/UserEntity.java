@@ -7,7 +7,7 @@ import java.util.Set;
 
 @Entity
 @Table(
-        name = "users",
+        name = "user",
         uniqueConstraints = {
                 @UniqueConstraint(name = "email_unique", columnNames = "email")
         }
