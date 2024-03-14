@@ -45,7 +45,6 @@ public class UserController {
     public ResponseEntity<?> login(@RequestBody UserLoginDTO userLoginDTO, HttpServletResponse httpServletResponse){
         try{
             JwtResponse jwtResponse = userService.loginUser(userLoginDTO);
-            cookieService.setCookie(httpServletResponse, jwtResponse.jwt());
             AuthenticatedUserLoginDTO authenticatedUserLoginDTO = new AuthenticatedUserLoginDTO(jwtResponse.firstName());
             return ResponseEntity.ok(authenticatedUserLoginDTO);
         } catch (Exception e){
