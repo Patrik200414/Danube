@@ -2,17 +2,11 @@ package com.danube.danube.model.product.product_information;
 
 import com.danube.danube.model.product.ProductDetail;
 import com.danube.danube.model.product.product_category.ProductCategory;
-import com.danube.danube.model.product.product_enums.Gender;
-import com.danube.danube.model.product.product_enums.NeckLine;
-import com.danube.danube.model.product.product_enums.SleeveLength;
-import jakarta.persistence.CollectionTable;
+import com.danube.danube.model.product.product_enums.shirt.Gender;
+import com.danube.danube.model.product.product_enums.shirt.NeckLine;
+import com.danube.danube.model.product.product_enums.shirt.SleeveLength;
 import jakarta.persistence.Entity;
 import org.hibernate.engine.jdbc.Size;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Entity
 public class Shirt extends ProductInformation{

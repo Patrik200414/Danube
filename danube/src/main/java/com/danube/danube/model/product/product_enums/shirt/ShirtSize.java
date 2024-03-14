@@ -1,4 +1,4 @@
-package com.danube.danube.model.product.product_enums;
+package com.danube.danube.model.product.product_enums.shirt;
 
 public enum ShirtSize {
     S,
