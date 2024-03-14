@@ -1,7 +1,7 @@
 package com.danube.danube.model.product.product_information;
 
 import com.danube.danube.model.product.ProductDetail;
-import com.danube.danube.model.product.product_category.ProductCategory;
+import com.danube.danube.model.product.product_category.Category;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -13,20 +13,18 @@ public class ProductInformation {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
 
-    @ManyToOne
-    private ProductCategory productCategory;
+    private Category productCategory;
     @OneToOne
     private ProductDetail productDetail;
 
     public ProductInformation() {
     }
 
-    public ProductInformation(long id, ProductCategory productCategory, ProductDetail productDetail) {
+    public ProductInformation(long id, Category productCategory, ProductDetail productDetail) {
         this.id = id;
         this.productCategory = productCategory;
         this.productDetail = productDetail;
     }
-
 
     public long getId() {
         return id;
@@ -36,11 +34,11 @@ public class ProductInformation {
         this.id = id;
     }
 
-    public ProductCategory getProductCategory() {
+    public Category getProductCategory() {
         return productCategory;
     }
 
-    public void setProductCategory(ProductCategory productCategory) {
+    public void setProductCategory(Category productCategory) {
         this.productCategory = productCategory;
     }
 

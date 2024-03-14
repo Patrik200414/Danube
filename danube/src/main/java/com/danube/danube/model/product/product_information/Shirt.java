@@ -1,7 +1,7 @@
 package com.danube.danube.model.product.product_information;
 
 import com.danube.danube.model.product.ProductDetail;
-import com.danube.danube.model.product.product_category.ProductCategory;
+import com.danube.danube.model.product.product_category.Category;
 import com.danube.danube.model.product.product_enums.shirt.Gender;
 import com.danube.danube.model.product.product_enums.shirt.NeckLine;
 import com.danube.danube.model.product.product_enums.shirt.SleeveLength;
@@ -22,8 +22,8 @@ public class Shirt extends ProductInformation{
     public Shirt() {
     }
 
-    public Shirt(long id, ProductCategory productCategory, ProductDetail productDetail, String style, Gender gender, Size size, String fabric, NeckLine neckLine, SleeveLength sleeveLength, String colors) {
-        super(id, productCategory, productDetail);
+    public Shirt(long id, Category category, ProductDetail productDetail, String style, Gender gender, Size size, String fabric, NeckLine neckLine, SleeveLength sleeveLength, String colors) {
+        super(id, category, productDetail);
         this.style = style;
         this.gender = gender;
         this.size = size;
@@ -32,7 +32,6 @@ public class Shirt extends ProductInformation{
         this.sleeveLength = sleeveLength;
         this.colors = colors;
     }
-
 
     public String getStyle() {
         return style;

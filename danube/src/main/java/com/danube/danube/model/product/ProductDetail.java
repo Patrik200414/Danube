@@ -1,6 +1,5 @@
 package com.danube.danube.model.product;
 
-import com.danube.danube.model.product.product_category.ProductCategory;
 import com.danube.danube.model.product.product_information.ProductInformation;
 import jakarta.persistence.*;
 
@@ -21,8 +20,6 @@ public class ProductDetail {
     @Column(nullable = false)
     private String description;
 
-    @ManyToOne
-    private ProductCategory productCategory;
 
     @OneToOne
     private ProductInformation productInformation;
