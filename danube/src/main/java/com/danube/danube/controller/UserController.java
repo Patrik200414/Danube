@@ -5,7 +5,6 @@ import com.danube.danube.model.dto.AuthenticatedUserLoginDTO;
 import com.danube.danube.model.dto.JwtResponse;
 import com.danube.danube.model.dto.UserLoginDTO;
 import com.danube.danube.model.dto.UserRegistrationDTO;
-import com.danube.danube.service.CookieService;
 import com.danube.danube.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +21,11 @@ public class UserController {
 
     private final UserService userService;
     private final Advice controllerAdvice;
-    private final CookieService cookieService;
 
     @Autowired
-    public UserController(UserService userService, Advice controllerAdvice, CookieService cookieService) {
+    public UserController(UserService userService, Advice controllerAdvice) {
         this.userService = userService;
         this.controllerAdvice = controllerAdvice;
-        this.cookieService = cookieService;
     }
 
     @PostMapping("/registration")
