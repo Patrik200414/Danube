@@ -2,6 +2,7 @@ package com.danube.danube.controller;
 
 import com.danube.danube.controller.advice.Advice;
 
+import com.danube.danube.model.dto.ProductUploadDTO;
 import com.danube.danube.model.product.ProductDetail;
 import com.danube.danube.model.product.product_category.Category;
 import com.danube.danube.model.product.product_category.SubCategory;
@@ -46,6 +47,17 @@ public class ProductController {
         try{
             Map<Category, List<SubCategory>> categories = productService.getCategories();
             return ResponseEntity.ok(categories);
+        } catch (Exception e){
+            return controllerAdvice.handleException(e);
+        }
+    }
+
+    @PostMapping()
+    public ResponseEntity<?> saveProduct(@RequestBody ProductUploadDTO productUploadDTO){
+        try{
+            productService.saveProduct(productUploadDTO);
+
+            return ResponseEntity.ok("Product");
         } catch (Exception e){
             return controllerAdvice.handleException(e);
         }
