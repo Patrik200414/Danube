@@ -1,4 +1,4 @@
-package com.danube.danube.model.dto;
+package com.danube.danube.model.dto.jwt;
 
 import java.util.List;
 import java.util.Set;

@@ -1,6 +1,6 @@
 package com.danube.danube.service.utility;
 
-import com.danube.danube.custom_exception.IncorrectProductObjectFormException;
+import com.danube.danube.custom_exception.product.IncorrectProductObjectFormException;
 import com.danube.danube.model.product.product_category.Category;
 import com.danube.danube.model.product.product_category.SubCategory;
 import com.danube.danube.model.product.product_enums.shirt.Gender;

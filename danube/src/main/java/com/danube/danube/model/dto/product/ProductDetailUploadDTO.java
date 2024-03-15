@@ -1,4 +1,4 @@
-package com.danube.danube.model.dto;
+package com.danube.danube.model.dto.product;
 
 public record ProductDetailUploadDTO(
         int deliveryTimeInDay,

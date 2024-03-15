@@ -1,6 +1,6 @@
 package com.danube.danube.service;
 
-import com.danube.danube.model.dto.ProductUploadDTO;
+import com.danube.danube.model.dto.product.ProductUploadDTO;
 import com.danube.danube.model.product.ProductDetail;
 import com.danube.danube.model.product.product_category.Category;
 import com.danube.danube.model.product.product_category.SubCategory;

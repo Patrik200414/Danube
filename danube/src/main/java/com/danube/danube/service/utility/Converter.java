@@ -1,7 +1,7 @@
 package com.danube.danube.service.utility;
 
-import com.danube.danube.model.dto.ProductDetailUploadDTO;
-import com.danube.danube.model.dto.UserRegistrationDTO;
+import com.danube.danube.model.dto.product.ProductDetailUploadDTO;
+import com.danube.danube.model.dto.user.UserRegistrationDTO;
 import com.danube.danube.model.product.ProductDetail;
 import com.danube.danube.model.user.Role;
 import com.danube.danube.model.user.UserEntity;

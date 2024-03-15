@@ -1,16 +1,15 @@
 package com.danube.danube.service;
 
-import com.danube.danube.custom_exception.*;
-import com.danube.danube.model.dto.JwtResponse;
-import com.danube.danube.model.dto.UserLoginDTO;
-import com.danube.danube.model.dto.UserRegistrationDTO;
+import com.danube.danube.custom_exception.login_registration.*;
+import com.danube.danube.model.dto.jwt.JwtResponse;
+import com.danube.danube.model.dto.user.UserLoginDTO;
+import com.danube.danube.model.dto.user.UserRegistrationDTO;
 import com.danube.danube.model.user.Role;
 import com.danube.danube.model.user.UserEntity;
 import com.danube.danube.repository.user.UserRepository;
 import com.danube.danube.security.jwt.JwtUtils;
 import com.danube.danube.service.utility.Converter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

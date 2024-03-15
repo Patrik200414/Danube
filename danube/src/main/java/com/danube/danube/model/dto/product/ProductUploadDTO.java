@@ -1,4 +1,6 @@
-package com.danube.danube.model.dto;
+package com.danube.danube.model.dto.product;
+
+import com.danube.danube.model.dto.product.ProductDetailUploadDTO;
 
 import java.util.Map;
 

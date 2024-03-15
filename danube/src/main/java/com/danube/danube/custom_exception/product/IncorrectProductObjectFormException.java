@@ -1,4 +1,4 @@
-package com.danube.danube.custom_exception;
+package com.danube.danube.custom_exception.product;
 
 public class IncorrectProductObjectFormException extends RuntimeException{
     public IncorrectProductObjectFormException() {
