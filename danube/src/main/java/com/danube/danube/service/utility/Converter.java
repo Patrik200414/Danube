@@ -52,7 +52,8 @@ public class Converter {
                         productDetail.getDeliveryTimeInDay(),
                         productDetail.getQuantity(),
                         productDetail.getRating(),
-                        productDetail.getSold()
+                        productDetail.getSold(),
+                        productDetail.getId()
                 )).toList();
     }
 }
