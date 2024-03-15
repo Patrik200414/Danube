@@ -38,9 +38,6 @@ public class ProductInformation {
         return productCategory;
     }
 
-    public void setProductCategory(Category productCategory) {
-        this.productCategory = productCategory;
-    }
 
     public ProductDetail getProductDetail() {
         return productDetail;

@@ -1,11 +1,13 @@
 package com.danube.danube.security;
 
+import com.danube.danube.model.user.Role;
 import com.danube.danube.security.jwt.AuthEntryPoint;
 import com.danube.danube.security.jwt.AuthTokenFilter;
 import com.danube.danube.security.jwt.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -48,6 +50,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/api/user/login").permitAll()
                                 .requestMatchers("/api/user/registration").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/product").hasRole("SELLER")
+                                .requestMatchers(HttpMethod.GET, "/api/product/category").permitAll()
                                 .requestMatchers("/error").permitAll()
                                 .anyRequest().authenticated()
                 ).authenticationProvider(authenticationProvider())

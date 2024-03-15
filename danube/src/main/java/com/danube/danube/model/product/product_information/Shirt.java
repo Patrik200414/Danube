@@ -22,8 +22,8 @@ public class Shirt extends ProductInformation{
     public Shirt() {
     }
 
-    public Shirt(long id, Category category, ProductDetail productDetail, String style, Gender gender, Size size, String fabric, NeckLine neckLine, SleeveLength sleeveLength, String colors) {
-        super(id, category, productDetail);
+    public Shirt(long id, ProductDetail productDetail, String style, Gender gender, Size size, String fabric, NeckLine neckLine, SleeveLength sleeveLength, String colors) {
+        super(id, Category.CLOTHING, productDetail);
         this.style = style;
         this.gender = gender;
         this.size = size;
