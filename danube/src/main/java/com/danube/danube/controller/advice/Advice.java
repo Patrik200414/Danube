@@ -75,6 +75,6 @@ public class Advice {
     }
 
     private UserErrorMessage handleIncorrectProductObjectFormException(){
-        return new UserErrorMessage("Incorrect data for the selected subcategory! Please correct the informations!");
+        return new UserErrorMessage("Incorrect data for the selected subcategory! Please correct the information!");
     }
 }
