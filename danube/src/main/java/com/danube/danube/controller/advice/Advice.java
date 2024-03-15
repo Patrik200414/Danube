@@ -1,9 +1,6 @@
 package com.danube.danube.controller.advice;
 
-import com.danube.danube.custom_exception.EmailNotFoundException;
-import com.danube.danube.custom_exception.InputTooShortException;
-import com.danube.danube.custom_exception.InvalidEmailFormatException;
-import com.danube.danube.custom_exception.RegistrationFieldNullException;
+import com.danube.danube.custom_exception.*;
 import com.danube.danube.model.error.UserErrorMessage;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -32,8 +29,10 @@ public class Advice {
             return ResponseEntity.badRequest().body(handleInvalidEmailFormat());
         } else if(e instanceof BadCredentialsException){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(handleBadCredentialException());
+        } else if(e instanceof NonExistingUserException){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(handleNonExistingUserException());
         } else{
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(handleInternalServerError());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(handleInternalServerError(e));
         }
     }
 
@@ -41,8 +40,9 @@ public class Advice {
         return new UserErrorMessage(String.format("Already existing email!"));
     }
 
-    private UserErrorMessage handleInternalServerError(){
-        return new UserErrorMessage("Unfortunately something went wrong on the server!");
+    private UserErrorMessage handleInternalServerError(Exception e){
+        return new UserErrorMessage(e.getMessage());
+        //return new UserErrorMessage("Unfortunately something went wrong on the server!");
     }
 
     private UserErrorMessage handleFieldIsNullError(Exception e){
@@ -65,5 +65,9 @@ public class Advice {
 
     private UserErrorMessage handleEmailNotFoundException(Exception e){
         return new UserErrorMessage(e.getMessage());
+    }
+
+    private UserErrorMessage handleNonExistingUserException(){
+        return new UserErrorMessage("This user doesn't exists!");
     }
 }
