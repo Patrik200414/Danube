@@ -4,6 +4,7 @@ import com.danube.danube.model.product.ProductDetail;
 import com.danube.danube.model.product.product_category.Category;
 import com.danube.danube.model.product.product_enums.shirt.Gender;
 import com.danube.danube.model.product.product_enums.shirt.NeckLine;
+import com.danube.danube.model.product.product_enums.shirt.ShirtSize;
 import com.danube.danube.model.product.product_enums.shirt.SleeveLength;
 import jakarta.persistence.Entity;
 import org.hibernate.engine.jdbc.Size;
@@ -13,7 +14,7 @@ public class Shirt extends ProductInformation{
     
     private String style;
     private Gender gender;
-    private Size size;
+    private ShirtSize size;
     private String fabric;
     private NeckLine neckLine;
     private SleeveLength sleeveLength;
@@ -22,8 +23,8 @@ public class Shirt extends ProductInformation{
     public Shirt() {
     }
 
-    public Shirt(long id, Category category, ProductDetail productDetail, String style, Gender gender, Size size, String fabric, NeckLine neckLine, SleeveLength sleeveLength, String colors) {
-        super(id, category, productDetail);
+    public Shirt(long id, ProductDetail productDetail, String style, Gender gender, ShirtSize size, String fabric, NeckLine neckLine, SleeveLength sleeveLength, String colors, Category productCategory) {
+        super(id, productCategory, productDetail);
         this.style = style;
         this.gender = gender;
         this.size = size;
@@ -32,6 +33,7 @@ public class Shirt extends ProductInformation{
         this.sleeveLength = sleeveLength;
         this.colors = colors;
     }
+
 
     public String getStyle() {
         return style;
@@ -49,11 +51,11 @@ public class Shirt extends ProductInformation{
         this.gender = gender;
     }
 
-    public Size getSize() {
+    public ShirtSize getSize() {
         return size;
     }
 
-    public void setSize(Size size) {
+    public void setSize(ShirtSize size) {
         this.size = size;
     }
 

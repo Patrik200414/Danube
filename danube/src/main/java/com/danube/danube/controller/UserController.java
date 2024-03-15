@@ -1,11 +1,10 @@
 package com.danube.danube.controller;
 
 import com.danube.danube.controller.advice.Advice;
-import com.danube.danube.model.dto.JwtResponse;
-import com.danube.danube.model.dto.UserLoginDTO;
-import com.danube.danube.model.dto.UserRegistrationDTO;
+import com.danube.danube.model.dto.jwt.JwtResponse;
+import com.danube.danube.model.dto.user.UserLoginDTO;
+import com.danube.danube.model.dto.user.UserRegistrationDTO;
 import com.danube.danube.service.UserService;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

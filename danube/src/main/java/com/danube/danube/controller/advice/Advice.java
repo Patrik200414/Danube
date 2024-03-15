@@ -1,6 +1,10 @@
 package com.danube.danube.controller.advice;
 
-import com.danube.danube.custom_exception.*;
+import com.danube.danube.custom_exception.login_registration.InputTooShortException;
+import com.danube.danube.custom_exception.login_registration.InvalidEmailFormatException;
+import com.danube.danube.custom_exception.login_registration.NonExistingUserException;
+import com.danube.danube.custom_exception.login_registration.RegistrationFieldNullException;
+import com.danube.danube.custom_exception.product.IncorrectProductObjectFormException;
 import com.danube.danube.model.error.UserErrorMessage;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -31,7 +35,10 @@ public class Advice {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(handleBadCredentialException());
         } else if(e instanceof NonExistingUserException){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(handleNonExistingUserException());
-        } else{
+        } else if(e instanceof IncorrectProductObjectFormException){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(handleIncorrectProductObjectFormException());
+        }
+        else{
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(handleInternalServerError(e));
         }
     }
@@ -69,5 +76,9 @@ public class Advice {
 
     private UserErrorMessage handleNonExistingUserException(){
         return new UserErrorMessage("This user doesn't exists!");
+    }
+
+    private UserErrorMessage handleIncorrectProductObjectFormException(){
+        return new UserErrorMessage("Incorrect data for the selected subcategory! Please correct the information!");
     }
 }

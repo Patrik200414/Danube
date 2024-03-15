@@ -17,7 +17,10 @@ public class ProductDetail {
     private String brand;
     @Column(nullable = false)
     private int quantity;
-    @Column(nullable = false)
+    @Column(
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
     private String description;
 
 
@@ -27,6 +30,12 @@ public class ProductDetail {
     private double shippingPrice;
     @Column(nullable = false)
     private int deliveryTimeInDay;
+
+    @Column(nullable = false)
+    private int rating;
+
+    @Column(nullable = false)
+    private int sold;
     /*
     TODO
     private List<String> images;
@@ -35,17 +44,19 @@ public class ProductDetail {
     public ProductDetail() {
     }
 
-    public ProductDetail(long id, String productName, double price, String brand, int quantity, String description, double shippingPrice, int deliveryTimeInDay) {
+    public ProductDetail(long id, String productName, double price, String brand, int quantity, String description, ProductInformation productInformation, double shippingPrice, int deliveryTimeInDay, int rating, int sold) {
         this.id = id;
         this.productName = productName;
         this.price = price;
         this.brand = brand;
         this.quantity = quantity;
         this.description = description;
+        this.productInformation = productInformation;
         this.shippingPrice = shippingPrice;
         this.deliveryTimeInDay = deliveryTimeInDay;
+        this.rating = rating;
+        this.sold = sold;
     }
-
 
     public long getId() {
         return id;
@@ -95,6 +106,13 @@ public class ProductDetail {
         this.description = description;
     }
 
+    public ProductInformation getProductInformation() {
+        return productInformation;
+    }
+
+    public void setProductInformation(ProductInformation productInformation) {
+        this.productInformation = productInformation;
+    }
 
     public double getShippingPrice() {
         return shippingPrice;
@@ -110,5 +128,21 @@ public class ProductDetail {
 
     public void setDeliveryTimeInDay(int deliveryTimeInDay) {
         this.deliveryTimeInDay = deliveryTimeInDay;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
+    public int getSold() {
+        return sold;
+    }
+
+    public void setSold(int sold) {
+        this.sold = sold;
     }
 }
