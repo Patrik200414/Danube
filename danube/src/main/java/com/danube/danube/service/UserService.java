@@ -1,12 +1,10 @@
 package com.danube.danube.service;
 
-import com.danube.danube.custom_exception.EmailNotFoundException;
-import com.danube.danube.custom_exception.InputTooShortException;
-import com.danube.danube.custom_exception.InvalidEmailFormatException;
-import com.danube.danube.custom_exception.RegistrationFieldNullException;
+import com.danube.danube.custom_exception.*;
 import com.danube.danube.model.dto.JwtResponse;
 import com.danube.danube.model.dto.UserLoginDTO;
 import com.danube.danube.model.dto.UserRegistrationDTO;
+import com.danube.danube.model.user.Role;
 import com.danube.danube.model.user.UserEntity;
 import com.danube.danube.repository.user.UserRepository;
 import com.danube.danube.security.jwt.JwtUtils;
@@ -23,6 +21,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 @Service
@@ -65,8 +65,38 @@ public class UserService {
 
         UserEntity user = userRepository.findByEmail(userLoginDTO.email()).orElseThrow(() -> new EmailNotFoundException(userLoginDTO.email()));
 
-        return new JwtResponse(jwt, user.getFirstName(), roles);
+        return new JwtResponse(jwt, user.getFirstName(), user.getId(), roles);
     }
+
+    public JwtResponse addSellerRoleToUser(long id){
+        Optional<UserEntity> searchedUser = userRepository.findById(id);
+
+        if(searchedUser.isEmpty()){
+            throw new NonExistingUserException();
+        }
+
+        UserEntity user = searchedUser.get();
+
+        Set<Role> userRoles = user.getRoles();
+        userRoles.add(Role.ROLE_SELLER);
+
+        user.setRoles(userRoles);
+
+        UserEntity updatedUser = userRepository.save(user);
+
+        String jwtToken = jwtUtils.generateJwtToken(updatedUser.getEmail());
+        List<String> roles = updatedUser.getRoles().stream()
+                .map(Enum::name)
+                .toList();
+
+        return new JwtResponse(
+                jwtToken,
+                updatedUser.getFirstName(),
+                updatedUser.getId(),
+                roles
+        );
+    }
+
 
     private void registrationValidator(UserRegistrationDTO userRegistrationDTO){
         if(userRegistrationDTO.email() == null){
