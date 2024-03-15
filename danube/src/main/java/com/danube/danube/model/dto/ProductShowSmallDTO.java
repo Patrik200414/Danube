@@ -9,6 +9,7 @@ public record ProductShowSmallDTO(
         int deliveryTimeInDay,
         int quantity,
         int rating,
-        int sold
+        int sold,
+        long id
 ) {
 }

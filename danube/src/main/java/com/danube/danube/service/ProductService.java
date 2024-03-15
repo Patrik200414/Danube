@@ -11,12 +11,16 @@ import com.danube.danube.repository.product.ProductInformationRepository;
 import com.danube.danube.service.utility.Converter;
 import com.danube.danube.service.utility.ProductInformationCreator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Pageable;
 import java.util.*;
 
 @Service
 public class ProductService {
+    public static final int DEFAULT_ITEM_AMOUNT_PAGE = 10;
     private final ProductDetailRepository productDetailRepository;
     private final ProductInformationRepository productInformationRepository;
 
@@ -27,8 +31,12 @@ public class ProductService {
     }
 
 
-    public List<ProductShowSmallDTO> getProducts(){
-        List<ProductDetail> products = productDetailRepository.findAll();
+    public List<ProductShowSmallDTO> getProducts(int pageNumber){
+        PageRequest pageRequest = PageRequest.of(pageNumber, DEFAULT_ITEM_AMOUNT_PAGE);
+
+        Page<ProductDetail> productPage = productDetailRepository.findAll(pageRequest);
+        List<ProductDetail> products = productPage.getContent();
+
         return Converter.convertProductDetails(products);
     }
 

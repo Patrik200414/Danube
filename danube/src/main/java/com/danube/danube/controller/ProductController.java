@@ -30,9 +30,9 @@ public class ProductController {
     }
 
     @GetMapping()
-    public ResponseEntity<?> getProducts(){
+    public ResponseEntity<?> getProducts(@RequestParam(defaultValue = "0") int pageNumber){
         try{
-            List<ProductShowSmallDTO> products = productService.getProducts();
+            List<ProductShowSmallDTO> products = productService.getProducts(pageNumber);
             return ResponseEntity.ok(products);
         } catch (Exception e){
             return controllerAdvice.handleException(e);
