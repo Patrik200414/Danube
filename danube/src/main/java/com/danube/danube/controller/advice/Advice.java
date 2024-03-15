@@ -33,7 +33,7 @@ public class Advice {
         } else if(e instanceof BadCredentialsException){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(handleBadCredentialException());
         } else{
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(handleInternalServerError());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(handleInternalServerError(e));
         }
     }
 
@@ -41,8 +41,9 @@ public class Advice {
         return new UserErrorMessage(String.format("Already existing email!"));
     }
 
-    private UserErrorMessage handleInternalServerError(){
-        return new UserErrorMessage("Unfortunately something went wrong on the server!");
+    private UserErrorMessage handleInternalServerError(Exception e){
+        return new UserErrorMessage(e.getMessage());
+        //return new UserErrorMessage("Unfortunately something went wrong on the server!");
     }
 
     private UserErrorMessage handleFieldIsNullError(Exception e){
