@@ -1,6 +1,8 @@
 package com.danube.danube.service.utility;
 
+import com.danube.danube.model.dto.ProductDetailUploadDTO;
 import com.danube.danube.model.dto.UserRegistrationDTO;
+import com.danube.danube.model.product.ProductDetail;
 import com.danube.danube.model.user.Role;
 import com.danube.danube.model.user.UserEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,5 +22,19 @@ public class Converter {
         user.setRoles(Set.of(Role.ROLE_CUSTOMER));
 
         return user;
+    }
+
+    public static ProductDetail convertToProductDetail(ProductDetailUploadDTO productDetailUploadDTO){
+        ProductDetail productDetail = new ProductDetail();
+
+        productDetail.setBrand(productDetailUploadDTO.brand());
+        productDetail.setProductName(productDetailUploadDTO.productName());
+        productDetail.setDescription(productDetailUploadDTO.description());
+        productDetail.setPrice(productDetailUploadDTO.price());
+        productDetail.setQuantity(productDetailUploadDTO.quantity());
+        productDetail.setShippingPrice(productDetailUploadDTO.shippingPrice());
+        productDetail.setDeliveryTimeInDay(productDetailUploadDTO.deliveryTimeInDay());
+
+        return productDetail;
     }
 }
