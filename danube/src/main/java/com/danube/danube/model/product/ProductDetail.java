@@ -30,6 +30,12 @@ public class ProductDetail {
     private double shippingPrice;
     @Column(nullable = false)
     private int deliveryTimeInDay;
+
+    @Column(nullable = false)
+    private int rating;
+
+    @Column(nullable = false)
+    private int sold;
     /*
     TODO
     private List<String> images;
@@ -38,7 +44,7 @@ public class ProductDetail {
     public ProductDetail() {
     }
 
-    public ProductDetail(long id, String productName, double price, String brand, int quantity, String description, ProductInformation productInformation, double shippingPrice, int deliveryTimeInDay) {
+    public ProductDetail(long id, String productName, double price, String brand, int quantity, String description, ProductInformation productInformation, double shippingPrice, int deliveryTimeInDay, int rating, int sold) {
         this.id = id;
         this.productName = productName;
         this.price = price;
@@ -48,6 +54,8 @@ public class ProductDetail {
         this.productInformation = productInformation;
         this.shippingPrice = shippingPrice;
         this.deliveryTimeInDay = deliveryTimeInDay;
+        this.rating = rating;
+        this.sold = sold;
     }
 
     public long getId() {
@@ -120,5 +128,21 @@ public class ProductDetail {
 
     public void setDeliveryTimeInDay(int deliveryTimeInDay) {
         this.deliveryTimeInDay = deliveryTimeInDay;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
+    public int getSold() {
+        return sold;
+    }
+
+    public void setSold(int sold) {
+        this.sold = sold;
     }
 }
