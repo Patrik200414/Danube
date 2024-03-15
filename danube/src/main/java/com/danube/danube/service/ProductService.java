@@ -1,5 +1,6 @@
 package com.danube.danube.service;
 
+import com.danube.danube.model.dto.ProductShowSmallDTO;
 import com.danube.danube.model.dto.product.ProductUploadDTO;
 import com.danube.danube.model.product.ProductDetail;
 import com.danube.danube.model.product.product_category.Category;
@@ -26,8 +27,9 @@ public class ProductService {
     }
 
 
-    public List<ProductDetail> getProducts(){
-        return productDetailRepository.findAll();
+    public List<ProductShowSmallDTO> getProducts(){
+        List<ProductDetail> products = productDetailRepository.findAll();
+        return Converter.convertProductDetails(products);
     }
 
     public Map<Category, List<SubCategory>> getCategories(){
