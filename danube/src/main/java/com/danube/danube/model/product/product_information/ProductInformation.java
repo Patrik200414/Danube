@@ -30,6 +30,7 @@ public class ProductInformation {
         return id;
     }
 
+
     public void setId(long id) {
         this.id = id;
     }
@@ -38,6 +39,9 @@ public class ProductInformation {
         return productCategory;
     }
 
+    public void setProductCategory(Category productCategory) {
+        this.productCategory = productCategory;
+    }
 
     public ProductDetail getProductDetail() {
         return productDetail;

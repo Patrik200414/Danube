@@ -17,7 +17,10 @@ public class ProductDetail {
     private String brand;
     @Column(nullable = false)
     private int quantity;
-    @Column(nullable = false)
+    @Column(
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
     private String description;
 
 
@@ -35,17 +38,17 @@ public class ProductDetail {
     public ProductDetail() {
     }
 
-    public ProductDetail(long id, String productName, double price, String brand, int quantity, String description, double shippingPrice, int deliveryTimeInDay) {
+    public ProductDetail(long id, String productName, double price, String brand, int quantity, String description, ProductInformation productInformation, double shippingPrice, int deliveryTimeInDay) {
         this.id = id;
         this.productName = productName;
         this.price = price;
         this.brand = brand;
         this.quantity = quantity;
         this.description = description;
+        this.productInformation = productInformation;
         this.shippingPrice = shippingPrice;
         this.deliveryTimeInDay = deliveryTimeInDay;
     }
-
 
     public long getId() {
         return id;
@@ -95,6 +98,13 @@ public class ProductDetail {
         this.description = description;
     }
 
+    public ProductInformation getProductInformation() {
+        return productInformation;
+    }
+
+    public void setProductInformation(ProductInformation productInformation) {
+        this.productInformation = productInformation;
+    }
 
     public double getShippingPrice() {
         return shippingPrice;
