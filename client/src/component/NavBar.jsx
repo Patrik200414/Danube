@@ -24,7 +24,9 @@ function NavBar(){
     return(
         <nav className="nav-bar">
             <div className="top-part">
-                <h1 className="logo">Danube</h1>
+                <h1 className="logo">
+                    <Link to='/'>Danube</Link>    
+                </h1>
                 <div className="input-container">
                     <input type="text" name="search" id="search" placeholder="Search Danube..." value={search} onChange={e => setSearch(e.target.value)}/>
                     <button>Search</button>
