@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import userImage from "../static/userImage.svg";
+import UserProfile from "./UserProfile";
+
 
 
 function NavBar(){
@@ -29,15 +30,7 @@ function NavBar(){
                 </div>
                 <div className="additional-information">
                     {user ? 
-                        <Link to='/profile'>
-                            <div className="greeting">
-                                <img className="user-image" src={userImage} />
-                                <div>
-                                    <h5>Welcome</h5>
-                                    <p>{user.firstName}</p>
-                                </div>
-                            </div>
-                        </Link>
+                        <UserProfile user={user}/>      
                         :
                         <Link to='/login'><button>Login</button></Link>
                     }
