@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom"
 import userImage from "../static/userImage.svg";
+import PropTypes from "prop-types";
 
 function UserProfileImage({user}){
     return(
@@ -14,5 +15,11 @@ function UserProfileImage({user}){
         </Link>
     )
 }
+
+UserProfileImage.propTypes = {
+    user: PropTypes.func
+}
+
+
 
 export default UserProfileImage;

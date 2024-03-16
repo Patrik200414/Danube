@@ -105,7 +105,7 @@
 /*Navbar*/
 
 .nav-bar {
-    background-color: #232f3e;
+    background-color: var(--deep-blue);
     color: #ffffff;
     padding: 10px;
     display: flex;
@@ -142,7 +142,7 @@ input[type="text"] {
 }
 
 button {
-    background-color: #FF9900;
+    background-color: var(--button-color);
     color: #232f3e;
     border: none;
     border-radius: 0 5px 5px 0;
