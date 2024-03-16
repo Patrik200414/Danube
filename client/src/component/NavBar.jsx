@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import UserProfileImage from "./UserProfileImage";
+import ShoppingCart from "./ShoppingCart";
 
 
 
@@ -34,6 +35,7 @@ function NavBar(){
                         :
                         <Link to='/login'><button>Login</button></Link>
                     }
+                    <ShoppingCart />
                 </div>
                 
             </div>

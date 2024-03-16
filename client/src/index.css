@@ -170,7 +170,9 @@ button {
 }
 
 .additional-information{
-    padding-left: 10%;
+    width: 20%;
+    display: flex;
+    justify-content: space-around;
 }
 .additional-information a{
     color: white;
@@ -192,6 +194,20 @@ button {
     max-width: 200px;
     max-height: 200px;
 }
+
+.fa-shopping-cart{
+    font-size: 36px;
+}
+
+.shopping-cart{
+    display: flex;
+    gap: 15%;
+}
+
+.shopping-cart p{
+    align-self: center;    
+}
+
 
 @media (max-width: 768px) {
     .bottom-part {
