@@ -6,6 +6,7 @@ import Login from './page/Login';
 import Registration from './page/Registration';
 import Home from './page/Home';
 import Profile from './page/Profile';
+import SellerAgreement from './page/SellerAgreement';
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
   {
     path: '/profile',
     element: <Profile />
+  },
+  {
+    path: '/seller/agreement',
+    element: <SellerAgreement />
   }
 ])
 
