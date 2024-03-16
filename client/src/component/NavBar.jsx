@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import UserProfile from "./UserProfile";
+import UserProfileImage from "./UserProfileImage";
 
 
 
@@ -30,7 +30,7 @@ function NavBar(){
                 </div>
                 <div className="additional-information">
                     {user ? 
-                        <UserProfile user={user}/>      
+                        <UserProfileImage user={user} />
                         :
                         <Link to='/login'><button>Login</button></Link>
                     }
