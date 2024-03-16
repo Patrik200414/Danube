@@ -4,6 +4,32 @@ import NavBar from "../component/NavBar";
 function SellerAgreement(){
     const [user, setUser] = useState(JSON.parse(sessionStorage.getItem("USER_JWT")));
     const [isAgreementAccepted, setIsAgreementAccepted] = useState(false);
+    const [error, setError] = useState('');
+
+    async function handleSubmit(){
+        if(!isAgreementAccepted){
+            setError('Seller agreement has to be accepted to become a seller!');
+            return;
+        }
+
+        setError('');
+
+        const updateRole = await fetch(`/api/user/${user.id}/role`, {
+            method: "PUT",
+            headers: {
+                'Authorization': `Bearer ${user.jwt}`
+            }
+        });
+
+        if(!updateRole.ok){
+            console.log(updateRole);
+            setError(updateRole.statusText);
+            return;
+        }
+
+        const updaterUser = await updateRole.json();
+        sessionStorage.setItem('USER_JWT', JSON.stringify(updaterUser));
+    }
 
     return(
         <div className="seller-agreement">
@@ -25,9 +51,12 @@ function SellerAgreement(){
                 <br />
                 <i className="parties">{user.firstName}</i>
                 <br />
+                <p className="error-message">{error}</p>
                 <div className="agreement-checkbox">
                     <label htmlFor="checkbox">I agree the circumstances: </label>
                     <input type="checkbox" className="checkbox" id='checkbox' value={isAgreementAccepted} onChange={() => setIsAgreementAccepted(prev => !prev)}/>
+                    <br />
+                    <button type="button" onClick={handleSubmit}>Save changes!</button>
                 </div>
             </div>
         </div>
