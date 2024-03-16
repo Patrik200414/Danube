@@ -20,7 +20,7 @@ import java.util.*;
 
 @Service
 public class ProductService {
-    public static final int DEFAULT_ITEM_AMOUNT_PAGE = 10;
+//    public static final int DEFAULT_ITEM_AMOUNT_PAGE = 10;
     private final ProductDetailRepository productDetailRepository;
     private final ProductInformationRepository productInformationRepository;
 
@@ -31,8 +31,8 @@ public class ProductService {
     }
 
 
-    public List<ProductShowSmallDTO> getProducts(int pageNumber){
-        PageRequest pageRequest = PageRequest.of(pageNumber, DEFAULT_ITEM_AMOUNT_PAGE);
+    public List<ProductShowSmallDTO> getProducts(int pageNumber, int itemPerPage){
+        PageRequest pageRequest = PageRequest.of(pageNumber, itemPerPage);
 
         Page<ProductDetail> productPage = productDetailRepository.findAll(pageRequest);
         List<ProductDetail> products = productPage.getContent();
@@ -44,13 +44,17 @@ public class ProductService {
         return productDetailRepository.count();
     }
 
-    public Map<Category, List<SubCategory>> getCategories(){
+    public Map<Category, List<SubCategory>> getCategoriesAndSubCategories(){
         Map<Category, List<SubCategory>> categories = new LinkedHashMap<>();
 
         Arrays.stream(Category.values())
                 .forEach(category -> categories.put(category, category.subCategories));
 
         return categories;
+    }
+
+    public Category[] getCategories(){
+        return Category.values();
     }
 
     public void saveProduct(ProductUploadDTO productUploadDTO){

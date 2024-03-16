@@ -30,9 +30,9 @@ public class ProductController {
     }
 
     @GetMapping()
-    public ResponseEntity<?> getProducts(@RequestParam(defaultValue = "0") int pageNumber){
+    public ResponseEntity<?> getProducts(@RequestParam(defaultValue = "0") int pageNumber, @RequestParam(defaultValue = "10") int itemPerPage){
         try{
-            List<ProductShowSmallDTO> products = productService.getProducts(pageNumber);
+            List<ProductShowSmallDTO> products = productService.getProducts(pageNumber, itemPerPage);
             return ResponseEntity.ok(products);
         } catch (Exception e){
             return controllerAdvice.handleException(e);
@@ -50,10 +50,20 @@ public class ProductController {
     }
 
 
+    @GetMapping("/category/subcategory")
+    public ResponseEntity<?> getProductCategoriesAndSubCategories(){
+        try{
+            Map<Category, List<SubCategory>> categories = productService.getCategoriesAndSubCategories();
+            return ResponseEntity.ok(categories);
+        } catch (Exception e){
+            return controllerAdvice.handleException(e);
+        }
+    }
+
     @GetMapping("/category")
     public ResponseEntity<?> getProductCategories(){
         try{
-            Map<Category, List<SubCategory>> categories = productService.getCategories();
+            Category[] categories = productService.getCategories();
             return ResponseEntity.ok(categories);
         } catch (Exception e){
             return controllerAdvice.handleException(e);

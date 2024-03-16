@@ -1,6 +1,7 @@
 :root{
   --deep-blue: #002366;
-  --hover-deep-blue: #001a99
+  --hover-deep-blue: #001a99;
+  --button-color: #FF9900;
 }
 
 *{
@@ -97,5 +98,133 @@
     .login-form,
     .registration-form {
         width: 60%; /* Adjust form width for larger screens */
+    }
+}
+
+
+/*Navbar*/
+
+.nav-bar {
+    background-color: var(--deep-blue);
+    color: #ffffff;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.top-part {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    margin-right: auto;
+}
+
+.input-container {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+    width: 60%;
+}
+
+input[type="text"] {
+    width: calc(100% - 80px);
+    padding: 8px;
+    border: none;
+    border-radius: 5px 0 0 5px;
+}
+
+button {
+    background-color: var(--button-color);
+    color: #232f3e;
+    border: none;
+    border-radius: 0 5px 5px 0;
+    padding: 8px 15px;
+    cursor: pointer;
+}
+
+.bottom-part {
+    width: 100%;
+}
+
+.categories {
+    padding-left: 0;
+    list-style-type: none;
+    display: flex;
+    gap: 2%;
+}
+
+.categories li {
+    padding: 10px 0;
+}
+
+.categories li:last-child {
+    border-bottom: none;
+}
+
+.additional-information{
+    width: 20%;
+    display: flex;
+    justify-content: space-around;
+}
+.additional-information a{
+    color: white;
+    text-decoration: none;
+}
+
+.greeting{
+    text-align: center;
+    max-width: 200px;
+    max-height: 200px;
+    display: flex;
+}
+
+.greeting > div{
+    align-self: center;
+}
+
+.userImage{
+    max-width: 200px;
+    max-height: 200px;
+}
+
+.fa-shopping-cart{
+    font-size: 36px;
+}
+
+.shopping-cart{
+    display: flex;
+    gap: 15%;
+}
+
+.shopping-cart p{
+    align-self: center;    
+}
+
+
+@media (max-width: 768px) {
+    .bottom-part {
+        display: block;
+    }
+
+    .top-part {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .input-container {
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    input[type="text"] {
+        width: 100%;
     }
 }
