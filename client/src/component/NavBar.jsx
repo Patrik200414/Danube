@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 function NavBar(){
     const [search, setSearch] = useState('');
     const [categories, setCategories] = useState([]);
+    const [user, setUser] = useState(sessionStorage.getItem('USER_JWT'));
 
     useEffect(() => {
         const getCategories = async () => {
@@ -19,8 +21,18 @@ function NavBar(){
         <nav className="nav-bar">
             <div className="top-part">
                 <h1 className="logo">Danube</h1>
-                <input type="text" name="search" id="search" placeholder="Search Danube..." value={search} onChange={e => setSearch(e.target.value)}/>
-                <button>Search</button>
+                <div className="input-container">
+                    <input type="text" name="search" id="search" placeholder="Search Danube..." value={search} onChange={e => setSearch(e.target.value)}/>
+                    <button>Search</button>
+                </div>
+                <div className="additional-information">
+                    {user ? 
+                        <h1>Hello</h1>
+                        :
+                        <Link to='/login'><button>Login</button></Link>
+                    }
+                </div>
+                
             </div>
             <div className="bottom-part">
                 <ul className="categories">
