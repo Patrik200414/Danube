@@ -39,6 +39,16 @@ public class ProductController {
         }
     }
 
+    @GetMapping("/count")
+    public ResponseEntity<?> getProductCount(){
+        try{
+            long productCount = productService.getProductCount();
+            return ResponseEntity.ok(productCount);
+        } catch (Exception e){
+            return controllerAdvice.handleException(e);
+        }
+    }
+
 
     @GetMapping("/category")
     public ResponseEntity<?> getProductCategories(){

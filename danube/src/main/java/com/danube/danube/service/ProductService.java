@@ -40,6 +40,10 @@ public class ProductService {
         return Converter.convertProductDetails(products);
     }
 
+    public long getProductCount(){
+        return productDetailRepository.count();
+    }
+
     public Map<Category, List<SubCategory>> getCategories(){
         Map<Category, List<SubCategory>> categories = new LinkedHashMap<>();
 
