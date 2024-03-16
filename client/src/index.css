@@ -172,6 +172,26 @@ button {
 .additional-information{
     padding-left: 10%;
 }
+.additional-information a{
+    color: white;
+    text-decoration: none;
+}
+
+.greeting{
+    text-align: center;
+    max-width: 200px;
+    max-height: 200px;
+    display: flex;
+}
+
+.greeting > div{
+    align-self: center;
+}
+
+.userImage{
+    max-width: 200px;
+    max-height: 200px;
+}
 
 @media (max-width: 768px) {
     .bottom-part {

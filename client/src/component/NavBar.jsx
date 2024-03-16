@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import userImage from "../static/userImage.svg";
+
 
 function NavBar(){
     const [search, setSearch] = useState('');
     const [categories, setCategories] = useState([]);
-    const [user, setUser] = useState(sessionStorage.getItem('USER_JWT'));
+    const [user, setUser] = useState(JSON.parse(sessionStorage.getItem('USER_JWT')));
 
     useEffect(() => {
         const getCategories = async () => {
@@ -27,7 +29,15 @@ function NavBar(){
                 </div>
                 <div className="additional-information">
                     {user ? 
-                        <h1>Hello</h1>
+                        <Link to='/profile'>
+                            <div className="greeting">
+                                <img className="user-image" src={userImage} />
+                                <div>
+                                    <h5>Welcome</h5>
+                                    <p>{user.firstName}</p>
+                                </div>
+                            </div>
+                        </Link>
                         :
                         <Link to='/login'><button>Login</button></Link>
                     }
