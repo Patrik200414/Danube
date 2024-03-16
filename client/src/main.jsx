@@ -4,11 +4,12 @@ import './index.css'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Login from './page/Login';
 import Registration from './page/Registration';
+import Home from './page/Home';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <h1>Main</h1>
+    element: <Home />
   },
   {
     path: '/login',

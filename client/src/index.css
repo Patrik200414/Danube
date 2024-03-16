@@ -1,6 +1,7 @@
 :root{
   --deep-blue: #002366;
-  --hover-deep-blue: #001a99
+  --hover-deep-blue: #001a99;
+  --button-color: #FF9900;
 }
 
 *{
@@ -99,3 +100,64 @@
         width: 60%; /* Adjust form width for larger screens */
     }
 }
+
+
+/*Navbar*/
+
+.nav-bar {
+    background-color: var(--deep-blue);
+    color: #ffffff;
+    padding: 10px;
+}
+
+.top-part {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    margin-right: auto;
+}
+
+input[type="text"] {
+    width: 60%;
+    padding: 8px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 5px;
+}
+
+button {
+    background-color: var(--button-color);
+    color: var(--deep-blue);
+    border: none;
+    border-radius: 5px;
+    padding: 8px 15px;
+    cursor: pointer;
+}
+
+.bottom-part {
+    display: block;
+}
+
+.categories {
+    padding-left: 0;
+    list-style-type: none;
+    display: flex;
+    gap: 2%;
+}
+
+.categories li {
+    padding: 10px 0;
+    
+}
+
+.categories li:last-child {
+    border-bottom: none;
+}
+
+@media (min-width: 769px) {
+    
+}
+
