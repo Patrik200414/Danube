@@ -44,13 +44,17 @@ public class ProductService {
         return productDetailRepository.count();
     }
 
-    public Map<Category, List<SubCategory>> getCategories(){
+    public Map<Category, List<SubCategory>> getCategoriesAndSubCategories(){
         Map<Category, List<SubCategory>> categories = new LinkedHashMap<>();
 
         Arrays.stream(Category.values())
                 .forEach(category -> categories.put(category, category.subCategories));
 
         return categories;
+    }
+
+    public Category[] getCategories(){
+        return Category.values();
     }
 
     public void saveProduct(ProductUploadDTO productUploadDTO){

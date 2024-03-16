@@ -50,10 +50,20 @@ public class ProductController {
     }
 
 
+    @GetMapping("/category/subcategory")
+    public ResponseEntity<?> getProductCategoriesAndSubCategories(){
+        try{
+            Map<Category, List<SubCategory>> categories = productService.getCategoriesAndSubCategories();
+            return ResponseEntity.ok(categories);
+        } catch (Exception e){
+            return controllerAdvice.handleException(e);
+        }
+    }
+
     @GetMapping("/category")
     public ResponseEntity<?> getProductCategories(){
         try{
-            Map<Category, List<SubCategory>> categories = productService.getCategories();
+            Category[] categories = productService.getCategories();
             return ResponseEntity.ok(categories);
         } catch (Exception e){
             return controllerAdvice.handleException(e);
