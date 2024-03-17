@@ -65,7 +65,7 @@ public class UserService {
 
         UserEntity user = userRepository.findByEmail(userLoginDTO.email()).orElseThrow(() -> new EmailNotFoundException(userLoginDTO.email()));
 
-        return new JwtResponse(jwt, user.getFirstName(), user.getId(), roles);
+        return new JwtResponse(jwt, user.getFirstName(), user.getLastName(), user.getEmail(), user.getId(), roles);
     }
 
     public JwtResponse addSellerRoleToUser(long id){
@@ -92,6 +92,8 @@ public class UserService {
         return new JwtResponse(
                 jwtToken,
                 updatedUser.getFirstName(),
+                updatedUser.getLastName(),
+                updatedUser.getEmail(),
                 updatedUser.getId(),
                 roles
         );
