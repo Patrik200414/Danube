@@ -6,6 +6,7 @@ import java.util.Map;
 
 public record ProductUploadDTO(
         ProductDetailUploadDTO productDetail,
-        Map<String, String> productInformation
+        Map<String, String> productInformation,
+        long userId
 ) {
 }
