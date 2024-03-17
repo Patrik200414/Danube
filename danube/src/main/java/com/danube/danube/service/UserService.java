@@ -4,6 +4,7 @@ import com.danube.danube.custom_exception.login_registration.*;
 import com.danube.danube.model.dto.jwt.JwtResponse;
 import com.danube.danube.model.dto.user.UserLoginDTO;
 import com.danube.danube.model.dto.user.UserRegistrationDTO;
+import com.danube.danube.model.dto.user.UserVerificationDTO;
 import com.danube.danube.model.user.Role;
 import com.danube.danube.model.user.UserEntity;
 import com.danube.danube.repository.user.UserRepository;
@@ -94,6 +95,22 @@ public class UserService {
                 updatedUser.getId(),
                 roles
         );
+    }
+
+    public boolean verifyUser(UserVerificationDTO userVerificationDTO){
+        Optional<UserEntity> searchedUser = userRepository.findById(userVerificationDTO.id());
+
+        if(searchedUser.isEmpty()){
+            throw new NonExistingUserException();
+        }
+
+        UserEntity user = searchedUser.get();
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(user.getEmail(), userVerificationDTO.password())
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        return true;
     }
 
 
