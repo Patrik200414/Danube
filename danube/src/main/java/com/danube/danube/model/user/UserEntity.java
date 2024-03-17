@@ -29,7 +29,6 @@ public class UserEntity {
     private String password;
     @Column(nullable = false)
     private Set<Role> roles;
-    @Column(nullable = false)
     @OneToMany(mappedBy = "user")
     private List<ProductDetail> products;
 

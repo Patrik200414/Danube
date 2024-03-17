@@ -42,7 +42,6 @@ public class ProductDetail {
     private List<String> images;
     */
 
-    @Column(nullable = false)
     @ManyToOne
     private UserEntity user;
 
