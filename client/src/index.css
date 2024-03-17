@@ -71,7 +71,8 @@
 }
 
 .login-form .error-message,
-.registration-form .error-message {
+.registration-form .error-message,
+.error-message{
     color: red;
     font-size: 14px;
     margin-bottom: 10px;
@@ -145,7 +146,7 @@ input[type="text"] {
     border-radius: 5px 0 0 5px;
 }
 
-button {
+.input-container button, .additional-information button{
     background-color: var(--button-color);
     color: #232f3e;
     border: none;
@@ -271,4 +272,43 @@ button {
 .service:not(:hover){
     transition: ease-in 0.2s;
     opacity: 1;
+}
+
+
+/*Agreement*/
+.agreement {
+    margin: 20px;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+  
+.explanation-text {
+    margin-bottom: 10px;
+}
+  
+.agreement ol {
+    list-style-type: decimal;
+    margin-left: 20px;
+}
+  
+.agreement ol li {
+    margin-bottom: 10px;
+}
+  
+.parties {
+    font-style: italic;
+}
+
+/*Checkbox*/
+.agreement-checkbox{
+    margin-top: 30px;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+}
+
+.checkbox{
+    width: 20px;
+    height: 20px;
 }
