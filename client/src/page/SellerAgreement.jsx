@@ -1,10 +1,13 @@
 import { useState } from "react";
 import NavBar from "../component/NavBar";
+import { useNavigate } from "react-router-dom";
 
 function SellerAgreement(){
     const [user, setUser] = useState(JSON.parse(sessionStorage.getItem("USER_JWT")));
     const [isAgreementAccepted, setIsAgreementAccepted] = useState(false);
     const [error, setError] = useState('');
+
+    const navigate = useNavigate();
 
     async function handleSubmit(){
         if(!isAgreementAccepted){
@@ -29,6 +32,8 @@ function SellerAgreement(){
 
         const updaterUser = await updateRole.json();
         sessionStorage.setItem('USER_JWT', JSON.stringify(updaterUser));
+        navigate('/profile')
+
     }
 
     return(
