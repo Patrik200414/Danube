@@ -8,6 +8,7 @@ import Home from './page/Home';
 import Profile from './page/Profile';
 import SellerAgreement from './page/SellerAgreement';
 import Verification from './page/Verification';
+import ProductUpload from './page/ProductUpload';
 
 const verificationToPages = ['upload'];
 
@@ -33,8 +34,12 @@ const router = createBrowserRouter([
     element: <SellerAgreement />
   },
   {
-    path: "/verification/:verificationBy/:to",
+    path: '/verification/:verificationBy/:to',
     element: <Verification verificationToPages={verificationToPages}/>
+  },
+  {
+    path: '/product/upload',
+    element: <ProductUpload />
   }
 ])
 
