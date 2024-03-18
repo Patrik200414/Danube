@@ -100,15 +100,8 @@ public class UserService {
     }
 
     public boolean verifyUser(UserVerificationDTO userVerificationDTO){
-        Optional<UserEntity> searchedUser = userRepository.findById(userVerificationDTO.id());
-
-        if(searchedUser.isEmpty()){
-            throw new NonExistingUserException();
-        }
-
-        UserEntity user = searchedUser.get();
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getEmail(), userVerificationDTO.password())
+                new UsernamePasswordAuthenticationToken(userVerificationDTO.email(), userVerificationDTO.password())
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
