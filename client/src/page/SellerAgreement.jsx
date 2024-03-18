@@ -25,7 +25,6 @@ function SellerAgreement(){
         });
 
         if(!updateRole.ok){
-            console.log(updateRole);
             setError(updateRole.statusText);
             return;
         }

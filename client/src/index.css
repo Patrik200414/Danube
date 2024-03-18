@@ -335,3 +335,52 @@ input[type="text"] {
     align-items: center;
 }
 
+/*ProductUploadForm*/
+.ProductDetailsForm {
+    max-width: 1000px; /* Adjust max-width as needed */
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  
+  
+  .product-detail-form label,
+  .product-detail-form input,
+  .product-detail-form textarea {
+    margin-bottom: 10px;
+  }
+  
+  .product-detail-form input,
+  .product-detail-form textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  .product-detail-form textarea {
+    resize: vertical;
+    height: 3%;
+  }
+  
+  @media screen and (min-width: 600px) {
+    .product-detail-form {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+  
+    .product-detail-form label {
+      flex: 0 0 30%; /* Adjust label width as needed */
+      margin-right: 10px;
+      text-align: right;
+    }
+  
+    .product-detail-form input,
+    .product-detail-form textarea {
+      flex: 1;
+      margin-right: 0;
+    }
+  }
+  
+
