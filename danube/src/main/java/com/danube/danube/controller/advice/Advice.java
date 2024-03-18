@@ -5,6 +5,7 @@ import com.danube.danube.custom_exception.login_registration.InvalidEmailFormatE
 import com.danube.danube.custom_exception.login_registration.NonExistingUserException;
 import com.danube.danube.custom_exception.login_registration.RegistrationFieldNullException;
 import com.danube.danube.custom_exception.product.IncorrectProductObjectFormException;
+import com.danube.danube.custom_exception.user.UserEntityPasswordMissMatchException;
 import com.danube.danube.model.error.UserErrorMessage;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -37,6 +38,8 @@ public class Advice {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(handleNonExistingUserException());
         } else if(e instanceof IncorrectProductObjectFormException){
             return ResponseEntity.status(HttpStatus.CONFLICT).body(handleIncorrectProductObjectFormException());
+        } else if(e instanceof UserEntityPasswordMissMatchException){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(handleUserEntityPasswordMissMatchException());
         }
         else{
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(handleInternalServerError(e));
@@ -80,5 +83,9 @@ public class Advice {
 
     private UserErrorMessage handleIncorrectProductObjectFormException(){
         return new UserErrorMessage("Incorrect data for the selected subcategory! Please correct the information!");
+    }
+
+    private UserErrorMessage handleUserEntityPasswordMissMatchException(){
+        return new UserErrorMessage("Incorrect password for the logged in user!");
     }
 }

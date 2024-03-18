@@ -4,6 +4,7 @@ import com.danube.danube.custom_exception.login_registration.*;
 import com.danube.danube.model.dto.jwt.JwtResponse;
 import com.danube.danube.model.dto.user.UserLoginDTO;
 import com.danube.danube.model.dto.user.UserRegistrationDTO;
+import com.danube.danube.model.dto.user.UserVerificationDTO;
 import com.danube.danube.model.user.Role;
 import com.danube.danube.model.user.UserEntity;
 import com.danube.danube.repository.user.UserRepository;
@@ -64,7 +65,7 @@ public class UserService {
 
         UserEntity user = userRepository.findByEmail(userLoginDTO.email()).orElseThrow(() -> new EmailNotFoundException(userLoginDTO.email()));
 
-        return new JwtResponse(jwt, user.getFirstName(), user.getId(), roles);
+        return new JwtResponse(jwt, user.getFirstName(), user.getLastName(), user.getEmail(), user.getId(), roles);
     }
 
     public JwtResponse addSellerRoleToUser(long id){
@@ -91,9 +92,20 @@ public class UserService {
         return new JwtResponse(
                 jwtToken,
                 updatedUser.getFirstName(),
+                updatedUser.getLastName(),
+                updatedUser.getEmail(),
                 updatedUser.getId(),
                 roles
         );
+    }
+
+    public boolean verifyUser(UserVerificationDTO userVerificationDTO){
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(userVerificationDTO.email(), userVerificationDTO.password())
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        return true;
     }
 
 

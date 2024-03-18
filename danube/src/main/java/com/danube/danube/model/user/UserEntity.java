@@ -1,8 +1,11 @@
 package com.danube.danube.model.user;
 
+import com.danube.danube.model.product.ProductDetail;
 import jakarta.persistence.*;
 import org.antlr.v4.runtime.misc.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -26,6 +29,8 @@ public class UserEntity {
     private String password;
     @Column(nullable = false)
     private Set<Role> roles;
+    @OneToMany(mappedBy = "user")
+    private List<ProductDetail> products;
 
     public UserEntity() {
     }
@@ -76,5 +81,13 @@ public class UserEntity {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public List<ProductDetail> getProducts() {
+        return new ArrayList<>(products);
+    }
+
+    public void setProducts(List<ProductDetail> products) {
+        this.products = new ArrayList<>(products);
     }
 }

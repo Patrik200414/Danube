@@ -1,9 +1,11 @@
 package com.danube.danube.controller;
 
 import com.danube.danube.controller.advice.Advice;
+import com.danube.danube.custom_exception.user.UserEntityPasswordMissMatchException;
 import com.danube.danube.model.dto.jwt.JwtResponse;
 import com.danube.danube.model.dto.user.UserLoginDTO;
 import com.danube.danube.model.dto.user.UserRegistrationDTO;
+import com.danube.danube.model.dto.user.UserVerificationDTO;
 import com.danube.danube.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -48,6 +50,21 @@ public class UserController {
         try{
             JwtResponse jwtResponse = userService.addSellerRoleToUser(id);
             return ResponseEntity.ok(jwtResponse);
+        } catch (Exception e){
+            return controllerAdvice.handleException(e);
+        }
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<?> verifyProfile(@RequestBody UserVerificationDTO userVerificationDTO){
+        try{
+            boolean result = userService.verifyUser(userVerificationDTO);
+
+            if(!result){
+                throw new UserEntityPasswordMissMatchException();
+            }
+
+            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
         } catch (Exception e){
             return controllerAdvice.handleException(e);
         }
