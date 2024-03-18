@@ -1,19 +1,23 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
 import UserAccountInformation from "../component/UserAccountInformation";
 
 
-function Verification(){
+function Verification({verificationToPages}){
     const [user, setUser] = useState();
+    const [url, setUrl] = useState();
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
     
     useEffect(() => {
         const urlLength = window.location.href.split('/').length;
-        const verificationBy = window.location.href.split('/')[urlLength - 1];
+        const verificationBy = window.location.href.split('/')[urlLength - 2];
+        const toPage = window.location.href.split('/')[urlLength - 1];
+        
 
-        if(verificationBy){
+        if(verificationBy && verificationToPages.includes(toPage)){
             const userData = JSON.parse(sessionStorage.getItem("USER_JWT"));
     
             if(!userData){
@@ -21,11 +25,13 @@ function Verification(){
                 return;
             }
     
-            if(verificationBy === 'seller' && !userData.roles.includes('ROLE_SELLER')){
+            if(verificationBy === 'product' && !userData.roles.includes('ROLE_SELLER')){
                 navigate('/profile');
                 return;
             }
-    
+
+            
+            setUrl(`/${verificationBy}/${toPage}`);
             setUser(userData);
         } else{
             navigate('/');
@@ -55,7 +61,7 @@ function Verification(){
         });
 
         if(verificationResult.ok){
-            navigate('/product/upload');
+            navigate(url);
         } else{
             const verificationResponse = await verificationResult.json();
             setError(verificationResponse.errorMessage);
@@ -82,6 +88,10 @@ function Verification(){
             }
         </div>
     )
+}
+
+Verification.propTypes = {
+    verificationToPages: PropTypes.array
 }
 
 export default Verification;

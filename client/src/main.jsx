@@ -9,6 +9,8 @@ import Profile from './page/Profile';
 import SellerAgreement from './page/SellerAgreement';
 import Verification from './page/Verification';
 
+const verificationToPages = ['upload'];
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -31,8 +33,8 @@ const router = createBrowserRouter([
     element: <SellerAgreement />
   },
   {
-    path: "/verification/:verificationBy",
-    element: <Verification />
+    path: "/verification/:verificationBy/:to",
+    element: <Verification verificationToPages={verificationToPages}/>
   }
 ])
 

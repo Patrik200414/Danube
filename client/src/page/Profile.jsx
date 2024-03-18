@@ -38,7 +38,7 @@ function Profile(){
                     }
                     {userRoles.includes("ROLE_SELLER") &&
                         <div className="service">
-                            <Link to='/verification/seller'>
+                            <Link to='/verification/product/upload'>
                                 <img src={sellProduct} />
                                 <h2>Upload product</h2>
                                 <p>This service offers a comprehensive set of features and functionalities to empower sellers in showcasing their products effectively and maximizing sales potential.</p>
