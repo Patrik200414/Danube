@@ -25,6 +25,8 @@ function ProductCategoryForm(){
             }
 
             getSubCategories();
+        } else{
+            setSubCategories();
         }
     }, [avaibleCategories, selectedCategory]);
 
