@@ -40,6 +40,8 @@ public class Advice {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(handleIncorrectProductObjectFormException());
         } else if(e instanceof UserEntityPasswordMissMatchException){
             return ResponseEntity.status(HttpStatus.CONFLICT).body(handleUserEntityPasswordMissMatchException());
+        } else if(e.getMessage().contains("No enum constant com.danube.danube.model.product.product_category.Category")){
+            return ResponseEntity.badRequest().body(handleNoEnumConstantCategory());
         }
         else{
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(handleInternalServerError(e));
@@ -87,5 +89,9 @@ public class Advice {
 
     private UserErrorMessage handleUserEntityPasswordMissMatchException(){
         return new UserErrorMessage("Incorrect password for the logged in user!");
+    }
+
+    private UserErrorMessage handleNoEnumConstantCategory(){
+        return new UserErrorMessage("Non Existing category!");
     }
 }

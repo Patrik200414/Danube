@@ -8,14 +8,13 @@ import com.danube.danube.model.product.product_category.SubCategory;
 import com.danube.danube.model.product.product_information.ProductInformation;
 import com.danube.danube.repository.product.ProductDetailRepository;
 import com.danube.danube.repository.product.ProductInformationRepository;
-import com.danube.danube.service.utility.Converter;
-import com.danube.danube.service.utility.ProductInformationCreator;
+import com.danube.danube.service.utility.converter.Converter;
+import com.danube.danube.service.utility.product_information_creator.ProductInformationCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Pageable;
 import java.util.*;
 
 @Service
@@ -23,11 +22,15 @@ public class ProductService {
 //    public static final int DEFAULT_ITEM_AMOUNT_PAGE = 10;
     private final ProductDetailRepository productDetailRepository;
     private final ProductInformationRepository productInformationRepository;
+    private final ProductInformationCreator productInformationCreator;
+    private final Converter converter;
 
     @Autowired
-    public ProductService(ProductDetailRepository productDetailRepository, ProductInformationRepository productInformationRepository) {
+    public ProductService(ProductDetailRepository productDetailRepository, ProductInformationRepository productInformationRepository, ProductInformationCreator productInformationCreator, Converter converter) {
         this.productDetailRepository = productDetailRepository;
         this.productInformationRepository = productInformationRepository;
+        this.productInformationCreator = productInformationCreator;
+        this.converter = converter;
     }
 
 
@@ -37,7 +40,7 @@ public class ProductService {
         Page<ProductDetail> productPage = productDetailRepository.findAll(pageRequest);
         List<ProductDetail> products = productPage.getContent();
 
-        return Converter.convertProductDetails(products);
+        return converter.convertProductDetails(products);
     }
 
     public long getProductCount(){
@@ -59,8 +62,8 @@ public class ProductService {
 
     public void saveProduct(ProductUploadDTO productUploadDTO){
 
-        ProductInformation productInformation = ProductInformationCreator.createProduct(productUploadDTO.productInformation());
-        ProductDetail productDetail = Converter.convertToProductDetail(productUploadDTO.productDetail());
+        ProductInformation productInformation = productInformationCreator.createProduct(productUploadDTO.productInformation());
+        ProductDetail productDetail = converter.convertToProductDetail(productUploadDTO.productDetail());
 
         productInformationRepository.save(productInformation);
         productDetail.setProductInformation(productInformation);

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import NavBar from "../component/NavBar";
 import ProductDetailsForm from "../component/ProductDetailsForm"
 import { useNavigate } from "react-router-dom";
+import ProductCategoryForm from "../component/ProductCategoryForm";
 
 function ProductUpload(){
     const [user, setUser] = useState();
@@ -11,9 +12,11 @@ function ProductUpload(){
         price: '',
         shippingPrice: '',
         quantity: '',
-        deliveryTimeInDate: '',
+        deliveryTimeInDay: '',
         description: ''
     });
+
+    const [productInformation, setProductInformation] = useState();
 
     const navigate = useNavigate();
 
@@ -42,12 +45,19 @@ function ProductUpload(){
         setProductDetail(newDetail);
     }
 
+    async function handleSubmit(e){
+        e.preventDefault();
+        console.log(productDetail);
+    }
+
     return(
         <div className="product-upload">
             {user && 
                 <>
                     <NavBar />
                     <ProductDetailsForm onDetailsChange={handleDetailChange} productDetail={productDetail}/>
+                    <ProductCategoryForm />
+                    <button onClick={handleSubmit} type="button" >Upload product!</button>
                 </>
             }
         </div>

@@ -70,6 +70,15 @@ public class ProductController {
         }
     }
 
+    @GetMapping("/subcategory/{categoryName}")
+    public ResponseEntity<?> getSubCategories(@PathVariable String categoryName){
+        try{
+            return ResponseEntity.ok(Category.valueOf(categoryName).subCategories);
+        } catch (Exception e){
+            return controllerAdvice.handleException(e);
+        }
+    }
+
     @PostMapping()
     public ResponseEntity<?> saveProduct(@RequestBody ProductUploadDTO productUploadDTO){
         try{
