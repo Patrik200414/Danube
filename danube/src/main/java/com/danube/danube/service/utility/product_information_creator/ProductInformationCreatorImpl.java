@@ -1,4 +1,4 @@
-package com.danube.danube.service.utility;
+package com.danube.danube.service.utility.product_information_creator;
 
 import com.danube.danube.custom_exception.product.IncorrectProductObjectFormException;
 import com.danube.danube.model.product.product_category.Category;
@@ -9,11 +9,12 @@ import com.danube.danube.model.product.product_enums.shirt.ShirtSize;
 import com.danube.danube.model.product.product_enums.shirt.SleeveLength;
 import com.danube.danube.model.product.product_information.ProductInformation;
 import com.danube.danube.model.product.product_information.Shirt;
+import com.danube.danube.service.utility.product_information_creator.ProductInformationCreator;
 
 import java.util.Map;
 
-public class ProductInformationCreator {
-    public static ProductInformation createProduct(Map<String, String> product){
+public class ProductInformationCreatorImpl implements ProductInformationCreator {
+    public ProductInformation createProduct(Map<String, String> product){
         if(product.get("subCategory").equals(SubCategory.SHIRT.name())){
             Shirt shirt = new Shirt();
             shirt.setColors(product.get("color"));

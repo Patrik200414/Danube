@@ -1,4 +1,4 @@
-package com.danube.danube.service.utility;
+package com.danube.danube.service.utility.converter;
 
 import com.danube.danube.model.dto.ProductShowSmallDTO;
 import com.danube.danube.model.dto.product.ProductDetailUploadDTO;
@@ -6,16 +6,15 @@ import com.danube.danube.model.dto.user.UserRegistrationDTO;
 import com.danube.danube.model.product.ProductDetail;
 import com.danube.danube.model.user.Role;
 import com.danube.danube.model.user.UserEntity;
+import com.danube.danube.service.utility.converter.Converter;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Set;
 
-@Component
-public class Converter {
+public class ConverterImpl implements Converter {
 
-    public static UserEntity convertUserRegistrationDTOToUserEntity(UserRegistrationDTO userRegistrationDTO, PasswordEncoder passwordEncoder){
+    public UserEntity convertUserRegistrationDTOToUserEntity(UserRegistrationDTO userRegistrationDTO, PasswordEncoder passwordEncoder){
         UserEntity user = new UserEntity();
         user.setFirstName(userRegistrationDTO.firstName());
         user.setLastName(userRegistrationDTO.lastName());
@@ -26,7 +25,7 @@ public class Converter {
         return user;
     }
 
-    public static ProductDetail convertToProductDetail(ProductDetailUploadDTO productDetailUploadDTO){
+    public ProductDetail convertToProductDetail(ProductDetailUploadDTO productDetailUploadDTO){
         ProductDetail productDetail = new ProductDetail();
 
         productDetail.setBrand(productDetailUploadDTO.brand());
@@ -42,7 +41,7 @@ public class Converter {
         return productDetail;
     }
 
-    public static List<ProductShowSmallDTO> convertProductDetails(List<ProductDetail> productDetails){
+    public List<ProductShowSmallDTO> convertProductDetails(List<ProductDetail> productDetails){
 
         return productDetails.stream()
                 .map(productDetail -> new ProductShowSmallDTO(
