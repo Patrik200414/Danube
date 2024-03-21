@@ -1,8 +1,10 @@
 package com.danube.danube.service.utility.converter;
 
+import com.danube.danube.model.dto.product.CategoryDTO;
 import com.danube.danube.model.dto.product.ProductShowSmallDTO;
 import com.danube.danube.model.dto.user.UserRegistrationDTO;
 import com.danube.danube.model.product.Product;
+import com.danube.danube.model.product.category.Category;
 import com.danube.danube.model.user.Role;
 import com.danube.danube.model.user.UserEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,6 +36,13 @@ public class ConverterImpl implements Converter {
                         product.getRating(),
                         product.getSold(),
                         product.getId()
+                )).toList();
+    }
+
+    public List<CategoryDTO> convertCategoryToCategoryDTO(List<Category> categories){
+        return categories.stream()
+                .map(category -> new CategoryDTO(
+                        category.getName()
                 )).toList();
     }
 
