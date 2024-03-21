@@ -1,6 +1,6 @@
 package com.danube.danube.model.product.category;
 
-import com.danube.danube.model.product.connection.CategorySubcategory;
+import com.danube.danube.model.product.subcategory.Subcategory;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -12,16 +12,17 @@ public class Category {
     private long id;
     @Column(nullable = false)
     private String name;
+
     @OneToMany(mappedBy = "category")
-    private List<CategorySubcategory> categorySubcategories;
+    private List<Subcategory> subcategories;
 
     public Category() {
     }
 
-    public Category(long id, String name, List<CategorySubcategory> categorySubcategories) {
+    public Category(long id, String name, List<Subcategory> subcategories) {
         this.id = id;
         this.name = name;
-        this.categorySubcategories = categorySubcategories;
+        this.subcategories = subcategories;
     }
 
     public long getId() {
@@ -40,11 +41,12 @@ public class Category {
         this.name = name;
     }
 
-    public List<CategorySubcategory> getCategorySubcategories() {
-        return categorySubcategories;
+    public List<Subcategory> getSubcategories() {
+        return subcategories;
     }
 
-    public void setCategorySubcategories(List<CategorySubcategory> categorySubcategories) {
-        this.categorySubcategories = categorySubcategories;
+    public void setSubcategories(List<Subcategory> subcategories) {
+        this.subcategories = subcategories;
     }
+
 }

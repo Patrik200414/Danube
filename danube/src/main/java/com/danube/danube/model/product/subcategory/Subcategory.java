@@ -1,6 +1,6 @@
 package com.danube.danube.model.product.subcategory;
 
-import com.danube.danube.model.product.connection.CategorySubcategory;
+import com.danube.danube.model.product.category.Category;
 import com.danube.danube.model.product.detail.Detail;
 import jakarta.persistence.*;
 
@@ -13,18 +13,18 @@ public class Subcategory {
     private long id;
     @Column(nullable = false)
     private String name;
-    @OneToMany(mappedBy = "subcategory")
-    private List<CategorySubcategory> categorySubcategories;
+    @ManyToOne
+    private Category category;
+
     @OneToMany(mappedBy = "subcategory")
     private List<Detail> details;
 
     public Subcategory() {
     }
 
-    public Subcategory(long id, String name, List<CategorySubcategory> categorySubcategories, List<Detail> details) {
+    public Subcategory(long id, String name, List<Detail> details) {
         this.id = id;
         this.name = name;
-        this.categorySubcategories = categorySubcategories;
         this.details = details;
     }
 
@@ -44,13 +44,14 @@ public class Subcategory {
         this.name = name;
     }
 
-    public List<CategorySubcategory> getCategorySubcategories() {
-        return categorySubcategories;
+    public Category getCategory() {
+        return category;
     }
 
-    public void setCategorySubcategories(List<CategorySubcategory> categorySubcategories) {
-        this.categorySubcategories = categorySubcategories;
+    public void setCategory(Category category) {
+        this.category = category;
     }
+
 
     public List<Detail> getDetails() {
         return details;
