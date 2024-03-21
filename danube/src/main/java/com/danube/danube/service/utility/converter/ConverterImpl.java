@@ -1,12 +1,10 @@
 package com.danube.danube.service.utility.converter;
 
-import com.danube.danube.model.dto.ProductShowSmallDTO;
-import com.danube.danube.model.dto.product.ProductDetailUploadDTO;
+import com.danube.danube.model.dto.product.ProductShowSmallDTO;
 import com.danube.danube.model.dto.user.UserRegistrationDTO;
-import com.danube.danube.model.product.ProductDetail;
+import com.danube.danube.model.product.Product;
 import com.danube.danube.model.user.Role;
 import com.danube.danube.model.user.UserEntity;
-import com.danube.danube.service.utility.converter.Converter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
@@ -25,6 +23,21 @@ public class ConverterImpl implements Converter {
         return user;
     }
 
+    public List<ProductShowSmallDTO> convertProductsToProductShowSmallDTOs(List<Product> products){
+        return products.stream()
+                .map(product -> new ProductShowSmallDTO(
+                        product.getProductName(),
+                        product.getPrice(),
+                        product.getShippingPrice(),
+                        product.getDeliveryTimeInDay(),
+                        product.getQuantity(),
+                        product.getRating(),
+                        product.getSold(),
+                        product.getId()
+                )).toList();
+    }
+
+    /*
     public ProductDetail convertToProductDetail(ProductDetailUploadDTO productDetailUploadDTO){
         ProductDetail productDetail = new ProductDetail();
 
@@ -54,5 +67,5 @@ public class ConverterImpl implements Converter {
                         productDetail.getSold(),
                         productDetail.getId()
                 )).toList();
-    }
+    }*/
 }
