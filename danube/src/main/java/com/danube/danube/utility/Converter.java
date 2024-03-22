@@ -1,4 +1,4 @@
-package com.danube.danube.service.utility.converter;
+package com.danube.danube.utility;
 
 import com.danube.danube.model.dto.product.CategoryDTO;
 import com.danube.danube.model.dto.product.ProductShowSmallDTO;

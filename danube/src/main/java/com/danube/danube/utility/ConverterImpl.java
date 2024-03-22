@@ -1,4 +1,4 @@
-package com.danube.danube.service.utility.converter;
+package com.danube.danube.utility;
 
 import com.danube.danube.model.dto.product.CategoryDTO;
 import com.danube.danube.model.dto.product.ProductShowSmallDTO;
@@ -9,6 +9,7 @@ import com.danube.danube.model.product.category.Category;
 import com.danube.danube.model.product.subcategory.Subcategory;
 import com.danube.danube.model.user.Role;
 import com.danube.danube.model.user.UserEntity;
+import com.danube.danube.utility.Converter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
