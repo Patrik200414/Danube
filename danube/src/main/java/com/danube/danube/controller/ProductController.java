@@ -70,9 +70,9 @@ public class ProductController {
     }
 
     @GetMapping("/subcategory/{categoryName}")
-    public ResponseEntity<?> getSubCategories(@PathVariable String categoryName){
+    public ResponseEntity<?> getSubCategoriesByCategory(@PathVariable String categoryName){
         try{
-            List<SubcategoriesDTO> subCategories = productService.getSubCategories();
+            List<SubcategoriesDTO> subCategories = productService.getSubCategoriesByCategory(categoryName);
             return ResponseEntity.ok(subCategories);
         } catch (Exception e){
             return controllerAdvice.handleException(e);
