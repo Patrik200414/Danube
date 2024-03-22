@@ -1,12 +1,15 @@
-package com.danube.danube.service.utility.converter;
+package com.danube.danube.utility;
 
-import com.danube.danube.model.dto.ProductShowSmallDTO;
-import com.danube.danube.model.dto.product.ProductDetailUploadDTO;
+import com.danube.danube.model.dto.product.CategoryDTO;
+import com.danube.danube.model.dto.product.ProductShowSmallDTO;
+import com.danube.danube.model.dto.product.SubcategoriesDTO;
 import com.danube.danube.model.dto.user.UserRegistrationDTO;
-import com.danube.danube.model.product.ProductDetail;
+import com.danube.danube.model.product.Product;
+import com.danube.danube.model.product.category.Category;
+import com.danube.danube.model.product.subcategory.Subcategory;
 import com.danube.danube.model.user.Role;
 import com.danube.danube.model.user.UserEntity;
-import com.danube.danube.service.utility.converter.Converter;
+import com.danube.danube.utility.Converter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
@@ -25,6 +28,34 @@ public class ConverterImpl implements Converter {
         return user;
     }
 
+    public List<ProductShowSmallDTO> convertProductsToProductShowSmallDTOs(List<Product> products){
+        return products.stream()
+                .map(product -> new ProductShowSmallDTO(
+                        product.getProductName(),
+                        product.getPrice(),
+                        product.getShippingPrice(),
+                        product.getDeliveryTimeInDay(),
+                        product.getQuantity(),
+                        product.getRating(),
+                        product.getSold(),
+                        product.getId()
+                )).toList();
+    }
+
+    public List<CategoryDTO> convertCategoryToCategoryDTO(List<Category> categories){
+        return categories.stream()
+                .map(category -> new CategoryDTO(
+                        category.getName()
+                )).toList();
+    }
+
+    public List<SubcategoriesDTO> convertSubcategoriesToSubcategoryDTOs(List<Subcategory> subcategories){
+        return subcategories.stream()
+                .map(subcategory -> new SubcategoriesDTO(subcategory.getName()))
+                .toList();
+    }
+
+    /*
     public ProductDetail convertToProductDetail(ProductDetailUploadDTO productDetailUploadDTO){
         ProductDetail productDetail = new ProductDetail();
 
@@ -54,5 +85,5 @@ public class ConverterImpl implements Converter {
                         productDetail.getSold(),
                         productDetail.getId()
                 )).toList();
-    }
+    }*/
 }

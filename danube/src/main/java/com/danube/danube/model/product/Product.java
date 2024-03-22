@@ -1,66 +1,52 @@
 package com.danube.danube.model.product;
 
-import com.danube.danube.model.product.product_information.ProductInformation;
+import com.danube.danube.model.product.connection.ProductValue;
 import com.danube.danube.model.user.UserEntity;
 import jakarta.persistence.*;
 
-@Entity
+import java.util.List;
 
-public class ProductDetail {
+@Entity
+public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
+    @OneToMany(mappedBy = "product")
+    private List<ProductValue> productValues;
     @Column(nullable = false)
     private String productName;
-    @Column(nullable = false)
     private double price;
     @Column(nullable = false)
     private String brand;
-    @Column(nullable = false)
     private int quantity;
     @Column(
             nullable = false,
             columnDefinition = "TEXT"
     )
     private String description;
-
-
-    @OneToOne
-    private ProductInformation productInformation;
-
     private double shippingPrice;
-    @Column(nullable = false)
     private int deliveryTimeInDay;
-
-    @Column(nullable = false)
     private int rating;
-
-    @Column(nullable = false)
     private int sold;
-    /*
-    TODO
-    private List<String> images;
-    */
-
     @ManyToOne
-    private UserEntity user;
+    private UserEntity seller;
 
-    public ProductDetail() {
+    public Product() {
     }
 
-    public ProductDetail(long id, String productName, double price, String brand, int quantity, String description, ProductInformation productInformation, double shippingPrice, int deliveryTimeInDay, int rating, int sold, UserEntity user) {
+    public Product(long id, List<ProductValue> productValues, String productName, double price, String brand, int quantity, String description, double shippingPrice, int deliveryTimeInDay, int rating, int sold, UserEntity seller) {
         this.id = id;
+        this.productValues = productValues;
         this.productName = productName;
         this.price = price;
         this.brand = brand;
         this.quantity = quantity;
         this.description = description;
-        this.productInformation = productInformation;
         this.shippingPrice = shippingPrice;
         this.deliveryTimeInDay = deliveryTimeInDay;
         this.rating = rating;
         this.sold = sold;
-        this.user = user;
+        this.seller = seller;
     }
 
     public long getId() {
@@ -69,6 +55,14 @@ public class ProductDetail {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public List<ProductValue> getProductValues() {
+        return productValues;
+    }
+
+    public void setProductValues(List<ProductValue> productValues) {
+        this.productValues = productValues;
     }
 
     public String getProductName() {
@@ -111,14 +105,6 @@ public class ProductDetail {
         this.description = description;
     }
 
-    public ProductInformation getProductInformation() {
-        return productInformation;
-    }
-
-    public void setProductInformation(ProductInformation productInformation) {
-        this.productInformation = productInformation;
-    }
-
     public double getShippingPrice() {
         return shippingPrice;
     }
@@ -151,11 +137,11 @@ public class ProductDetail {
         this.sold = sold;
     }
 
-    public UserEntity getUser() {
-        return user;
+    public UserEntity getSeller() {
+        return seller;
     }
 
-    public void setUser(UserEntity user) {
-        this.user = user;
+    public void setSeller(UserEntity seller) {
+        this.seller = seller;
     }
 }

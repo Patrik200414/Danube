@@ -1,7 +1,7 @@
 package com.danube.danube.configuration;
 
-import com.danube.danube.service.utility.converter.Converter;
-import com.danube.danube.service.utility.converter.ConverterImpl;
+import com.danube.danube.utility.Converter;
+import com.danube.danube.utility.ConverterImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

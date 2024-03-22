@@ -2,11 +2,10 @@ package com.danube.danube.controller;
 
 import com.danube.danube.controller.advice.Advice;
 
-import com.danube.danube.model.dto.ProductShowSmallDTO;
-import com.danube.danube.model.dto.product.ProductUploadDTO;
-import com.danube.danube.model.product.ProductDetail;
+import com.danube.danube.model.dto.product.*;
+/*import com.danube.danube.model.product.ProductDetail;
 import com.danube.danube.model.product.product_category.Category;
-import com.danube.danube.model.product.product_category.SubCategory;
+import com.danube.danube.model.product.product_category.SubCategory;*/
 import com.danube.danube.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/product")
@@ -50,10 +48,11 @@ public class ProductController {
     }
 
 
+
     @GetMapping("/category/subcategory")
     public ResponseEntity<?> getProductCategoriesAndSubCategories(){
         try{
-            Map<Category, List<SubCategory>> categories = productService.getCategoriesAndSubCategories();
+            List<CategoryAndSubCategoryDTO> categories = productService.getCategoriesAndSubCategories();
             return ResponseEntity.ok(categories);
         } catch (Exception e){
             return controllerAdvice.handleException(e);
@@ -63,7 +62,7 @@ public class ProductController {
     @GetMapping("/category")
     public ResponseEntity<?> getProductCategories(){
         try{
-            Category[] categories = productService.getCategories();
+            List<CategoryDTO> categories = productService.getCategories();
             return ResponseEntity.ok(categories);
         } catch (Exception e){
             return controllerAdvice.handleException(e);
@@ -71,13 +70,15 @@ public class ProductController {
     }
 
     @GetMapping("/subcategory/{categoryName}")
-    public ResponseEntity<?> getSubCategories(@PathVariable String categoryName){
+    public ResponseEntity<?> getSubCategoriesByCategory(@PathVariable String categoryName){
         try{
-            return ResponseEntity.ok(Category.valueOf(categoryName).subCategories);
+            List<SubcategoriesDTO> subCategories = productService.getSubCategoriesByCategory(categoryName);
+            return ResponseEntity.ok(subCategories);
         } catch (Exception e){
             return controllerAdvice.handleException(e);
         }
     }
+
 
     @PostMapping()
     public ResponseEntity<?> saveProduct(@RequestBody ProductUploadDTO productUploadDTO){
