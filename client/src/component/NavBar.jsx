@@ -8,7 +8,7 @@ import ShoppingCart from "./ShoppingCart";
 function NavBar(){
     const [search, setSearch] = useState('');
     const [categories, setCategories] = useState([]);
-    const [user, setUser] = useState(JSON.parse(sessionStorage.getItem('USER_JWT')));
+    const [user, ] = useState(JSON.parse(sessionStorage.getItem('USER_JWT')));
 
     useEffect(() => {
         const getCategories = async () => {
@@ -44,7 +44,7 @@ function NavBar(){
             <div className="bottom-part">
                 <ul className="categories">
                     <li>Categories: </li>
-                    {categories.map(category => <li key={category}>{category}</li>)}
+                    {categories.map(category => <li key={category.categoryNamse}>{category.categoryName}</li>)}
                 </ul>
             </div>
         </nav>
