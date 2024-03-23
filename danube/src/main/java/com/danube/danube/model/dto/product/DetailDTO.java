@@ -1,4 +1,4 @@
 package com.danube.danube.model.dto.product;
 
-public record DetailDTO() {
+public record DetailDTO(String detailName, long id) {
 }
