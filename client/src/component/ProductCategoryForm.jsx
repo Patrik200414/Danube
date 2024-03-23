@@ -20,6 +20,7 @@ function ProductCategoryForm(){
             const getSubCategories = async () => {
                 const subCategoriesData = await fetch(`/api/product/subcategory/${selectedCategory}`);
                 const subCategoriesResponse = await subCategoriesData.json();
+                console.log(subCategoriesResponse);
 
                 setSubCategories(subCategoriesResponse);
             }
@@ -37,7 +38,7 @@ function ProductCategoryForm(){
                     <label htmlFor="category">Category: </label>
                     <select onChange={e => setSelectedCaegory(e.target.value)} id="category" name="category">
                         <option name='' value=''>...</option>
-                        {avaibleCategories.map(category => <option key={category} name={category} value={category} id={category}>{category}</option>)}
+                        {avaibleCategories.map(category => <option key={category.categoryName} name={category.categoryName} value={category.categoryName} id={category.categoryName}>{category.categoryName}</option>)}
                     </select>
                     <br />
                     {subCategories &&
@@ -45,7 +46,7 @@ function ProductCategoryForm(){
                             <label htmlFor="subCategory">Sub category: </label>
                             <select id="subCategory" name="subCategory">
                                 <option name='' value=''>...</option>
-                                {subCategories.map(subCategory => <option key={subCategory} name={subCategory} value={subCategory} id={subCategory}>{subCategory}</option>)}
+                                {subCategories.map(subCategory => <option key={subCategory.subcategory} name={subCategory.subcategory} value={subCategory.subcategory} id={subCategory.subcategory}>{subCategory.subcategory}</option>)}
                             </select>
                         </>
                     }
