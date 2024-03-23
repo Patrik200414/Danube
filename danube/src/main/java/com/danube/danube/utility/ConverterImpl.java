@@ -1,11 +1,13 @@
 package com.danube.danube.utility;
 
 import com.danube.danube.model.dto.product.CategoryDTO;
+import com.danube.danube.model.dto.product.DetailDTO;
 import com.danube.danube.model.dto.product.ProductShowSmallDTO;
 import com.danube.danube.model.dto.product.SubcategoriesDTO;
 import com.danube.danube.model.dto.user.UserRegistrationDTO;
 import com.danube.danube.model.product.Product;
 import com.danube.danube.model.product.category.Category;
+import com.danube.danube.model.product.detail.Detail;
 import com.danube.danube.model.product.subcategory.Subcategory;
 import com.danube.danube.model.user.Role;
 import com.danube.danube.model.user.UserEntity;
@@ -52,8 +54,20 @@ public class ConverterImpl implements Converter {
 
     public List<SubcategoriesDTO> convertSubcategoriesToSubcategoryDTOs(List<Subcategory> subcategories){
         return subcategories.stream()
-                .map(subcategory -> new SubcategoriesDTO(subcategory.getName()))
+                .map(subcategory -> new SubcategoriesDTO(
+                        subcategory.getName(),
+                        subcategory.getId()
+                ))
                 .toList();
+    }
+
+    @Override
+    public List<DetailDTO> convertDetailsToDetailsDTO(List<Detail> details) {
+        return details.stream()
+                .map(detail -> new DetailDTO(
+                        detail.getName(),
+                        detail.getId()
+                )).toList();
     }
 
     /*
