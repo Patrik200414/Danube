@@ -1,6 +1,7 @@
 package com.danube.danube.service;
 
 import com.danube.danube.custom_exception.product.NonExistingProductCategoryException;
+import com.danube.danube.custom_exception.product.NonExistingSubcategoryException;
 import com.danube.danube.model.dto.product.*;
 /*import com.danube.danube.model.product.ProductDetail;
 import com.danube.danube.model.product.product_category.Category;
@@ -10,8 +11,10 @@ import com.danube.danube.repository.product.ProductDetailRepository;
 import com.danube.danube.repository.product.ProductInformationRepository;*/
 import com.danube.danube.model.product.Product;
 import com.danube.danube.model.product.category.Category;
+import com.danube.danube.model.product.detail.Detail;
 import com.danube.danube.model.product.subcategory.Subcategory;
 import com.danube.danube.repository.product.CategoryRepository;
+import com.danube.danube.repository.product.DetailRepository;
 import com.danube.danube.repository.product.ProductRepository;
 import com.danube.danube.repository.product.SubcategoryRepository;
 import com.danube.danube.utility.Converter;
@@ -27,13 +30,15 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final SubcategoryRepository subcategoryRepository;
+    private final DetailRepository detailRepository;
     private final Converter converter;
 
     @Autowired
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, SubcategoryRepository subcategoryRepository, Converter converter) {
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, SubcategoryRepository subcategoryRepository, DetailRepository detailRepository, Converter converter) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.subcategoryRepository = subcategoryRepository;
+        this.detailRepository = detailRepository;
         this.converter = converter;
     }
 
@@ -86,6 +91,17 @@ public class ProductService {
         Category category = searchedCategory.get();
         List<Subcategory> subcategories = subcategoryRepository.findAllByCategory(category);
         return converter.convertSubcategoriesToSubcategoryDTOs(subcategories);
+    }
+
+    public List<DetailDTO> getDetailsBySubcategory(long id){
+        Optional<Subcategory> searchedSubcategory = subcategoryRepository.findById(id);
+        if(searchedSubcategory.isEmpty()){
+            throw new NonExistingSubcategoryException();
+        }
+
+        Subcategory subcategory = searchedSubcategory.get();
+        List<Detail> details = detailRepository.findBySubcategory(subcategory);
+        return converter.convertDetailsToDetailsDTO(details);
     }
 
     public void saveProduct(ProductUploadDTO productUploadDTO){
