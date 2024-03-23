@@ -5,6 +5,7 @@ import com.danube.danube.custom_exception.login_registration.InvalidEmailFormatE
 import com.danube.danube.custom_exception.login_registration.NonExistingUserException;
 import com.danube.danube.custom_exception.login_registration.RegistrationFieldNullException;
 import com.danube.danube.custom_exception.product.IncorrectProductObjectFormException;
+import com.danube.danube.custom_exception.product.NonExistingSubcategoryException;
 import com.danube.danube.custom_exception.user.UserEntityPasswordMissMatchException;
 import com.danube.danube.model.error.UserErrorMessage;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -42,6 +44,8 @@ public class Advice {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(handleUserEntityPasswordMissMatchException());
         } else if(e.getMessage().contains("No enum constant com.danube.danube.model.product.product_category.Category")){
             return ResponseEntity.badRequest().body(handleNoEnumConstantCategory());
+        } else if(e instanceof NonExistingSubcategoryException){
+            return ResponseEntity.badRequest().body(handleNonExistingSubcategoryException());
         }
         else{
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(handleInternalServerError(e));
@@ -93,5 +97,8 @@ public class Advice {
 
     private UserErrorMessage handleNoEnumConstantCategory(){
         return new UserErrorMessage("Non Existing category!");
+    }
+    private UserErrorMessage handleNonExistingSubcategoryException(){
+        return new UserErrorMessage("Non existing subcategory!");
     }
 }

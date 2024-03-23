@@ -79,6 +79,16 @@ public class ProductController {
         }
     }
 
+    @GetMapping("/detail/{subcategoryId}")
+    public ResponseEntity<?> getDetailsBySubcategory(@PathVariable long subcategoryId){
+        try{
+            List<DetailDTO> details = productService.getDetailsBySubcategory(subcategoryId);
+            return ResponseEntity.ok(details);
+        } catch (Exception e){
+            return controllerAdvice.handleException(e);
+        }
+    }
+
 
     @PostMapping()
     public ResponseEntity<?> saveProduct(@RequestBody ProductUploadDTO productUploadDTO){
