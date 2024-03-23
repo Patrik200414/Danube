@@ -45,7 +45,8 @@ public class ConverterImpl implements Converter {
     public List<CategoryDTO> convertCategoryToCategoryDTO(List<Category> categories){
         return categories.stream()
                 .map(category -> new CategoryDTO(
-                        category.getName()
+                        category.getName(),
+                        category.getId()
                 )).toList();
     }
 

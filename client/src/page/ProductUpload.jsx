@@ -6,17 +6,8 @@ import ProductCategoryForm from "../component/ProductCategoryForm";
 
 function ProductUpload(){
     const [user, setUser] = useState();
-    const [productDetail, setProductDetail] = useState({
-        productName: '',
-        brand: '',
-        price: '',
-        shippingPrice: '',
-        quantity: '',
-        deliveryTimeInDay: '',
-        description: ''
-    });
+    const [productDetail, setProductDetail] = useState();
 
-    const [productInformation, setProductInformation] = useState();
 
     const navigate = useNavigate();
 
@@ -34,6 +25,16 @@ function ProductUpload(){
         }
 
         setUser(userData);
+        setProductDetail({
+            productName: '',
+            brand: '',
+            price: '',
+            shippingPrice: '',
+            quantity: '',
+            deliveryTimeInDay: '',
+            description: '',
+            userId: userData.id
+        })
     }, []);
 
     function handleDetailChange(value, field){
@@ -57,6 +58,7 @@ function ProductUpload(){
                     <NavBar />
                     <ProductDetailsForm onDetailsChange={handleDetailChange} productDetail={productDetail}/>
                     <ProductCategoryForm />
+                    {}
                     <button onClick={handleSubmit} type="button" >Upload product!</button>
                 </>
             }

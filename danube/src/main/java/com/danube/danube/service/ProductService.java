@@ -76,11 +76,11 @@ public class ProductService {
         return converter.convertCategoryToCategoryDTO(categories);
     }
 
-    public List<SubcategoriesDTO> getSubCategoriesByCategory(String categoryName){
-        Optional<Category> searchedCategory = categoryRepository.findByName(categoryName);
+    public List<SubcategoriesDTO> getSubCategoriesByCategory(long categoryId){
+        Optional<Category> searchedCategory = categoryRepository.findById(categoryId);
 
         if(searchedCategory.isEmpty()){
-            throw new NonExistingProductCategoryException(categoryName);
+            throw new NonExistingProductCategoryException();
         }
 
         Category category = searchedCategory.get();
