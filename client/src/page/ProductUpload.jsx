@@ -9,6 +9,7 @@ function ProductUpload(){
     const [user, setUser] = useState();
     const [product, setProduct] = useState();
     const [details, setDetails] = useState();
+    const [error, setError] = useState();
 
 
     const navigate = useNavigate();
@@ -28,13 +29,13 @@ function ProductUpload(){
 
         setUser(userData);
         setProduct({
-            productName: '',
-            brand: '',
-            price: '',
-            shippingPrice: '',
-            quantity: '',
-            deliveryTimeInDay: '',
-            description: '',
+            'Product name': '',
+            'Brand': '',
+            'Price': '',
+            'Shipping price': '',
+            'Quantity': '',
+            'Delivery time in day': '',
+            'Description': '',
             userId: userData.id
         })
     }, []);
@@ -57,8 +58,29 @@ function ProductUpload(){
 
     async function handleSubmit(e){
         e.preventDefault();
-        console.log(product);
-        console.log(details);
+        
+        const errorFields = [
+            ...formDataValidator(product),
+            ...formDataValidator(details)
+        ].join(', ');
+
+        console.log(errorFields);
+        const errors = `Missing value at: ${errorFields}!`;
+
+        setError(errors);
+    }
+    
+
+    function formDataValidator(information){
+        const missingFields = [];
+        console.log(information);
+        for(const informationKey in information){
+            if(!information[informationKey]){
+                missingFields.push(informationKey);
+            }
+        }
+
+        return missingFields;
     }
 
     return(
@@ -71,6 +93,7 @@ function ProductUpload(){
                     {details &&
                         <ProductDetailsForm details={details} onDetailsChange={handleDetailChange}/>
                     }
+                    <p className="error-message">{error}</p>
                     <button onClick={handleSubmit} type="button" >Upload product!</button>
                 </>
             }
