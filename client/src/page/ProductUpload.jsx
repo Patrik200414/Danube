@@ -40,7 +40,6 @@ function ProductUpload(){
             'Quantity': '',
             'Delivery time in day': '',
             'Description': '',
-            userId: userData.id
         })
     }, []);
 
@@ -67,7 +66,6 @@ function ProductUpload(){
         const errorFields = [
             ...formDataValidator(product),
             ...formDataValidator(productCategories),
-            ...formDataValidator(details)
         ].join(', ');
 
         if(errorFields.length > 0){
@@ -80,12 +78,23 @@ function ProductUpload(){
 
 
         const convertedProduct = fieldNameConverter(product);
-        const convertedCategories = fieldNameConverter(productCategories);
-        const convertedDetails = fieldNameConverter(details);
 
-        console.log(convertedProduct);
-        console.log(convertedCategories);
-        console.log(convertedDetails);
+        const newProduct = {
+            productDetail: convertedProduct,
+            productInformation: details,
+            userId: user.id
+        }
+
+        const uploadProductResponse = await fetch('/api/product', {
+            method: 'POST',
+            headers: {
+                'Content-type': 'Application/json',
+                'Authorization': `Bearer ${user.jwt}`
+            },
+            body: JSON.stringify(newProduct)
+        });
+
+        console.log(uploadProductResponse);
 
     }
     
@@ -98,11 +107,9 @@ function ProductUpload(){
                 const firstPart = splitted[0].toLowerCase();
                 const restPart = splitted.slice(1).map(propertyName => propertyName[0].toUpperCase() + propertyName.slice(1).toLowerCase()).join('');
                 convertedInformations[firstPart + restPart] = information[key];
-            } else if(!(key.includes('Id') || key.includes('id'))){
+            } else {
                 const firstPart = splitted[0].toLowerCase();
                 convertedInformations[firstPart] = information[key];
-            } else{
-                convertedInformations[key] = information[key];
             }
         }
 
