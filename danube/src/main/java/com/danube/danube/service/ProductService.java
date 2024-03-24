@@ -135,6 +135,7 @@ public class ProductService {
             ProductValue productValue = new ProductValue();
             productValue.setProduct(product);
             productValue.setValue(savedValue);
+            productValueRepository.save(productValue);
         }
     }
 
