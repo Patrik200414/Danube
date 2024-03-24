@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import NavBar from "../component/NavBar";
-import ProductDetailsForm from "../component/ProductDetailsForm"
+import ProductInformationForm from "../component/ProductInformationForm"
 import { useNavigate } from "react-router-dom";
 import ProductCategoryForm from "../component/ProductCategoryForm";
+import ProductDetailsForm from "../component/ProductDetailsForm";
 
 function ProductUpload(){
     const [user, setUser] = useState();
-    const [productDetail, setProductDetail] = useState();
+    const [product, setProduct] = useState();
+    const [details, setDetails] = useState();
 
 
     const navigate = useNavigate();
@@ -25,7 +27,7 @@ function ProductUpload(){
         }
 
         setUser(userData);
-        setProductDetail({
+        setProduct({
             productName: '',
             brand: '',
             price: '',
@@ -37,18 +39,26 @@ function ProductUpload(){
         })
     }, []);
 
-    function handleDetailChange(value, field){
+    function handleProductChange(value, field){
         const newDetail = {
-            ...productDetail
+            ...product
         }
         newDetail[field] = value;
 
-        setProductDetail(newDetail);
+        setProduct(newDetail);
+    }
+
+    function handleDetailChange(detailName, value){
+        setDetails(prev => ({
+            ...prev,
+            [detailName]: value
+        }));
     }
 
     async function handleSubmit(e){
         e.preventDefault();
-        console.log(productDetail);
+        console.log(product);
+        console.log(details);
     }
 
     return(
@@ -56,9 +66,11 @@ function ProductUpload(){
             {user && 
                 <>
                     <NavBar />
-                    <ProductDetailsForm onDetailsChange={handleDetailChange} productDetail={productDetail}/>
-                    <ProductCategoryForm />
-                    {}
+                    <ProductInformationForm onDetailsChange={handleProductChange} productDetail={product}/>
+                    <ProductCategoryForm user={user} onDetailSet={(detail) => setDetails(detail)}/>
+                    {details &&
+                        <ProductDetailsForm details={details} onDetailsChange={handleDetailChange}/>
+                    }
                     <button onClick={handleSubmit} type="button" >Upload product!</button>
                 </>
             }
