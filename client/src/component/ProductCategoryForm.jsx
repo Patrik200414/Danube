@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Proptypes from "prop-types";
 
-function ProductCategoryForm({user, onDetailSet}){
+function ProductCategoryForm({user, onDetailSet, onCategoryChange}){
     const [avaibleCategories, setAvaibleCategories] = useState();
     const [subCategories, setSubCategories] = useState();
     const [selectedCategoryId, setSelectedCaegoryId] = useState();
@@ -70,7 +70,7 @@ function ProductCategoryForm({user, onDetailSet}){
                     {subCategories &&
                         <>
                             <label htmlFor="subCategory">Sub category: </label>
-                            <select id="subCategory" name="subCategory" onChange={(e) => setSelectedSubcategoryId(e.target.value)}>
+                            <select id="subCategory" name="subCategory" onChange={(e) => {setSelectedSubcategoryId(e.target.value); onCategoryChange({'Category': selectedCategoryId, 'Subcategory': e.target.id})}}>
                                 <option name='' value=''>...</option>
                                 {subCategories.map(subCategory => <option key={subCategory.id} name={subCategory.subcategory} value={subCategory.id} id={subCategory.id}>{subCategory.subcategory}</option>)}
                             </select>

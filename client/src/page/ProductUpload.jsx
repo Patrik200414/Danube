@@ -9,6 +9,10 @@ function ProductUpload(){
     const [user, setUser] = useState();
     const [product, setProduct] = useState();
     const [details, setDetails] = useState();
+    const [productCategories, setProductCategories] = useState({
+        'Category': '',
+        'Subcategory': ''
+    });
     const [error, setError] = useState();
 
 
@@ -59,21 +63,54 @@ function ProductUpload(){
     async function handleSubmit(e){
         e.preventDefault();
         
+
         const errorFields = [
             ...formDataValidator(product),
+            ...formDataValidator(productCategories),
             ...formDataValidator(details)
         ].join(', ');
 
-        console.log(errorFields);
-        const errors = `Missing value at: ${errorFields}!`;
+        if(errorFields.length > 0){
+            const errors = `Missing value at: ${errorFields}!`;
+            setError(errors);
+            return
+        } else{
+            setError();
+        }
 
-        setError(errors);
+
+        const convertedProduct = fieldNameConverter(product);
+        const convertedCategories = fieldNameConverter(productCategories);
+        const convertedDetails = fieldNameConverter(details);
+
+        console.log(convertedProduct);
+        console.log(convertedCategories);
+        console.log(convertedDetails);
+
     }
     
 
+    function fieldNameConverter(information){
+        const convertedInformations = {};
+        for(const key in information){
+            const splitted = key.split(' '); 
+            if(splitted.length > 1){
+                const firstPart = splitted[0].toLowerCase();
+                const restPart = splitted.slice(1).map(propertyName => propertyName[0].toUpperCase() + propertyName.slice(1).toLowerCase()).join('');
+                convertedInformations[firstPart + restPart] = information[key];
+            } else if(!(key.includes('Id') || key.includes('id'))){
+                const firstPart = splitted[0].toLowerCase();
+                convertedInformations[firstPart] = information[key];
+            } else{
+                convertedInformations[key] = information[key];
+            }
+        }
+
+        return convertedInformations;
+    }
+
     function formDataValidator(information){
         const missingFields = [];
-        console.log(information);
         for(const informationKey in information){
             if(!information[informationKey]){
                 missingFields.push(informationKey);
@@ -89,7 +126,7 @@ function ProductUpload(){
                 <>
                     <NavBar />
                     <ProductInformationForm onDetailsChange={handleProductChange} productDetail={product}/>
-                    <ProductCategoryForm user={user} onDetailSet={(detail) => setDetails(detail)}/>
+                    <ProductCategoryForm user={user} onDetailSet={(detail) => setDetails(detail)} onCategoryChange={(categories) => setProductCategories(categories)}/>
                     {details &&
                         <ProductDetailsForm details={details} onDetailsChange={handleDetailChange}/>
                     }
