@@ -1,9 +1,6 @@
 package com.danube.danube.utility;
 
-import com.danube.danube.model.dto.product.CategoryDTO;
-import com.danube.danube.model.dto.product.DetailDTO;
-import com.danube.danube.model.dto.product.ProductShowSmallDTO;
-import com.danube.danube.model.dto.product.SubcategoriesDTO;
+import com.danube.danube.model.dto.product.*;
 import com.danube.danube.model.dto.user.UserRegistrationDTO;
 import com.danube.danube.model.product.Product;
 import com.danube.danube.model.product.category.Category;
@@ -68,6 +65,22 @@ public class ConverterImpl implements Converter {
                         detail.getName(),
                         detail.getId()
                 )).toList();
+    }
+
+    @Override
+    public Product convertProductDetailUploadDTOToProduct(ProductDetailUploadDTO productDetails, UserEntity seller) {
+        Product product = new Product();
+        product.setProductName(productDetails.productName());
+        product.setBrand(productDetails.brand());
+        product.setDescription(productDetails.description());
+        product.setPrice(productDetails.price());
+        product.setQuantity(productDetails.quantity());
+        product.setDeliveryTimeInDay(productDetails.deliveryTimeInDay());
+        product.setRating(0);
+        product.setShippingPrice(productDetails.shippingPrice());
+        product.setSold(0);
+        product.setSeller(seller);
+        return product;
     }
 
     /*
