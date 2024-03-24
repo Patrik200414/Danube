@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
+import Proptypes from "prop-types";
 
-function ProductCategoryForm(){
+function ProductCategoryForm({user, onDetailSet}){
     const [avaibleCategories, setAvaibleCategories] = useState();
     const [subCategories, setSubCategories] = useState();
     const [selectedCategoryId, setSelectedCaegoryId] = useState();
+    const [selectedSubcategoryId, setSelectedSubcategoryId] = useState();
+
 
     useEffect(() => {
         const getCategories = async () => {
             const categoriesData = await fetch('/api/product/category');
             const categoriesDataResponse = await categoriesData.json();
-            console.log(categoriesDataResponse);
             setAvaibleCategories(categoriesDataResponse);
         }
 
@@ -29,8 +31,31 @@ function ProductCategoryForm(){
             getSubCategories();
         } else{
             setSubCategories();
+            setSelectedSubcategoryId();
         }
     }, [avaibleCategories, selectedCategoryId]);
+
+    useEffect(() => {
+        if(selectedSubcategoryId){
+            const getDetails = async () => {
+                const detailsData = await fetch(`/api/product/detail/${selectedSubcategoryId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${user.jwt}`
+                    }
+                });
+                const details = await detailsData.json();
+
+                const detailObj = {};
+                details.forEach(detail => detailObj[detail.detailName] = '');
+                onDetailSet(detailObj);                
+            }
+
+            getDetails();
+        } else{
+            onDetailSet(null);
+        }
+    }, [selectedSubcategoryId, user]);
 
     return(
         <>
@@ -45,9 +70,9 @@ function ProductCategoryForm(){
                     {subCategories &&
                         <>
                             <label htmlFor="subCategory">Sub category: </label>
-                            <select id="subCategory" name="subCategory">
+                            <select id="subCategory" name="subCategory" onChange={(e) => setSelectedSubcategoryId(e.target.value)}>
                                 <option name='' value=''>...</option>
-                                {subCategories.map(subCategory => <option key={subCategory.subcategory} name={subCategory.subcategory} value={subCategory.subcategory} id={subCategory.subcategory}>{subCategory.subcategory}</option>)}
+                                {subCategories.map(subCategory => <option key={subCategory.id} name={subCategory.subcategory} value={subCategory.id} id={subCategory.id}>{subCategory.subcategory}</option>)}
                             </select>
                         </>
                     }
@@ -55,6 +80,11 @@ function ProductCategoryForm(){
             }
         </>
     )
+}
+
+ProductCategoryForm.propTypes = {
+    user: Proptypes.object,
+    onDetailSet: Proptypes.func
 }
 
 export default ProductCategoryForm;
