@@ -1,11 +1,10 @@
 package com.danube.danube.utility;
 
-import com.danube.danube.model.dto.product.CategoryDTO;
-import com.danube.danube.model.dto.product.ProductShowSmallDTO;
-import com.danube.danube.model.dto.product.SubcategoriesDTO;
+import com.danube.danube.model.dto.product.*;
 import com.danube.danube.model.dto.user.UserRegistrationDTO;
 import com.danube.danube.model.product.Product;
 import com.danube.danube.model.product.category.Category;
+import com.danube.danube.model.product.detail.Detail;
 import com.danube.danube.model.product.subcategory.Subcategory;
 import com.danube.danube.model.user.Role;
 import com.danube.danube.model.user.UserEntity;
@@ -45,14 +44,43 @@ public class ConverterImpl implements Converter {
     public List<CategoryDTO> convertCategoryToCategoryDTO(List<Category> categories){
         return categories.stream()
                 .map(category -> new CategoryDTO(
-                        category.getName()
+                        category.getName(),
+                        category.getId()
                 )).toList();
     }
 
     public List<SubcategoriesDTO> convertSubcategoriesToSubcategoryDTOs(List<Subcategory> subcategories){
         return subcategories.stream()
-                .map(subcategory -> new SubcategoriesDTO(subcategory.getName()))
+                .map(subcategory -> new SubcategoriesDTO(
+                        subcategory.getName(),
+                        subcategory.getId()
+                ))
                 .toList();
+    }
+
+    @Override
+    public List<DetailDTO> convertDetailsToDetailsDTO(List<Detail> details) {
+        return details.stream()
+                .map(detail -> new DetailDTO(
+                        detail.getName(),
+                        detail.getId()
+                )).toList();
+    }
+
+    @Override
+    public Product convertProductDetailUploadDTOToProduct(ProductDetailUploadDTO productDetails, UserEntity seller) {
+        Product product = new Product();
+        product.setProductName(productDetails.productName());
+        product.setBrand(productDetails.brand());
+        product.setDescription(productDetails.description());
+        product.setPrice(productDetails.price());
+        product.setQuantity(productDetails.quantity());
+        product.setDeliveryTimeInDay(productDetails.deliveryTimeInDay());
+        product.setRating(0);
+        product.setShippingPrice(productDetails.shippingPrice());
+        product.setSold(0);
+        product.setSeller(seller);
+        return product;
     }
 
     /*

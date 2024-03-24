@@ -17,7 +17,7 @@ function UserProfileImage({user}){
 }
 
 UserProfileImage.propTypes = {
-    user: PropTypes.func
+    user: PropTypes.object
 }
 
 

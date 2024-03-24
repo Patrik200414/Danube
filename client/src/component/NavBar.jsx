@@ -21,6 +21,7 @@ function NavBar(){
         getCategories();
     }, []);
 
+
     return(
         <nav className="nav-bar">
             <div className="top-part">
@@ -44,7 +45,7 @@ function NavBar(){
             <div className="bottom-part">
                 <ul className="categories">
                     <li>Categories: </li>
-                    {categories.map(category => <li key={category.categoryNamse}>{category.categoryName}</li>)}
+                    {categories.map(category => <li key={category.categoryName} id={category.id}>{category.categoryName}</li>)}
                 </ul>
             </div>
         </nav>

@@ -7,9 +7,11 @@ import com.danube.danube.model.dto.product.*;
 import com.danube.danube.model.product.product_category.Category;
 import com.danube.danube.model.product.product_category.SubCategory;*/
 import com.danube.danube.service.ProductService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -69,17 +71,29 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/subcategory/{categoryName}")
-    public ResponseEntity<?> getSubCategoriesByCategory(@PathVariable String categoryName){
+    @GetMapping("/subcategory/{categoryId}")
+    public ResponseEntity<?> getSubCategoriesByCategory(@PathVariable long categoryId){
         try{
-            List<SubcategoriesDTO> subCategories = productService.getSubCategoriesByCategory(categoryName);
+            List<SubcategoriesDTO> subCategories = productService.getSubCategoriesByCategory(categoryId);
             return ResponseEntity.ok(subCategories);
         } catch (Exception e){
             return controllerAdvice.handleException(e);
         }
     }
 
+    @GetMapping("/detail/{subcategoryId}")
+    public ResponseEntity<?> getDetailsBySubcategory(@PathVariable long subcategoryId){
+        try{
+            List<DetailDTO> details = productService.getDetailsBySubcategory(subcategoryId);
+            return ResponseEntity.ok(details);
+        } catch (Exception e){
+            return controllerAdvice.handleException(e);
+        }
+    }
 
+
+    @Async
+    @Transactional
     @PostMapping()
     public ResponseEntity<?> saveProduct(@RequestBody ProductUploadDTO productUploadDTO){
         try{
