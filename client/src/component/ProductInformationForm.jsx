@@ -2,15 +2,6 @@ import PropTypes from 'prop-types';
 
 function ProductInformationForm({onDetailsChange, productDetail}){
     return(
-        /* 'Product name': '',
-            'Brand': '',
-            'Price': '',
-            'Shipping price': '',
-            'Quantity': '',
-            'Delivery time in day': '',
-            'Description': '', */
-
-
         <div className="product-details-form-container">
             <h2>Product details:</h2>
                 <form className="product-detail-form">
