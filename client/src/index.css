@@ -336,7 +336,7 @@ input[type="text"] {
 }
 
 /*ProductUploadForm*/
-.ProductDetailsForm {
+.product-details-form-container {
     max-width: 1000px; /* Adjust max-width as needed */
     margin: 0 auto;
     padding: 20px;
