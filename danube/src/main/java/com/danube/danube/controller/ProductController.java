@@ -7,9 +7,11 @@ import com.danube.danube.model.dto.product.*;
 import com.danube.danube.model.product.product_category.Category;
 import com.danube.danube.model.product.product_category.SubCategory;*/
 import com.danube.danube.service.ProductService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -90,6 +92,8 @@ public class ProductController {
     }
 
 
+    @Async
+    @Transactional
     @PostMapping()
     public ResponseEntity<?> saveProduct(@RequestBody ProductUploadDTO productUploadDTO){
         try{
