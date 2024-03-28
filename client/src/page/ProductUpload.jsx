@@ -9,11 +9,14 @@ function ProductUpload(){
     const [user, setUser] = useState();
     const [product, setProduct] = useState();
     const [details, setDetails] = useState();
+
+    const [selectedCategoryId, setSelectedCaegoryId] = useState();
+    const [selectedSubcategoryId, setSelectedSubcategoryId] = useState();
+
     const [productCategories, setProductCategories] = useState({
         'Category': '',
         'Subcategory': ''
     });
-    const [isChangedCategory, setIsChangedCategory] = useState(0);
     const [error, setError] = useState();
 
     /*
@@ -23,7 +26,6 @@ function ProductUpload(){
 
     const navigate = useNavigate();
 
-    console.log(productCategories);
 
     useEffect(() => {
         const userData = JSON.parse(sessionStorage.getItem('USER_JWT'));
@@ -159,7 +161,12 @@ function ProductUpload(){
                 <>
                     <NavBar />
                     <ProductInformationForm onDetailsChange={handleProductChange} productDetail={product}/>
-                    <ProductCategoryForm isChangedCategory={isChangedCategory} user={user} onDetailSet={(detail) => setDetails(detail)} onCategoryChange={(categories) => setProductCategories(categories)}/>
+                    <ProductCategoryForm 
+                        onSelectCategoryIdChange={(categoryId) => setSelectedCaegoryId(categoryId)} 
+                        onSelectedSubCategoryIdChange={(subcategoryId) => setSelectedSubcategoryId(subcategoryId)} 
+                        selectedCategoryId={selectedCategoryId}
+                        selectedSubcategoryId={selectedSubcategoryId}
+                    />
                     {details &&
                         <ProductDetailsForm details={details} onDetailsChange={handleDetailChange}/>
                     }
