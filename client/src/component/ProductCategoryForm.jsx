@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import Proptypes from "prop-types";
 
-function ProductCategoryForm({user, onDetailSet, onCategoryChange}){
+function ProductCategoryForm({user, onDetailSet, isChangedCategory, onCategoryChange}){
     const [avaibleCategories, setAvaibleCategories] = useState();
     const [subCategories, setSubCategories] = useState();
     const [selectedCategoryId, setSelectedCaegoryId] = useState();
     const [selectedSubcategoryId, setSelectedSubcategoryId] = useState();
+
+    console.log(subCategories);
 
 
     useEffect(() => {
@@ -56,6 +58,11 @@ function ProductCategoryForm({user, onDetailSet, onCategoryChange}){
             onDetailSet(null);
         }
     }, [selectedSubcategoryId, user]);
+
+    useEffect(() => {
+        setSelectedCaegoryId();
+        setSelectedSubcategoryId();
+    }, [isChangedCategory]);
 
     return(
         <>

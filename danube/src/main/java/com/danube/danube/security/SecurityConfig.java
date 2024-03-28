@@ -1,6 +1,5 @@
 package com.danube.danube.security;
 
-import com.danube.danube.model.user.Role;
 import com.danube.danube.security.jwt.AuthEntryPoint;
 import com.danube.danube.security.jwt.AuthTokenFilter;
 import com.danube.danube.security.jwt.JwtUtils;

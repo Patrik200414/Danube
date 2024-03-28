@@ -13,10 +13,17 @@ function ProductUpload(){
         'Category': '',
         'Subcategory': ''
     });
+    const [isChangedCategory, setIsChangedCategory] = useState(0);
     const [error, setError] = useState();
+
+    /*
+    Success message!   
+    */
 
 
     const navigate = useNavigate();
+
+    console.log(productCategories);
 
     useEffect(() => {
         const userData = JSON.parse(sessionStorage.getItem('USER_JWT'));
@@ -94,7 +101,26 @@ function ProductUpload(){
             body: JSON.stringify(newProduct)
         });
 
-        console.log(uploadProductResponse);
+        if(uploadProductResponse.ok){
+            setProduct({
+                'Product name': '',
+                'Brand': '',
+                'Price': '',
+                'Shipping price': '',
+                'Quantity': '',
+                'Delivery time in day': '',
+                'Description': '',
+            });
+            setProductCategories({
+                'Category': '',
+                'Subcategory': ''
+            });
+            setDetails();
+            setIsChangedCategory(prev => prev + 1);
+        } else{
+            const uploadResponse = await uploadProductResponse.json();
+            setError(uploadResponse.errorMessage);
+        }
 
     }
     
@@ -133,7 +159,7 @@ function ProductUpload(){
                 <>
                     <NavBar />
                     <ProductInformationForm onDetailsChange={handleProductChange} productDetail={product}/>
-                    <ProductCategoryForm user={user} onDetailSet={(detail) => setDetails(detail)} onCategoryChange={(categories) => setProductCategories(categories)}/>
+                    <ProductCategoryForm isChangedCategory={isChangedCategory} user={user} onDetailSet={(detail) => setDetails(detail)} onCategoryChange={(categories) => setProductCategories(categories)}/>
                     {details &&
                         <ProductDetailsForm details={details} onDetailsChange={handleDetailChange}/>
                     }

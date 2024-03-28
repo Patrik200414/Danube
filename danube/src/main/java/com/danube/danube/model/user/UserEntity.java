@@ -2,9 +2,7 @@ package com.danube.danube.model.user;
 
 import com.danube.danube.model.product.Product;
 import jakarta.persistence.*;
-import org.antlr.v4.runtime.misc.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
