@@ -17,6 +17,10 @@ function ProductCategoryForm({onSelectCategoryIdChange, selectedCategoryId, sele
     }, []);
 
     useEffect(() => {
+        if(!selectedCategoryId){
+            setAvaibleSubCategories('');
+        }
+
         const getSubCategories = async () => {
             const subCategoryData = await fetch(`/api/product/subcategory/${selectedCategoryId}`);
             const subCategoryResponse = await subCategoryData.json();
