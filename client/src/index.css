@@ -2,6 +2,9 @@
   --deep-blue: #002366;
   --hover-deep-blue: #001a99;
   --button-color: #FF9900;
+  --white-background-color: #f0f0f0;
+  --success-green-background: #32cd32;
+  --success-gree-text-color: rgb(20, 80, 20);
 }
 
 *{
@@ -18,7 +21,7 @@
     align-items: center;
     justify-content: center;
     height: 100vh;
-    background-color: #f0f0f0; /* White background */
+    background-color: var(--white-background-color);
 }
 
 .login-container h1,
@@ -383,4 +386,24 @@ input[type="text"] {
     }
   }
   
-
+/*Success message*/
+.success-message {
+    text-align: center;
+    width: 35%;
+    background-color: var(--success-green-background);
+    color: var(--success-gree-text-color);
+    border-radius: 10px;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    border: 1px solid var(--success-gree-text-color);
+    padding: 15px;
+  }
+  
+  @media only screen and (max-width: 600px) {
+    .success-message {
+      width: 90%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+  

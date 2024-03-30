@@ -6,6 +6,8 @@ import ProductCategoryForm from "../component/ProductCategoryForm";
 import ProductDetailsForm from "../component/ProductDetailsForm";
 
 function ProductUpload(){
+    const SUCCESS_MESSAGE_TIME_IN_SECONDS = 2;
+
     const [user, setUser] = useState();
     const [product, setProduct] = useState();
     const [details, setDetails] = useState();
@@ -14,10 +16,8 @@ function ProductUpload(){
     const [selectedSubcategoryId, setSelectedSubcategoryId] = useState();
 
     const [error, setError] = useState();
-
-    /*
-    Success message!   
-    */
+    const [successUploadCount, setSuccessUploadCount] = useState(0);
+    const [successMessage, setSuccessMessage] = useState('');
 
 
     const navigate = useNavigate();
@@ -48,6 +48,20 @@ function ProductUpload(){
         })
     }, []);
 
+    useEffect(() => {
+        if(successUploadCount){
+            let currTime = SUCCESS_MESSAGE_TIME_IN_SECONDS;
+            setSuccessMessage('The upload of the product was successfull!');
+            const interval = setInterval(() => {
+                if(currTime === 1){
+                    clearInterval(interval);
+                    setSuccessMessage('');
+                }
+                currTime--;
+            }, 1000);
+        }
+    }, [successUploadCount]);
+
     function handleProductChange(value, field){
         const newDetail = {
             ...product
@@ -73,60 +87,68 @@ function ProductUpload(){
     async function handleSubmit(e){
         e.preventDefault();
         
-
+        
+        const convertedDetails = details ? detailsConverter(details) : [];
         const errorFields = [
             ...formDataValidator(product),
             ...formDataValidator({
                 Category: selectedCategoryId,
                 Subcategory: selectedSubcategoryId
             }),
+            ...formDataValidator(convertedDetails)
         ].join(', ');
 
-        if(errorFields.length > 0){
-            const errors = `Missing value at: ${errorFields}!`;
-            setError(errors);
-            return
-        } else{
-            setError();
-        }
-
-
-        const convertedProduct = fieldNameConverter(product);
-
-        const newProduct = {
-            productDetail: convertedProduct,
-            productInformation: detailsConverter(details),
-            userId: user.id
-        }
-
-        const uploadProductResponse = await fetch('/api/product', {
-            method: 'POST',
-            headers: {
-                'Content-type': 'Application/json',
-                'Authorization': `Bearer ${user.jwt}`
-            },
-            body: JSON.stringify(newProduct)
-        });
-
-        if(uploadProductResponse.ok){
-            setProduct({
-                'Product name': '',
-                'Brand': '',
-                'Price': '',
-                'Shipping price': '',
-                'Quantity': '',
-                'Delivery time in day': '',
-                'Description': '',
+        if(isCorrectForm(errorFields)){
+            const convertedProduct = fieldNameConverter(product);
+    
+            const newProduct = {
+                productDetail: convertedProduct,
+                productInformation: convertedDetails,
+                userId: user.id
+            }
+    
+            const uploadProductResponse = await fetch('/api/product', {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'Application/json',
+                    'Authorization': `Bearer ${user.jwt}`
+                },
+                body: JSON.stringify(newProduct)
             });
-            setSelectedCaegoryId('');
-            setSelectedSubcategoryId('');
-            setDetails();
-        } else{
-            const uploadResponse = await uploadProductResponse.json();
-            setError(uploadResponse.errorMessage);
+    
+            if(uploadProductResponse.ok){
+                setProduct({
+                    'Product name': '',
+                    'Brand': '',
+                    'Price': '',
+                    'Shipping price': '',
+                    'Quantity': '',
+                    'Delivery time in day': '',
+                    'Description': '',
+                });
+                setSelectedCaegoryId('');
+                setSelectedSubcategoryId('');
+                setDetails();
+                setSuccessUploadCount(prev => prev + 1);
+            } else{
+                const uploadResponse = await uploadProductResponse.json();
+                setError(uploadResponse.errorMessage);
+            }
         }
 
     }
+
+    function isCorrectForm(errorFields){
+        if(errorFields.length > 0){
+            const errors = `Missing value at: ${errorFields}!`;
+            setError(errors);
+            return false;
+        } else{
+            setError();
+            return true;
+        }
+    }
+
 
     function detailsConverter(productDetails){
         const convertedProductDetails = {};
@@ -168,6 +190,7 @@ function ProductUpload(){
             {user && 
                 <>
                     <NavBar />
+                    {successMessage && <h3 className="success-message">{successMessage}</h3>}
                     <ProductInformationForm onDetailsChange={handleProductChange} productDetail={product}/>
                     <ProductCategoryForm 
                         onSelectCategoryIdChange={(categoryId) => setSelectedCaegoryId(categoryId)} 
