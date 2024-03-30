@@ -61,11 +61,17 @@ function ProductUpload(){
         setProduct(newDetail);
     }
 
-    function handleDetailChange(detailName, value){
-        setDetails(prev => ({
-            ...prev,
-            [detailName]: value
-        }));
+    function handleDetailChange(value, detailId){
+        const changedDetails = details.map(detail => {
+            if(detail.id === detailId){
+                return{
+                    ...detail,
+                    value: value
+                }
+            }
+            return detail;
+        });
+        setDetails(changedDetails);
     }
 
     async function handleSubmit(e){
@@ -74,7 +80,7 @@ function ProductUpload(){
 
         const errorFields = [
             ...formDataValidator(product),
-            ...formDataValidator(productCategories),
+            //...formDataValidator(productCategories),
         ].join(', ');
 
         if(errorFields.length > 0){
@@ -113,12 +119,9 @@ function ProductUpload(){
                 'Delivery time in day': '',
                 'Description': '',
             });
-            setProductCategories({
-                'Category': '',
-                'Subcategory': ''
-            });
+            setSelectedCaegoryId();
+            setSelectedSubcategoryId();
             setDetails();
-            setIsChangedCategory(prev => prev + 1);
         } else{
             const uploadResponse = await uploadProductResponse.json();
             setError(uploadResponse.errorMessage);
@@ -167,8 +170,14 @@ function ProductUpload(){
                         selectedCategoryId={selectedCategoryId}
                         selectedSubcategoryId={selectedSubcategoryId}
                     />
-                    {details &&
-                        <ProductDetailsForm details={details} onDetailsChange={handleDetailChange}/>
+                    {selectedSubcategoryId &&
+                        <ProductDetailsForm 
+                            details={details}
+                            onDetailsChange={handleDetailChange}
+                            subCategoryId={selectedSubcategoryId} 
+                            user={user}
+                            onDetailsSet={(details) => setDetails(details)}
+                        />
                     }
                     <p className="error-message">{error}</p>
                     <button onClick={handleSubmit} type="button" >Upload product!</button>

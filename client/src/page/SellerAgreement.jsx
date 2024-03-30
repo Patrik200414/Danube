@@ -3,7 +3,7 @@ import NavBar from "../component/NavBar";
 import { useNavigate } from "react-router-dom";
 
 function SellerAgreement(){
-    const [user, setUser] = useState(JSON.parse(sessionStorage.getItem("USER_JWT")));
+    const [user, ] = useState(JSON.parse(sessionStorage.getItem("USER_JWT")));
     const [isAgreementAccepted, setIsAgreementAccepted] = useState(false);
     const [error, setError] = useState('');
 

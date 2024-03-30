@@ -58,5 +58,11 @@ function ProductCategoryForm({onSelectCategoryIdChange, selectedCategoryId, sele
     )    
 }
 
+ProductCategoryForm.propTypes={
+    onSelectCategoryIdChange: Proptypes.func,
+    selectedCategoryId: Proptypes.string,
+    selectedSubcategoryId: Proptypes.string,
+    onSelectedSubCategoryIdChange: Proptypes.func
+}
 
 export default ProductCategoryForm;

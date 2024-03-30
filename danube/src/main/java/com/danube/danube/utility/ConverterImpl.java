@@ -63,7 +63,8 @@ public class ConverterImpl implements Converter {
         return details.stream()
                 .map(detail -> new DetailDTO(
                         detail.getName(),
-                        detail.getId()
+                        detail.getId(),
+                        ""
                 )).toList();
     }
 
