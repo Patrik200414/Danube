@@ -5,20 +5,18 @@ function ProductDetailsForm({details, onDetailsChange, subCategoryId, user, onDe
 
     useEffect(() => {
         const getDetails = async () => {
-            if(!details){
-                const detailsData = await fetch(`/api/product/detail/${subCategoryId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${user.jwt}`
-                    }
-                });
-                const detailResponse = await detailsData.json();
-                onDetailsSet(detailResponse);
-            }
+            const detailsData = await fetch(`/api/product/detail/${subCategoryId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${user.jwt}`
+                }
+            });
+            const detailResponse = await detailsData.json();
+            onDetailsSet(detailResponse);
         }
-
         getDetails();
-    }, [subCategoryId, user, details])
+    }, [subCategoryId])
+
 
     return(
         <>

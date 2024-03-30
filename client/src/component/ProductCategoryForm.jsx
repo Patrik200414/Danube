@@ -19,6 +19,7 @@ function ProductCategoryForm({onSelectCategoryIdChange, selectedCategoryId, sele
     useEffect(() => {
         if(!selectedCategoryId){
             setAvaibleSubCategories('');
+            onSelectedSubCategoryIdChange('');
         }
 
         const getSubCategories = async () => {

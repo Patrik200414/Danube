@@ -62,6 +62,7 @@ function ProductUpload(){
         }
     }, [successUploadCount]);
 
+
     function handleProductChange(value, field){
         const newDetail = {
             ...product
@@ -184,6 +185,7 @@ function ProductUpload(){
 
         return missingFields;
     }
+
 
     return(
         <div className="product-upload">
