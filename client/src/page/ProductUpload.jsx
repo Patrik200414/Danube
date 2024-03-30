@@ -208,7 +208,7 @@ function ProductUpload(){
                         />
                     }
                     <p className="error-message">{error}</p>
-                    <button onClick={handleSubmit} type="button" >Upload product!</button>
+                    <button className="submit-button" onClick={handleSubmit} type="button" >Upload product!</button>
                 </>
             }
         </div>
