@@ -13,10 +13,6 @@ function ProductUpload(){
     const [selectedCategoryId, setSelectedCaegoryId] = useState();
     const [selectedSubcategoryId, setSelectedSubcategoryId] = useState();
 
-    const [productCategories, setProductCategories] = useState({
-        'Category': '',
-        'Subcategory': ''
-    });
     const [error, setError] = useState();
 
     /*
@@ -80,7 +76,10 @@ function ProductUpload(){
 
         const errorFields = [
             ...formDataValidator(product),
-            //...formDataValidator(productCategories),
+            ...formDataValidator({
+                Category: selectedCategoryId,
+                Subcategory: selectedSubcategoryId
+            }),
         ].join(', ');
 
         if(errorFields.length > 0){
@@ -96,7 +95,7 @@ function ProductUpload(){
 
         const newProduct = {
             productDetail: convertedProduct,
-            productInformation: details,
+            productInformation: detailsConverter(details),
             userId: user.id
         }
 
@@ -119,14 +118,20 @@ function ProductUpload(){
                 'Delivery time in day': '',
                 'Description': '',
             });
-            setSelectedCaegoryId();
-            setSelectedSubcategoryId();
+            setSelectedCaegoryId('');
+            setSelectedSubcategoryId('');
             setDetails();
         } else{
             const uploadResponse = await uploadProductResponse.json();
             setError(uploadResponse.errorMessage);
         }
 
+    }
+
+    function detailsConverter(productDetails){
+        const convertedProductDetails = {};
+        productDetails.forEach(productDetail => convertedProductDetails[productDetail.detailName] = productDetail.value);
+        return convertedProductDetails;
     }
     
 
