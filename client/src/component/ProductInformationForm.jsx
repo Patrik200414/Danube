@@ -30,7 +30,7 @@ function ProductInformationForm({onDetailsChange, productDetail}){
                     <br />
 
                     <label htmlFor="description">Description: </label>
-                    <textarea onChange={e => onDetailsChange(e.target.value, 'Description')} id="description" placeholder="Description...">{productDetail['Description']}</textarea>
+                    <textarea onChange={e => onDetailsChange(e.target.value, 'Description')} id="description" placeholder="Description..." value={productDetail['Description']}></textarea>
                 </form>
         </div>
     )

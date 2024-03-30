@@ -6,17 +6,22 @@ import ProductCategoryForm from "../component/ProductCategoryForm";
 import ProductDetailsForm from "../component/ProductDetailsForm";
 
 function ProductUpload(){
+    const SUCCESS_MESSAGE_TIME_IN_SECONDS = 2;
+
     const [user, setUser] = useState();
     const [product, setProduct] = useState();
     const [details, setDetails] = useState();
-    const [productCategories, setProductCategories] = useState({
-        'Category': '',
-        'Subcategory': ''
-    });
+
+    const [selectedCategoryId, setSelectedCaegoryId] = useState();
+    const [selectedSubcategoryId, setSelectedSubcategoryId] = useState();
+
     const [error, setError] = useState();
+    const [successUploadCount, setSuccessUploadCount] = useState(0);
+    const [successMessage, setSuccessMessage] = useState('');
 
 
     const navigate = useNavigate();
+
 
     useEffect(() => {
         const userData = JSON.parse(sessionStorage.getItem('USER_JWT'));
@@ -43,6 +48,21 @@ function ProductUpload(){
         })
     }, []);
 
+    useEffect(() => {
+        if(successUploadCount){
+            let currTime = SUCCESS_MESSAGE_TIME_IN_SECONDS;
+            setSuccessMessage('The upload of the product was successfull!');
+            const interval = setInterval(() => {
+                if(currTime === 1){
+                    clearInterval(interval);
+                    setSuccessMessage('');
+                }
+                currTime--;
+            }, 1000);
+        }
+    }, [successUploadCount]);
+
+
     function handleProductChange(value, field){
         const newDetail = {
             ...product
@@ -52,50 +72,89 @@ function ProductUpload(){
         setProduct(newDetail);
     }
 
-    function handleDetailChange(detailName, value){
-        setDetails(prev => ({
-            ...prev,
-            [detailName]: value
-        }));
+    function handleDetailChange(value, detailId){
+        const changedDetails = details.map(detail => {
+            if(detail.id === detailId){
+                return{
+                    ...detail,
+                    value: value
+                }
+            }
+            return detail;
+        });
+        setDetails(changedDetails);
     }
 
     async function handleSubmit(e){
         e.preventDefault();
         
-
+        
+        const convertedDetails = details ? detailsConverter(details) : [];
         const errorFields = [
             ...formDataValidator(product),
-            ...formDataValidator(productCategories),
+            ...formDataValidator({
+                Category: selectedCategoryId,
+                Subcategory: selectedSubcategoryId
+            }),
+            ...formDataValidator(convertedDetails)
         ].join(', ');
 
+        if(isCorrectForm(errorFields)){
+            const convertedProduct = fieldNameConverter(product);
+    
+            const newProduct = {
+                productDetail: convertedProduct,
+                productInformation: convertedDetails,
+                userId: user.id
+            }
+    
+            const uploadProductResponse = await fetch('/api/product', {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'Application/json',
+                    'Authorization': `Bearer ${user.jwt}`
+                },
+                body: JSON.stringify(newProduct)
+            });
+    
+            if(uploadProductResponse.ok){
+                setProduct({
+                    'Product name': '',
+                    'Brand': '',
+                    'Price': '',
+                    'Shipping price': '',
+                    'Quantity': '',
+                    'Delivery time in day': '',
+                    'Description': '',
+                });
+                setSelectedCaegoryId('');
+                setSelectedSubcategoryId('');
+                setDetails();
+                setSuccessUploadCount(prev => prev + 1);
+            } else{
+                const uploadResponse = await uploadProductResponse.json();
+                setError(uploadResponse.errorMessage);
+            }
+        }
+
+    }
+
+    function isCorrectForm(errorFields){
         if(errorFields.length > 0){
             const errors = `Missing value at: ${errorFields}!`;
             setError(errors);
-            return
+            return false;
         } else{
             setError();
+            return true;
         }
+    }
 
 
-        const convertedProduct = fieldNameConverter(product);
-
-        const newProduct = {
-            productDetail: convertedProduct,
-            productInformation: details,
-            userId: user.id
-        }
-
-        const uploadProductResponse = await fetch('/api/product', {
-            method: 'POST',
-            headers: {
-                'Content-type': 'Application/json',
-                'Authorization': `Bearer ${user.jwt}`
-            },
-            body: JSON.stringify(newProduct)
-        });
-
-        console.log(uploadProductResponse);
-
+    function detailsConverter(productDetails){
+        const convertedProductDetails = {};
+        productDetails.forEach(productDetail => convertedProductDetails[productDetail.detailName] = productDetail.value);
+        return convertedProductDetails;
     }
     
 
@@ -127,18 +186,31 @@ function ProductUpload(){
         return missingFields;
     }
 
+
     return(
         <div className="product-upload">
             {user && 
                 <>
                     <NavBar />
+                    {successMessage && <h3 className="success-message">{successMessage}</h3>}
                     <ProductInformationForm onDetailsChange={handleProductChange} productDetail={product}/>
-                    <ProductCategoryForm user={user} onDetailSet={(detail) => setDetails(detail)} onCategoryChange={(categories) => setProductCategories(categories)}/>
-                    {details &&
-                        <ProductDetailsForm details={details} onDetailsChange={handleDetailChange}/>
+                    <ProductCategoryForm 
+                        onSelectCategoryIdChange={(categoryId) => setSelectedCaegoryId(categoryId)} 
+                        onSelectedSubCategoryIdChange={(subcategoryId) => setSelectedSubcategoryId(subcategoryId)} 
+                        selectedCategoryId={selectedCategoryId}
+                        selectedSubcategoryId={selectedSubcategoryId}
+                    />
+                    {selectedSubcategoryId &&
+                        <ProductDetailsForm 
+                            details={details}
+                            onDetailsChange={handleDetailChange}
+                            subCategoryId={selectedSubcategoryId} 
+                            user={user}
+                            onDetailsSet={(details) => setDetails(details)}
+                        />
                     }
                     <p className="error-message">{error}</p>
-                    <button onClick={handleSubmit} type="button" >Upload product!</button>
+                    <button className="submit-button" onClick={handleSubmit} type="button" >Upload product!</button>
                 </>
             }
         </div>
