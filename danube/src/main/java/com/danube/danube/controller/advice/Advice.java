@@ -119,6 +119,6 @@ public class Advice {
     }
 
     private UserErrorMessage handleNotMatchingNewPasswordAndReenterPasswordException(){
-        return new UserErrorMessage("The new password and the reenter password doesn't match!");
+        return new UserErrorMessage("The reentered password does not matches the new password!");
     }
 }

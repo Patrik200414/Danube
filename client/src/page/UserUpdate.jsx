@@ -8,7 +8,7 @@ function UserUpdate(){
         <div className="user-update-container">
             <NavBar />
             <UserUpdateForm />
-            <Link to={'/user/update/password'}>
+            <Link className="change-password" to={'/user/update/password'}>
                 <button>Change password</button>
             </Link>
         </div>

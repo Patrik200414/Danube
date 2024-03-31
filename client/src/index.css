@@ -455,3 +455,27 @@ input[type="text"] {
     width: 100%;
 
 }
+
+/* User update page*/
+.user-update-form{
+    max-width: 1000px;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    margin-top: 5%;
+    margin-bottom: 2%;
+}
+
+.user-update-form button,
+.change-password button{
+    background-color: var(--button-color);
+    color: #232f3e;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 15px;
+    cursor: pointer;   
+}
+
+.change-password{
+    margin-left: 50%;
+    transform: translateX(-50%);
+}
