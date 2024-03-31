@@ -1,19 +1,15 @@
 import { useState } from "react";
+import Proptypes from 'prop-types';
 
-function PasswordUpdateForm(){
+function PasswordUpdateForm({user, navigate}){
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [reenterPassword, setReenterPassword] = useState('');
     const [error, setError] = useState('');
 
 
-    function handleSubmit(e){
+    async function handleSubmit(e){
         e.preventDefault();
-
-        if(newPassword !== reenterPassword){
-            setError('The password and the reenter password are not the same!');
-            return;
-        }
 
         const updatedPassword = {
             currentPassword: currentPassword,
@@ -22,6 +18,22 @@ function PasswordUpdateForm(){
         };
 
         
+        const passwordUpdateData = await fetch(`/api/user/password/${user.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-type': 'Application/json',
+                'Authorization': `Bearer ${user.jwt}`
+            },
+            body: JSON.stringify(updatedPassword)
+        });
+
+        
+        if(passwordUpdateData.ok){
+            navigate('/user/update');
+            return;
+        }
+        const passwordUpdateResponse = await passwordUpdateData.json();
+        setError(passwordUpdateResponse.errorMessage);
     }
 
     return(
@@ -38,9 +50,15 @@ function PasswordUpdateForm(){
             <input onChange={e => setReenterPassword(e.target.value)} type="password" id="reenterNewPassword" name="reenterNewPassword" value={reenterPassword}/>
             <br />
 
+            <p className="error-message">{error}</p>
             <button>Save</button>
         </form>
     )
 }
 
+
+PasswordUpdateForm.propTypes = {
+    user: Proptypes.object,
+    navigate: Proptypes.func
+}
 export default PasswordUpdateForm;

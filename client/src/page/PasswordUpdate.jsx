@@ -9,7 +9,7 @@ function PasswordUpdate(){
     const navigate = useNavigate();
 
     useEffect(() => {
-        const userData = JSON.stringify(sessionStorage.getItem('USER_JWT'));
+        const userData = JSON.parse(sessionStorage.getItem('USER_JWT'));
 
         if(!userData){
             navigate('/');
@@ -22,7 +22,7 @@ function PasswordUpdate(){
     return(
         <div className="password-update">
             <NavBar />
-            <PasswordUpdateForm />
+            <PasswordUpdateForm user={user} navigate={(path) => navigate(path)}/>
         </div>
     )
 }
