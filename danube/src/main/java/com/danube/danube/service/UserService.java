@@ -1,12 +1,11 @@
 package com.danube.danube.service;
 
 import com.danube.danube.custom_exception.login_registration.*;
+import com.danube.danube.custom_exception.user.NotMatchingCurrentPasswordException;
+import com.danube.danube.custom_exception.user.NotMatchingNewPasswordAndReenterPasswordException;
 import com.danube.danube.custom_exception.user.NotMatchingUserAndUpdateUserIdException;
 import com.danube.danube.model.dto.jwt.JwtResponse;
-import com.danube.danube.model.dto.user.UserLoginDTO;
-import com.danube.danube.model.dto.user.UserRegistrationDTO;
-import com.danube.danube.model.dto.user.UserUpdateDTO;
-import com.danube.danube.model.dto.user.UserVerificationDTO;
+import com.danube.danube.model.dto.user.*;
 import com.danube.danube.model.user.Role;
 import com.danube.danube.model.user.UserEntity;
 import com.danube.danube.repository.user.UserRepository;
@@ -115,6 +114,28 @@ public class UserService {
 
         UserEntity updatedUser = userRepository.save(user);
         return generateJwtResponse(updatedUser);
+    }
+
+    @Transactional
+    public void updatePassword(long id, PasswordUpdateDTO passwordUpdateDTO){
+        Optional<UserEntity> searchedUser = userRepository.findById(id);
+
+        if(searchedUser.isEmpty()){
+            throw new NonExistingUserException();
+        }
+
+        UserEntity user = searchedUser.get();
+
+        if(!passwordEncoder.matches(passwordUpdateDTO.currentPassword(), user.getPassword())){
+            throw new NotMatchingCurrentPasswordException();
+        }
+
+        if(!passwordUpdateDTO.newPassword().equals(passwordUpdateDTO.reenterPassword())){
+            throw new NotMatchingNewPasswordAndReenterPasswordException();
+        }
+
+        user.setPassword(passwordEncoder.encode(passwordUpdateDTO.newPassword()));
+        userRepository.save(user);
     }
 
     public boolean verifyUser(UserVerificationDTO userVerificationDTO){
