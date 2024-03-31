@@ -1,15 +1,18 @@
 package com.danube.danube.service;
 
 import com.danube.danube.custom_exception.login_registration.*;
+import com.danube.danube.custom_exception.user.NotMatchingUserAndUpdateUserIdException;
 import com.danube.danube.model.dto.jwt.JwtResponse;
 import com.danube.danube.model.dto.user.UserLoginDTO;
 import com.danube.danube.model.dto.user.UserRegistrationDTO;
+import com.danube.danube.model.dto.user.UserUpdateDTO;
 import com.danube.danube.model.dto.user.UserVerificationDTO;
 import com.danube.danube.model.user.Role;
 import com.danube.danube.model.user.UserEntity;
 import com.danube.danube.repository.user.UserRepository;
 import com.danube.danube.security.jwt.JwtUtils;
 import com.danube.danube.utility.Converter;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -86,19 +89,32 @@ public class UserService {
 
         UserEntity updatedUser = userRepository.save(user);
 
-        String jwtToken = jwtUtils.generateJwtToken(updatedUser.getEmail());
-        List<String> roles = updatedUser.getRoles().stream()
-                .map(Enum::name)
-                .toList();
+        return generateJwtResponse(updatedUser);
+    }
 
-        return new JwtResponse(
-                jwtToken,
-                updatedUser.getFirstName(),
-                updatedUser.getLastName(),
-                updatedUser.getEmail(),
-                updatedUser.getId(),
-                roles
-        );
+    @Transactional
+    public JwtResponse updateUser(long id, UserUpdateDTO userUpdateDTO){
+        if(id != userUpdateDTO.userId()){
+            throw new NotMatchingUserAndUpdateUserIdException();
+        }
+
+
+        Optional<UserEntity> searchedUser = userRepository.findById(id);
+        if(searchedUser.isEmpty()){
+            throw new NonExistingUserException();
+        }
+
+        UserEntity user = searchedUser.get();
+
+        validateEmail(userUpdateDTO.email());
+        validateFirstNameAndLastName(userUpdateDTO.firstName(), userUpdateDTO.lastName());
+
+        user.setEmail(userUpdateDTO.email());
+        user.setFirstName(userUpdateDTO.firstName());
+        user.setLastName(userUpdateDTO.lastName());
+
+        UserEntity updatedUser = userRepository.save(user);
+        return generateJwtResponse(updatedUser);
     }
 
     public boolean verifyUser(UserVerificationDTO userVerificationDTO){
@@ -122,15 +138,37 @@ public class UserService {
             throw new RegistrationFieldNullException("password");
         }
 
-        if(userRegistrationDTO.firstName().length() < MIN_LENGTH_NAME){
-            throw new InputTooShortException("first name", MIN_LENGTH_NAME);
-        } else if(userRegistrationDTO.password().length() < MIN_LENGTH_PASSWORD){
+
+        validateFirstNameAndLastName(userRegistrationDTO.firstName(), userRegistrationDTO.lastName());
+        if(userRegistrationDTO.password().length() < MIN_LENGTH_PASSWORD){
             throw new InputTooShortException("password", MIN_LENGTH_PASSWORD);
-        } else if(userRegistrationDTO.lastName().length() < MIN_LENGTH_NAME){
-            throw new InputTooShortException("last name", MIN_LENGTH_NAME);
         }
 
         validateEmail(userRegistrationDTO.email());
+    }
+
+    private JwtResponse generateJwtResponse(UserEntity user){
+        String jwtToken = jwtUtils.generateJwtToken(user.getEmail());
+        List<String> roles = user.getRoles().stream()
+                .map(Enum::name)
+                .toList();
+
+        return new JwtResponse(
+                jwtToken,
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getId(),
+                roles
+        );
+    }
+
+    private void validateFirstNameAndLastName(String firstName, String lastName){
+        if(firstName.length() < MIN_LENGTH_NAME){
+            throw new InputTooShortException("first name", MIN_LENGTH_NAME);
+        } else if(lastName.length() < MIN_LENGTH_NAME){
+            throw new InputTooShortException("last name", MIN_LENGTH_NAME);
+        }
     }
 
     private void validateEmail(String email){
