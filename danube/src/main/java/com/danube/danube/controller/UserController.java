@@ -5,6 +5,7 @@ import com.danube.danube.custom_exception.user.UserEntityPasswordMissMatchExcept
 import com.danube.danube.model.dto.jwt.JwtResponse;
 import com.danube.danube.model.dto.user.UserLoginDTO;
 import com.danube.danube.model.dto.user.UserRegistrationDTO;
+import com.danube.danube.model.dto.user.UserUpdateDTO;
 import com.danube.danube.model.dto.user.UserVerificationDTO;
 import com.danube.danube.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,16 @@ public class UserController {
     public ResponseEntity<?> updateUserRole(@PathVariable long id){
         try{
             JwtResponse jwtResponse = userService.addSellerRoleToUser(id);
+            return ResponseEntity.ok(jwtResponse);
+        } catch (Exception e){
+            return controllerAdvice.handleException(e);
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable long id, @RequestBody UserUpdateDTO userUpdateDTO){
+        try{
+            JwtResponse jwtResponse = userService.updateUser(id, userUpdateDTO);
             return ResponseEntity.ok(jwtResponse);
         } catch (Exception e){
             return controllerAdvice.handleException(e);

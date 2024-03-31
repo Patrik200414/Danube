@@ -6,6 +6,7 @@ import com.danube.danube.custom_exception.login_registration.NonExistingUserExce
 import com.danube.danube.custom_exception.login_registration.RegistrationFieldNullException;
 import com.danube.danube.custom_exception.product.IncorrectProductObjectFormException;
 import com.danube.danube.custom_exception.product.NonExistingSubcategoryException;
+import com.danube.danube.custom_exception.user.NotMatchingUserAndUpdateUserIdException;
 import com.danube.danube.custom_exception.user.UserEntityPasswordMissMatchException;
 import com.danube.danube.model.error.UserErrorMessage;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -45,6 +46,8 @@ public class Advice {
             return ResponseEntity.badRequest().body(handleNoEnumConstantCategory());
         } else if(e instanceof NonExistingSubcategoryException){
             return ResponseEntity.badRequest().body(handleNonExistingSubcategoryException());
+        } else if(e instanceof NotMatchingUserAndUpdateUserIdException){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(handleNotMatchingUserAndUpdateUserIdException());
         }
         else{
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(handleInternalServerError(e));
@@ -99,5 +102,9 @@ public class Advice {
     }
     private UserErrorMessage handleNonExistingSubcategoryException(){
         return new UserErrorMessage("Non existing subcategory!");
+    }
+
+    private UserErrorMessage handleNotMatchingUserAndUpdateUserIdException(){
+        return new UserErrorMessage("You can't modify other user's information!");
     }
 }
