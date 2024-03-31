@@ -47,7 +47,7 @@ function Profile(){
                     }
 
                     <div className="service">
-                        <Link to='/profile/settings'>
+                        <Link to='/verification/user/update'>
                             <img src={settings} />
                             <h2>Profile settings</h2>
                             <p>The Profile Setting Service is a comprehensive feature designed to empower users with control over their personal accounts within the platform. It offers a range of customization options and management tools to enhance user experience and privacy.</p>

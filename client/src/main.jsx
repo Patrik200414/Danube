@@ -9,8 +9,10 @@ import Profile from './page/Profile';
 import SellerAgreement from './page/SellerAgreement';
 import Verification from './page/Verification';
 import ProductUpload from './page/ProductUpload';
+import UserUpdate from './page/UserUpdate';
+import PasswordUpdate from './page/PasswordUpdate';
 
-const verificationToPages = ['upload'];
+const verificationToPages = ['upload', 'update'];
 
 const router = createBrowserRouter([
   {
@@ -40,6 +42,14 @@ const router = createBrowserRouter([
   {
     path: '/product/upload',
     element: <ProductUpload />
+  },
+  {
+    path: '/user/update',
+    element: <UserUpdate />
+  },
+  {
+    path: '/user/update/password',
+    element: <PasswordUpdate />
   }
 ])
 

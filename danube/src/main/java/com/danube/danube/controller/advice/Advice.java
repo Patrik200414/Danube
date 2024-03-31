@@ -6,6 +6,9 @@ import com.danube.danube.custom_exception.login_registration.NonExistingUserExce
 import com.danube.danube.custom_exception.login_registration.RegistrationFieldNullException;
 import com.danube.danube.custom_exception.product.IncorrectProductObjectFormException;
 import com.danube.danube.custom_exception.product.NonExistingSubcategoryException;
+import com.danube.danube.custom_exception.user.NotMatchingNewPasswordAndReenterPasswordException;
+import com.danube.danube.custom_exception.user.NotMatchingCurrentPasswordException;
+import com.danube.danube.custom_exception.user.NotMatchingUserAndUpdateUserIdException;
 import com.danube.danube.custom_exception.user.UserEntityPasswordMissMatchException;
 import com.danube.danube.model.error.UserErrorMessage;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -45,6 +48,12 @@ public class Advice {
             return ResponseEntity.badRequest().body(handleNoEnumConstantCategory());
         } else if(e instanceof NonExistingSubcategoryException){
             return ResponseEntity.badRequest().body(handleNonExistingSubcategoryException());
+        } else if(e instanceof NotMatchingUserAndUpdateUserIdException){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(handleNotMatchingUserAndUpdateUserIdException());
+        } else if(e instanceof NotMatchingCurrentPasswordException){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(handleNotMatchingCurrentPasswordException());
+        } else if(e instanceof NotMatchingNewPasswordAndReenterPasswordException){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(handleNotMatchingNewPasswordAndReenterPasswordException());
         }
         else{
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(handleInternalServerError(e));
@@ -99,5 +108,17 @@ public class Advice {
     }
     private UserErrorMessage handleNonExistingSubcategoryException(){
         return new UserErrorMessage("Non existing subcategory!");
+    }
+
+    private UserErrorMessage handleNotMatchingUserAndUpdateUserIdException(){
+        return new UserErrorMessage("You can't modify other user's information!");
+    }
+
+    private UserErrorMessage handleNotMatchingCurrentPasswordException(){
+        return new UserErrorMessage("The given current password does not matches!");
+    }
+
+    private UserErrorMessage handleNotMatchingNewPasswordAndReenterPasswordException(){
+        return new UserErrorMessage("The new password and the reenter password doesn't match!");
     }
 }

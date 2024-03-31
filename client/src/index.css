@@ -340,7 +340,8 @@ input[type="text"] {
 }
 
 /*ProductUploadForm*/
-.product-details-form-container {
+.product-details-form-container
+.user-update-container {
     max-width: 1000px; /* Adjust max-width as needed */
     margin: 0 auto;
     padding: 20px;
@@ -350,6 +351,8 @@ input[type="text"] {
   
   .product-detail-form label,
   .product-detail-form input,
+  .user-update-form label,
+  .user-update-form input,
   .product-detail-form textarea,
   select {
     margin-bottom: 10px;
@@ -357,6 +360,7 @@ input[type="text"] {
   
   .product-detail-form input,
   .product-detail-form textarea,
+  .user-update-form input,
   select {
     width: 100%;
     padding: 8px;
@@ -371,18 +375,21 @@ input[type="text"] {
   }
   
   @media screen and (min-width: 600px) {
-    .product-detail-form {
+    .product-detail-form
+    .user-update-form {
       flex-direction: row;
       flex-wrap: wrap;
     }
   
-    .product-detail-form label {
+    .product-detail-form label 
+    .user-update-form label {
       flex: 0 0 30%; /* Adjust label width as needed */
       margin-right: 10px;
       text-align: right;
     }
   
     .product-detail-form input,
+    .user-update-form input,
     .product-detail-form textarea,
     select {
       flex: 1;
