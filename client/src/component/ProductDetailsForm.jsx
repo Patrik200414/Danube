@@ -1,8 +1,7 @@
 import Proptypes from "prop-types";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
-function ProductDetailsForm({details, onDetailsChange, subCategoryId, user, onDetailsSet, onImageUpload, images}){
-    const [selectedImageNames, setSeletedImageNames] = useState([]);
+function ProductDetailsForm({details, onDetailsChange, subCategoryId, user, onDetailsSet, onImageUpload}){
 
     useEffect(() => {
         const getDetails = async () => {
@@ -18,10 +17,6 @@ function ProductDetailsForm({details, onDetailsChange, subCategoryId, user, onDe
         getDetails();
     }, [subCategoryId])
 
-    useEffect(() => {
-        console.log(images);
-        setSeletedImageNames(images.map(image => image?.name))
-    }, [images])
 
     return(
         <>
