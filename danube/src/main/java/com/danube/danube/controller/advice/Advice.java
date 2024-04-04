@@ -19,6 +19,8 @@ import org.springframework.security.authentication.InternalAuthenticationService
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.io.IOException;
+
 
 @ControllerAdvice
 public class Advice {
@@ -54,6 +56,8 @@ public class Advice {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(handleNotMatchingCurrentPasswordException());
         } else if(e instanceof NotMatchingNewPasswordAndReenterPasswordException){
             return ResponseEntity.status(HttpStatus.CONFLICT).body(handleNotMatchingNewPasswordAndReenterPasswordException());
+        } else if(e instanceof IOException){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(handleIOexception());
         }
         else{
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(handleInternalServerError(e));
@@ -120,5 +124,9 @@ public class Advice {
 
     private UserErrorMessage handleNotMatchingNewPasswordAndReenterPasswordException(){
         return new UserErrorMessage("The reentered password does not matches the new password!");
+    }
+
+    private UserErrorMessage handleIOexception(){
+        return new UserErrorMessage("Something went wrong! Couldn't save product! Please try again!");
     }
 }
