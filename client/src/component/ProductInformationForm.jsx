@@ -14,19 +14,19 @@ function ProductInformationForm({onDetailsChange, productDetail}){
                     <br />
 
                     <label htmlFor="price">Price: </label>
-                    <input onChange={e => (!isNaN(e.target.value) && Number(e.target.value) >= 0) && onDetailsChange(e.target.value, 'Price')} type="text" id="price" name="price" value={productDetail['Price']} placeholder="Price..."/>
+                    <input onChange={e => (!isNaN(e.target.value) && Number(e.target.value) >= 0) && onDetailsChange(Number(e.target.value), 'Price')} type="text" id="price" name="price" value={productDetail['Price']} placeholder="Price..."/>
                     <br />
 
                     <label htmlFor="shippingPrice">Shipping price: </label>
-                    <input onChange={e => (!isNaN(e.target.value) && Number(e.target.value) >= 0) && onDetailsChange(e.target.value, 'Shipping price')} type="text" id="shippingPrice" name="shippingPrice" value={productDetail['Shipping price']} placeholder="Shipping Price..."/>
+                    <input onChange={e => (!isNaN(e.target.value) && Number(e.target.value) >= 0) && onDetailsChange(Number(e.target.value), 'Shipping price')} type="text" id="shippingPrice" name="shippingPrice" value={productDetail['Shipping price']} placeholder="Shipping Price..."/>
                     <br />
 
                     <label htmlFor="quantity">Quantity: </label>
-                    <input onChange={e => (!isNaN(e.target.value) && Number(e.target.value) >= 0 && Number.isInteger(Number(e.target.value)) && !e.target.value.includes('.')) && onDetailsChange(e.target.value, 'Quantity')} type="text" id="quantity" name="quantity" value={productDetail.Quantity} placeholder="Quantity..."/>
+                    <input onChange={e => (!isNaN(e.target.value) && Number(e.target.value) >= 0 && Number.isInteger(Number(e.target.value)) && !e.target.value.includes('.')) && onDetailsChange(Number(e.target.value), 'Quantity')} type="text" id="quantity" name="quantity" value={productDetail.Quantity} placeholder="Quantity..."/>
                     <br />
 
                     <label htmlFor="deliveryTimeInDay">Delivery time in days: </label>
-                    <input onChange={e => (!isNaN(e.target.value) && Number(e.target.value) >= 0 && Number.isInteger(Number(e.target.value)) && !e.target.value.includes('.')) && onDetailsChange(e.target.value, 'Delivery time in day')} type="text" id="deliveryTimeInDay" name="deliveryTimeInDay" value={productDetail['Delivery time in day']} placeholder="Delivery time in days..."/>
+                    <input onChange={e => (!isNaN(e.target.value) && Number(e.target.value) >= 0 && Number.isInteger(Number(e.target.value)) && !e.target.value.includes('.')) && onDetailsChange(Number(e.target.value), 'Delivery time in day')} type="text" id="deliveryTimeInDay" name="deliveryTimeInDay" value={productDetail['Delivery time in day']} placeholder="Delivery time in days..."/>
                     <br />
 
                     <label htmlFor="description">Description: </label>
