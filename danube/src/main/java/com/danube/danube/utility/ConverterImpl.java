@@ -9,12 +9,23 @@ import com.danube.danube.model.product.subcategory.Subcategory;
 import com.danube.danube.model.user.Role;
 import com.danube.danube.model.user.UserEntity;
 import com.danube.danube.utility.Converter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class ConverterImpl implements Converter {
+    private final ObjectMapper objectMapper;
+
+    public ConverterImpl() {
+        this.objectMapper = new ObjectMapper();
+    }
 
     public UserEntity convertUserRegistrationDTOToUserEntity(UserRegistrationDTO userRegistrationDTO, PasswordEncoder passwordEncoder){
         UserEntity user = new UserEntity();
@@ -84,35 +95,17 @@ public class ConverterImpl implements Converter {
         return product;
     }
 
-    /*
-    public ProductDetail convertToProductDetail(ProductDetailUploadDTO productDetailUploadDTO){
-        ProductDetail productDetail = new ProductDetail();
+    @Override
+    public ProductUploadDTO convertRequestParamToProductUploadDTO(String productDetail, String productInformation, long userId, MultipartFile[] image) throws JsonProcessingException {
+        ProductDetailUploadDTO convertedProductDetail = objectMapper.readValue(productDetail, ProductDetailUploadDTO.class);
+        Map<String, String> convertedProductInformation = objectMapper.readValue(productInformation, new TypeReference<Map<String, String>>() {});
 
-        productDetail.setBrand(productDetailUploadDTO.brand());
-        productDetail.setProductName(productDetailUploadDTO.productName());
-        productDetail.setDescription(productDetailUploadDTO.description());
-        productDetail.setPrice(productDetailUploadDTO.price());
-        productDetail.setQuantity(productDetailUploadDTO.quantity());
-        productDetail.setShippingPrice(productDetailUploadDTO.shippingPrice());
-        productDetail.setDeliveryTimeInDay(productDetailUploadDTO.deliveryTimeInDay());
-        productDetail.setRating(0);
-        productDetail.setSold(0);
+        return new ProductUploadDTO(
+                convertedProductDetail,
+                convertedProductInformation,
+                userId,
+                image
+        );
 
-        return productDetail;
     }
-
-    public List<ProductShowSmallDTO> convertProductDetails(List<ProductDetail> productDetails){
-
-        return productDetails.stream()
-                .map(productDetail -> new ProductShowSmallDTO(
-                        productDetail.getProductName(),
-                        productDetail.getPrice(),
-                        productDetail.getShippingPrice(),
-                        productDetail.getDeliveryTimeInDay(),
-                        productDetail.getQuantity(),
-                        productDetail.getRating(),
-                        productDetail.getSold(),
-                        productDetail.getId()
-                )).toList();
-    }*/
 }
