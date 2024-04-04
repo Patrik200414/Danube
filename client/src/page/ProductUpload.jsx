@@ -140,6 +140,7 @@ function ProductUpload(){
                 setSelectedCaegoryId('');
                 setSelectedSubcategoryId('');
                 setDetails();
+                setImages([]);
                 setSuccessUploadCount(prev => prev + 1);
             } else{
                 const uploadResponse = await uploadProductResponse.json();
@@ -156,6 +157,7 @@ function ProductUpload(){
             formData.append('userId', user.id);
             
             appendFilesToFormData(formData, images);
+            console.log(images);
 
             return(formData)
     }
