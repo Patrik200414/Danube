@@ -1,6 +1,7 @@
 package com.danube.danube.model.product;
 
 import com.danube.danube.model.product.connection.ProductValue;
+import com.danube.danube.model.product.image.Image;
 import com.danube.danube.model.user.UserEntity;
 import jakarta.persistence.*;
 
@@ -30,11 +31,13 @@ public class Product {
     private int sold;
     @ManyToOne
     private UserEntity seller;
+    @OneToMany(mappedBy = "product")
+    private List<Image> images;
 
     public Product() {
     }
 
-    public Product(long id, List<ProductValue> productValues, String productName, double price, String brand, int quantity, String description, double shippingPrice, int deliveryTimeInDay, int rating, int sold, UserEntity seller) {
+    public Product(long id, List<ProductValue> productValues, String productName, double price, String brand, int quantity, String description, double shippingPrice, int deliveryTimeInDay, int rating, int sold, UserEntity seller, List<Image> images) {
         this.id = id;
         this.productValues = productValues;
         this.productName = productName;
@@ -47,6 +50,7 @@ public class Product {
         this.rating = rating;
         this.sold = sold;
         this.seller = seller;
+        this.images = images;
     }
 
     public long getId() {
@@ -143,5 +147,13 @@ public class Product {
 
     public void setSeller(UserEntity seller) {
         this.seller = seller;
+    }
+
+    public List<Image> getImages() {
+        return images;
+    }
+
+    public void setImages(List<Image> images) {
+        this.images = images;
     }
 }
