@@ -114,13 +114,15 @@ function ProductUpload(){
 
         if(isCorrectForm(errorFields)){
             const convertedProduct = fieldNameConverter(product);
+            const formDataImages = convertFilesToFormData(images);
     
             const newProduct = {
                 productDetail: convertedProduct,
                 productInformation: convertedDetails,
-                userId: user.id
+                userId: user.id,
+                images: formDataImages
             }
-    
+            
             const uploadProductResponse = await fetch('/api/product', {
                 method: 'POST',
                 headers: {
@@ -150,6 +152,15 @@ function ProductUpload(){
             }
         }
 
+    }
+
+    function convertFilesToFormData(files){
+        const formData = new FormData();
+        for(let i = 0; i < files.length; i++){
+            formData.append(`file${i}`, files[i]);
+        }
+
+        return formData;
     }
 
     function isCorrectForm(errorFields){
@@ -220,6 +231,7 @@ function ProductUpload(){
                             user={user}
                             onDetailsSet={(details) => setDetails(details)}
                             onImageUpload={handleImagesChange}
+                            images={images}
                         />
                     }
                     <p className="error-message">{error}</p>

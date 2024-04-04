@@ -1,7 +1,8 @@
 import Proptypes from "prop-types";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-function ProductDetailsForm({details, onDetailsChange, subCategoryId, user, onDetailsSet, onImageUpload}){
+function ProductDetailsForm({details, onDetailsChange, subCategoryId, user, onDetailsSet, onImageUpload, images}){
+    const [selectedImageNames, setSeletedImageNames] = useState([]);
 
     useEffect(() => {
         const getDetails = async () => {
@@ -17,6 +18,10 @@ function ProductDetailsForm({details, onDetailsChange, subCategoryId, user, onDe
         getDetails();
     }, [subCategoryId])
 
+    useEffect(() => {
+        console.log(images);
+        setSeletedImageNames(images.map(image => image?.name))
+    }, [images])
 
     return(
         <>
@@ -29,7 +34,7 @@ function ProductDetailsForm({details, onDetailsChange, subCategoryId, user, onDe
                         <input onChange={e => onDetailsChange(e.target.value, detail.id)} type="text" id={detail.detailName} name={detail.detailName} value={detail.value} placeholder={`${detail.detailName}...`}/>
                     </div>)}
                     <label htmlFor="inputData">Upload images: </label>
-                    <input type="file" id="inputData" name="inputData" className="inputData" multiple onChange={e => onImageUpload(e)}/>
+                    <input type="file" id="inputData" name="inputData" className="inputData" accept="image/*" multiple onChange={e => onImageUpload(e)} value=""/>
                 </form>
             </div>
         }
