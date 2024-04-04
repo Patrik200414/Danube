@@ -11,6 +11,7 @@ function ProductUpload(){
     const [user, setUser] = useState();
     const [product, setProduct] = useState();
     const [details, setDetails] = useState();
+    const [images, setImages] = useState([]);
 
     const [selectedCategoryId, setSelectedCaegoryId] = useState();
     const [selectedSubcategoryId, setSelectedSubcategoryId] = useState();
@@ -83,6 +84,18 @@ function ProductUpload(){
             return detail;
         });
         setDetails(changedDetails);
+    }
+
+    function handleImagesChange(e){
+        const uploadedFiles = e.target.files;
+        const files = [];
+        for(const fileIndex in uploadedFiles){
+            if(typeof uploadedFiles[fileIndex] === 'object'){
+                files.push(uploadedFiles[fileIndex]);
+            }
+        }
+
+        setImages(prev => [...prev, ...files]);
     }
 
     async function handleSubmit(e){
@@ -186,7 +199,6 @@ function ProductUpload(){
         return missingFields;
     }
 
-
     return(
         <div className="product-upload">
             {user && 
@@ -207,6 +219,7 @@ function ProductUpload(){
                             subCategoryId={selectedSubcategoryId} 
                             user={user}
                             onDetailsSet={(details) => setDetails(details)}
+                            onImageUpload={handleImagesChange}
                         />
                     }
                     <p className="error-message">{error}</p>
