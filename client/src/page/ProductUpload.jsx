@@ -114,22 +114,17 @@ function ProductUpload(){
 
         if(isCorrectForm(errorFields)){
             const convertedProduct = fieldNameConverter(product);
-            const formDataImages = convertFilesToFormData(images);
-    
-            const newProduct = {
-                productDetail: convertedProduct,
-                productInformation: convertedDetails,
-                userId: user.id,
-                images: formDataImages
-            }
             
+            
+            const formData = createFormData(convertedProduct, convertedDetails);
+            
+
             const uploadProductResponse = await fetch('/api/product', {
                 method: 'POST',
                 headers: {
-                    'Content-type': 'Application/json',
                     'Authorization': `Bearer ${user.jwt}`
                 },
-                body: JSON.stringify(newProduct)
+                body: formData
             });
     
             if(uploadProductResponse.ok){
@@ -154,10 +149,20 @@ function ProductUpload(){
 
     }
 
-    function convertFilesToFormData(files){
-        const formData = new FormData();
+    function createFormData(product, details){
+            const formData = new FormData();
+            formData.append('productDetail', JSON.stringify(product));
+            formData.append('productInformation', JSON.stringify(details));
+            formData.append('userId', user.id);
+            
+            appendFilesToFormData(formData, images);
+
+            return(formData)
+    }
+
+    function appendFilesToFormData(formData, files){
         for(let i = 0; i < files.length; i++){
-            formData.append(`file${i}`, files[i]);
+            formData.append(`image`, files[i]);
         }
 
         return formData;
@@ -231,7 +236,6 @@ function ProductUpload(){
                             user={user}
                             onDetailsSet={(details) => setDetails(details)}
                             onImageUpload={handleImagesChange}
-                            images={images}
                         />
                     }
                     <p className="error-message">{error}</p>
