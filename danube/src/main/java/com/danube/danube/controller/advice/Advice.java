@@ -11,6 +11,7 @@ import com.danube.danube.custom_exception.user.NotMatchingCurrentPasswordExcepti
 import com.danube.danube.custom_exception.user.NotMatchingUserAndUpdateUserIdException;
 import com.danube.danube.custom_exception.user.UserEntityPasswordMissMatchException;
 import com.danube.danube.model.error.UserErrorMessage;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,7 +57,7 @@ public class Advice {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(handleNotMatchingCurrentPasswordException());
         } else if(e instanceof NotMatchingNewPasswordAndReenterPasswordException){
             return ResponseEntity.status(HttpStatus.CONFLICT).body(handleNotMatchingNewPasswordAndReenterPasswordException());
-        } else if(e instanceof IOException){
+        } else if(e instanceof IOException || e instanceof JsonProcessingException){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(handleIOexception());
         }
         else{
