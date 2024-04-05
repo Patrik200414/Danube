@@ -5,6 +5,7 @@ import com.danube.danube.model.dto.user.UserRegistrationDTO;
 import com.danube.danube.model.product.Product;
 import com.danube.danube.model.product.category.Category;
 import com.danube.danube.model.product.detail.Detail;
+import com.danube.danube.model.product.image.Image;
 import com.danube.danube.model.product.subcategory.Subcategory;
 import com.danube.danube.model.user.UserEntity;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -27,6 +28,6 @@ public interface Converter {
             long userId,
             MultipartFile[] image
     ) throws JsonProcessingException;
-    //ProductDetail convertToProductDetail(ProductDetailUploadDTO productDetailUploadDTO);
-    //List<ProductShowSmallDTO> convertProductDetails(List<ProductDetail> productDetails);
+
+    List<Image> convertMultiPartFilesToListOfImages(MultipartFile[] images, Product product, String basePath);
 }

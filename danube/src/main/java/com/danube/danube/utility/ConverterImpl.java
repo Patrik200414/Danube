@@ -5,6 +5,7 @@ import com.danube.danube.model.dto.user.UserRegistrationDTO;
 import com.danube.danube.model.product.Product;
 import com.danube.danube.model.product.category.Category;
 import com.danube.danube.model.product.detail.Detail;
+import com.danube.danube.model.product.image.Image;
 import com.danube.danube.model.product.subcategory.Subcategory;
 import com.danube.danube.model.user.Role;
 import com.danube.danube.model.user.UserEntity;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -107,5 +109,21 @@ public class ConverterImpl implements Converter {
                 image
         );
 
+    }
+
+    @Override
+    public List<Image> convertMultiPartFilesToListOfImages(MultipartFile[] images, Product product, String basePath) {
+
+        List<Image> convertedImages = new ArrayList<>();
+
+        for(MultipartFile image : images){
+            Image createdImage = new Image();
+            createdImage.setProduct(product);
+            createdImage.setFilePath(basePath);
+
+            convertedImages.add(createdImage);
+        }
+
+        return convertedImages;
     }
 }
