@@ -4,6 +4,7 @@ import ProductInformationForm from "../component/ProductInformationForm"
 import { useNavigate } from "react-router-dom";
 import ProductCategoryForm from "../component/ProductCategoryForm";
 import ProductDetailsForm from "../component/ProductDetailsForm";
+import UploadedImages from "../component/UploadedImages";
 
 function ProductUpload(){
     const SUCCESS_MESSAGE_TIME_IN_SECONDS = 2;
@@ -90,12 +91,18 @@ function ProductUpload(){
         const uploadedFiles = e.target.files;
         const files = [];
         for(const fileIndex in uploadedFiles){
-            if(typeof uploadedFiles[fileIndex] === 'object'){
+            const isImageAlreadyAdded = images.filter(image => image.name === uploadedFiles[fileIndex].name).length > 0;
+            if(typeof uploadedFiles[fileIndex] === 'object' && !isImageAlreadyAdded){
                 files.push(uploadedFiles[fileIndex]);
             }
         }
 
         setImages(prev => [...prev, ...files]);
+    }
+
+    function handleImageDeletion(index){
+        const deletedItem = images.filter((image, i) => i !== index);
+        setImages(deletedItem);
     }
 
     async function handleSubmit(e){
@@ -157,7 +164,6 @@ function ProductUpload(){
             formData.append('userId', user.id);
             
             appendFilesToFormData(formData, images);
-            console.log(images);
 
             return(formData)
     }
@@ -240,6 +246,7 @@ function ProductUpload(){
                             onImageUpload={handleImagesChange}
                         />
                     }
+                    {images.length ? <UploadedImages onImageDeletion={handleImageDeletion} images={images}/> : null}
                     <p className="error-message">{error}</p>
                     <button className="submit-button" onClick={handleSubmit} type="button" >Upload product!</button>
                 </>

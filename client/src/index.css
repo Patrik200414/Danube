@@ -5,6 +5,7 @@
   --white-background-color: #f0f0f0;
   --success-green-background: #32cd32;
   --success-gree-text-color: rgb(20, 80, 20);
+  --image-preview-container-background-color: rgb(201, 201, 201);
 }
 
 *{
@@ -340,6 +341,19 @@ input[type="text"] {
 }
 
 /*ProductUploadForm*/
+.product-upload h2{
+    text-align: center;
+}
+
+.product-details-form-container{
+    padding-top: 30px;
+}
+
+.submit-button{
+    margin-bottom: 30px;
+}
+
+
 .product-details-form-container
 .user-update-container {
     max-width: 1000px; /* Adjust max-width as needed */
@@ -347,6 +361,13 @@ input[type="text"] {
     padding: 20px;
   }
   
+
+  .product-detail-form{
+    margin-left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    max-width: 1000px;
+  }
   
   
   .product-detail-form label,
@@ -452,7 +473,7 @@ input[type="text"] {
     margin-left: 50%;
     transform: translateX(-50%);
     max-width: 1000px; /* Adjust max-width as needed */
-    width: 100%;
+    width: 80%;
 
 }
 
@@ -478,4 +499,42 @@ input[type="text"] {
 .change-password{
     margin-left: 50%;
     transform: translateX(-50%);
+}
+
+/*Image preview*/
+.uploaded-images-container{
+    width: 70%;
+    max-height: 600px;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    overflow-x: scroll;
+    background-color: var(--image-preview-container-background-color);
+}
+
+.image-preview-container{
+    max-height: 300px;
+    max-width: 300px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.image-preview{
+    height: 250px;
+    width: 250px;
+    padding-top: 10px;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-bottom: 30px;
+}
+
+
+.remove-image-preview-icon{
+    color: red;
+    font-size: 24px;
+    cursor: pointer;
 }
