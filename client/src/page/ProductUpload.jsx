@@ -91,7 +91,8 @@ function ProductUpload(){
         const uploadedFiles = e.target.files;
         const files = [];
         for(const fileIndex in uploadedFiles){
-            if(typeof uploadedFiles[fileIndex] === 'object'){
+            const isImageAlreadyAdded = images.filter(image => image.name === uploadedFiles[fileIndex].name).length > 0;
+            if(typeof uploadedFiles[fileIndex] === 'object' && !isImageAlreadyAdded){
                 files.push(uploadedFiles[fileIndex]);
             }
         }
@@ -158,7 +159,6 @@ function ProductUpload(){
             formData.append('userId', user.id);
             
             appendFilesToFormData(formData, images);
-            console.log(images);
 
             return(formData)
     }
@@ -241,7 +241,7 @@ function ProductUpload(){
                             onImageUpload={handleImagesChange}
                         />
                     }
-                    <UploadedImages images={images}/>
+                    {images.length && <UploadedImages images={images}/>}
                     <p className="error-message">{error}</p>
                     <button className="submit-button" onClick={handleSubmit} type="button" >Upload product!</button>
                 </>

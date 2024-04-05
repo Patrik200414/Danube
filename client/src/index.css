@@ -5,6 +5,7 @@
   --white-background-color: #f0f0f0;
   --success-green-background: #32cd32;
   --success-gree-text-color: rgb(20, 80, 20);
+  --image-preview-container-background-color: rgb(201, 201, 201);
 }
 
 *{
@@ -498,4 +499,42 @@ input[type="text"] {
 .change-password{
     margin-left: 50%;
     transform: translateX(-50%);
+}
+
+/*Image preview*/
+.uploaded-images-container{
+    width: 70%;
+    max-height: 600px;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    overflow-x: scroll;
+    background-color: var(--image-preview-container-background-color);
+}
+
+.image-preview-container{
+    max-height: 300px;
+    max-width: 300px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.image-preview{
+    height: 250px;
+    width: 250px;
+    padding-top: 10px;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-bottom: 30px;
+}
+
+
+.remove-image-preview-icon{
+    color: red;
+    font-size: 24px;
+    cursor: pointer;
 }
