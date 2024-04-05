@@ -11,6 +11,7 @@ function ProductUpload(){
     const [user, setUser] = useState();
     const [product, setProduct] = useState();
     const [details, setDetails] = useState();
+    const [images, setImages] = useState([]);
 
     const [selectedCategoryId, setSelectedCaegoryId] = useState();
     const [selectedSubcategoryId, setSelectedSubcategoryId] = useState();
@@ -85,6 +86,18 @@ function ProductUpload(){
         setDetails(changedDetails);
     }
 
+    function handleImagesChange(e){
+        const uploadedFiles = e.target.files;
+        const files = [];
+        for(const fileIndex in uploadedFiles){
+            if(typeof uploadedFiles[fileIndex] === 'object'){
+                files.push(uploadedFiles[fileIndex]);
+            }
+        }
+
+        setImages(prev => [...prev, ...files]);
+    }
+
     async function handleSubmit(e){
         e.preventDefault();
         
@@ -101,20 +114,17 @@ function ProductUpload(){
 
         if(isCorrectForm(errorFields)){
             const convertedProduct = fieldNameConverter(product);
-    
-            const newProduct = {
-                productDetail: convertedProduct,
-                productInformation: convertedDetails,
-                userId: user.id
-            }
-    
+            
+            
+            const formData = createFormData(convertedProduct, convertedDetails);
+            
+
             const uploadProductResponse = await fetch('/api/product', {
                 method: 'POST',
                 headers: {
-                    'Content-type': 'Application/json',
                     'Authorization': `Bearer ${user.jwt}`
                 },
-                body: JSON.stringify(newProduct)
+                body: formData
             });
     
             if(uploadProductResponse.ok){
@@ -130,6 +140,7 @@ function ProductUpload(){
                 setSelectedCaegoryId('');
                 setSelectedSubcategoryId('');
                 setDetails();
+                setImages([]);
                 setSuccessUploadCount(prev => prev + 1);
             } else{
                 const uploadResponse = await uploadProductResponse.json();
@@ -137,6 +148,26 @@ function ProductUpload(){
             }
         }
 
+    }
+
+    function createFormData(product, details){
+            const formData = new FormData();
+            formData.append('productDetail', JSON.stringify(product));
+            formData.append('productInformation', JSON.stringify(details));
+            formData.append('userId', user.id);
+            
+            appendFilesToFormData(formData, images);
+            console.log(images);
+
+            return(formData)
+    }
+
+    function appendFilesToFormData(formData, files){
+        for(let i = 0; i < files.length; i++){
+            formData.append(`image`, files[i]);
+        }
+
+        return formData;
     }
 
     function isCorrectForm(errorFields){
@@ -186,7 +217,6 @@ function ProductUpload(){
         return missingFields;
     }
 
-
     return(
         <div className="product-upload">
             {user && 
@@ -207,6 +237,7 @@ function ProductUpload(){
                             subCategoryId={selectedSubcategoryId} 
                             user={user}
                             onDetailsSet={(details) => setDetails(details)}
+                            onImageUpload={handleImagesChange}
                         />
                     }
                     <p className="error-message">{error}</p>
