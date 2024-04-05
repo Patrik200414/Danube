@@ -29,7 +29,8 @@ function UploadedImages({images, onImageDeletion}){
 }
 
 UploadedImages.propTypes = {
-    images: Proptypes.array
+    images: Proptypes.array,
+    onImageDeletion: Proptypes.func
 }
 
 export default UploadedImages;

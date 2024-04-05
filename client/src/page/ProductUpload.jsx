@@ -246,7 +246,7 @@ function ProductUpload(){
                             onImageUpload={handleImagesChange}
                         />
                     }
-                    {images.length && <UploadedImages onImageDeletion={handleImageDeletion} images={images}/>}
+                    {images.length ? <UploadedImages onImageDeletion={handleImageDeletion} images={images}/> : null}
                     <p className="error-message">{error}</p>
                     <button className="submit-button" onClick={handleSubmit} type="button" >Upload product!</button>
                 </>
