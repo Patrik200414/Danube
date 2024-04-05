@@ -100,6 +100,11 @@ function ProductUpload(){
         setImages(prev => [...prev, ...files]);
     }
 
+    function handleImageDeletion(index){
+        const deletedItem = images.filter((image, i) => i !== index);
+        setImages(deletedItem);
+    }
+
     async function handleSubmit(e){
         e.preventDefault();
         
@@ -241,7 +246,7 @@ function ProductUpload(){
                             onImageUpload={handleImagesChange}
                         />
                     }
-                    {images.length && <UploadedImages images={images}/>}
+                    {images.length && <UploadedImages onImageDeletion={handleImageDeletion} images={images}/>}
                     <p className="error-message">{error}</p>
                     <button className="submit-button" onClick={handleSubmit} type="button" >Upload product!</button>
                 </>

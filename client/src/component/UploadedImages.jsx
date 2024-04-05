@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Proptypes from "prop-types";
 
-function UploadedImages({images}){
+function UploadedImages({images, onImageDeletion}){
     const [imagesPreview, setImagesPreview] = useState([]);
     
     useEffect(() => {
@@ -18,9 +18,9 @@ function UploadedImages({images}){
 
     return(
         <div className="uploaded-images-container remove-preview-image-icon">
-            {imagesPreview.map(imageURL => (
+            {imagesPreview.map((imageURL, i) => (
                 <div key={imageURL} className="image-preview-container">
-                    <i className="fa fa-trash-o remove-image-preview-icon"></i>
+                    <i onClick={() => onImageDeletion(i)} className="fa fa-trash-o remove-image-preview-icon"></i>
                     <img src={imageURL} className="image-preview"/>
                 </div>
             ))}
