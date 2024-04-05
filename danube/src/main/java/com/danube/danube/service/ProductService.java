@@ -10,6 +10,7 @@ import com.danube.danube.model.product.Product;
 import com.danube.danube.model.product.category.Category;
 import com.danube.danube.model.product.connection.ProductValue;
 import com.danube.danube.model.product.detail.Detail;
+import com.danube.danube.model.product.image.Image;
 import com.danube.danube.model.product.subcategory.Subcategory;
 import com.danube.danube.model.product.value.Value;
 import com.danube.danube.model.user.Role;
@@ -18,15 +19,18 @@ import com.danube.danube.repository.product.*;
 import com.danube.danube.repository.product.connection.ProductValueRepository;
 import com.danube.danube.repository.user.UserRepository;
 import com.danube.danube.utility.Converter;
+import com.danube.danube.utility.filellogger.FileLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 
 @Service
 public class ProductService {
     public static final int DEFAULT_ITEM_AMOUNT_PAGE = 10;
+    public static final String BASE_IMAGE_PATH = String.format("%s\\src\\main\\resources\\images\\", System.getProperty("user.dir"));
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final SubcategoryRepository subcategoryRepository;
@@ -34,10 +38,11 @@ public class ProductService {
     private final UserRepository userRepository;
     private final ValueRepository valueRepository;
     private final ProductValueRepository productValueRepository;
+    private final ImageRepository imageRepository;
     private final Converter converter;
 
     @Autowired
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, SubcategoryRepository subcategoryRepository, DetailRepository detailRepository, UserRepository userRepository, ValueRepository valueRepository, ProductValueRepository productValueRepository, Converter converter) {
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, SubcategoryRepository subcategoryRepository, DetailRepository detailRepository, UserRepository userRepository, ValueRepository valueRepository, ProductValueRepository productValueRepository, ImageRepository imageRepository, Converter converter) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.subcategoryRepository = subcategoryRepository;
@@ -45,6 +50,7 @@ public class ProductService {
         this.userRepository = userRepository;
         this.valueRepository = valueRepository;
         this.productValueRepository = productValueRepository;
+        this.imageRepository = imageRepository;
         this.converter = converter;
     }
 
@@ -110,16 +116,24 @@ public class ProductService {
         return converter.convertDetailsToDetailsDTO(details);
     }
 
-    public void saveProduct(ProductUploadDTO productUploadDTO){
+    public void saveProduct(ProductUploadDTO productUploadDTO) throws IOException {
         UserEntity seller = userValidator(productUploadDTO.userId());
+
+        FileLogger.saveFile(productUploadDTO.images(), BASE_IMAGE_PATH);
         Product product = converter.convertProductDetailUploadDTOToProduct(
                 productUploadDTO.productDetail(), seller
         );
 
+        List<Image> images = converter.convertMultiPartFilesToListOfImages(productUploadDTO.images(), product, BASE_IMAGE_PATH);
+        imageRepository.saveAll(images);
+
+        product.setImages(images);
         productRepository.save(product);
+
         Map<String, String> productInformation = productUploadDTO.productInformation();
         saveProductValues(productInformation, product);
     }
+
 
     private void saveProductValues(Map<String, String> productInformation, Product product){
         for(Map.Entry<String, String> entry : productInformation.entrySet()){
