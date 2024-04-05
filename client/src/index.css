@@ -340,6 +340,19 @@ input[type="text"] {
 }
 
 /*ProductUploadForm*/
+.product-upload h2{
+    text-align: center;
+}
+
+.product-details-form-container{
+    padding-top: 30px;
+}
+
+.submit-button{
+    margin-bottom: 30px;
+}
+
+
 .product-details-form-container
 .user-update-container {
     max-width: 1000px; /* Adjust max-width as needed */
@@ -347,6 +360,13 @@ input[type="text"] {
     padding: 20px;
   }
   
+
+  .product-detail-form{
+    margin-left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    max-width: 1000px;
+  }
   
   
   .product-detail-form label,
@@ -452,7 +472,7 @@ input[type="text"] {
     margin-left: 50%;
     transform: translateX(-50%);
     max-width: 1000px; /* Adjust max-width as needed */
-    width: 100%;
+    width: 80%;
 
 }
 
