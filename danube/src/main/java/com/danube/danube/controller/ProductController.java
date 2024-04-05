@@ -7,12 +7,15 @@ import com.danube.danube.model.dto.product.*;
 import com.danube.danube.model.product.product_category.Category;
 import com.danube.danube.model.product.product_category.SubCategory;*/
 import com.danube.danube.service.ProductService;
+import com.danube.danube.utility.Converter;
+import com.danube.danube.utility.filellogger.FileLogger;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -22,11 +25,13 @@ public class ProductController {
 
     private final Advice controllerAdvice;
     private final ProductService productService;
+    private final Converter converter;
 
     @Autowired
-    public ProductController(Advice controllerAdvice, ProductService productService) {
+    public ProductController(Advice controllerAdvice, ProductService productService, Converter converter) {
         this.controllerAdvice = controllerAdvice;
         this.productService = productService;
+        this.converter = converter;
     }
 
     @GetMapping()
@@ -95,8 +100,20 @@ public class ProductController {
     @Async
     @Transactional
     @PostMapping()
-    public ResponseEntity<?> saveProduct(@RequestBody ProductUploadDTO productUploadDTO){
+    public ResponseEntity<?> saveProduct(
+            @RequestParam("productDetail") String productDetail,
+            @RequestParam("productInformation") String productInformation,
+            @RequestParam("userId") long userId,
+            @RequestParam("image") MultipartFile[] images
+    ){
         try{
+            ProductUploadDTO productUploadDTO = converter.convertRequestParamToProductUploadDTO(
+                    productDetail,
+                    productInformation,
+                    userId,
+                    images
+            );
+
             productService.saveProduct(productUploadDTO);
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (Exception e){
