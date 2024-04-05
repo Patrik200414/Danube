@@ -4,6 +4,7 @@ import ProductInformationForm from "../component/ProductInformationForm"
 import { useNavigate } from "react-router-dom";
 import ProductCategoryForm from "../component/ProductCategoryForm";
 import ProductDetailsForm from "../component/ProductDetailsForm";
+import UploadedImages from "../component/UploadedImages";
 
 function ProductUpload(){
     const SUCCESS_MESSAGE_TIME_IN_SECONDS = 2;
@@ -240,6 +241,7 @@ function ProductUpload(){
                             onImageUpload={handleImagesChange}
                         />
                     }
+                    <UploadedImages images={images}/>
                     <p className="error-message">{error}</p>
                     <button className="submit-button" onClick={handleSubmit} type="button" >Upload product!</button>
                 </>

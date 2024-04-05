@@ -29,7 +29,7 @@ function ProductDetailsForm({details, onDetailsChange, subCategoryId, user, onDe
                         <input onChange={e => onDetailsChange(e.target.value, detail.id)} type="text" id={detail.detailName} name={detail.detailName} value={detail.value} placeholder={`${detail.detailName}...`}/>
                     </div>)}
                     <label htmlFor="inputData">Upload images: </label>
-                    <input type="file" id="inputData" name="inputData" className="inputData" accept="image/*" multiple onChange={e => onImageUpload(e)} value=""/>
+                    <input type="file" id="inputData" name="inputData" className="inputData" accept="image/*" multiple onChange={e => onImageUpload(e)}/>
                 </form>
             </div>
         }
