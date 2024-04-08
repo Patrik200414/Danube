@@ -538,3 +538,36 @@ input[type="text"] {
     font-size: 24px;
     cursor: pointer;
 }
+
+/*Product-container and product count*/
+
+.product-container{
+    width: 80%;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    margin-top: 2vh;
+    display: grid;
+    grid-template-columns: auto auto auto;
+    gap: 3vh;
+}
+
+.product-card{
+    max-width: 350px;
+    max-height: 350px;
+    border: 1px solid black;
+    border-radius: 15px;
+    max-width: 250px;
+    text-align: center;
+}
+
+.product-card img{
+    max-width: 150px;
+    border-radius: 15px;
+}
+
+.sub-informations{
+    display: flex;
+    flex-direction: column;
+    margin-top: 15px;
+    border-top: 1px solid black;
+}
