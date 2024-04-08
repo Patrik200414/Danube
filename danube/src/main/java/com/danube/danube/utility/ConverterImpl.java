@@ -14,6 +14,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ConverterImpl implements Converter {
     private final ObjectMapper objectMapper;
@@ -125,5 +127,20 @@ public class ConverterImpl implements Converter {
         }
 
         return convertedImages;
+    }
+
+    @Override
+    public Set<ProductShowSmallDTO> convertProductToProductShowSmallDTORandomOrder(Page<Product> products){
+        return products.stream()
+                .map(product -> new ProductShowSmallDTO(
+                        product.getProductName(),
+                        product.getPrice(),
+                        product.getShippingPrice(),
+                        product.getDeliveryTimeInDay(),
+                        product.getQuantity(),
+                        product.getRating(),
+                        product.getSold(),
+                        product.getId()
+                )).collect(Collectors.toSet());
     }
 }

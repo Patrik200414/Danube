@@ -21,11 +21,13 @@ import com.danube.danube.repository.user.UserRepository;
 import com.danube.danube.utility.Converter;
 import com.danube.danube.utility.filellogger.FileLogger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -55,10 +57,10 @@ public class ProductService {
     }
 
 
-    public List<ProductShowSmallDTO> getProducts(int pageNumber, int itemPerPage){
+    public Set<ProductShowSmallDTO> getProducts(int pageNumber, int itemPerPage){
         PageRequest pageRequest = PageRequest.of(pageNumber, itemPerPage);
-        List<Product> products = productRepository.findAll();
-        return converter.convertProductsToProductShowSmallDTOs(products);
+        Page<Product> pagedProducts = productRepository.findAll(pageRequest);
+        return converter.convertProductToProductShowSmallDTORandomOrder(pagedProducts);
     }
 
     public long getProductCount(){

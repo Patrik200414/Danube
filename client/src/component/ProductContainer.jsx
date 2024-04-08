@@ -3,13 +3,14 @@ import ProductCard from "./ProductCard";
 
 function ProductContainer(){
     const [products, setProducts] = useState();
-    const [productCount, setProductCount] = useState(10);
+    const [itemPerPage, setItemPerPage] = useState(9);
+    const [pageNumber, setPageNumber] = useState(0);
 
     const [error, setError] = useState();
 
     useEffect(() => {
         const getProducts = async () => {
-            const productsData = await fetch(`/api/product`);
+            const productsData = await fetch(`/api/product?pageNumber=${pageNumber}&itemPerPage=${itemPerPage}`);
             const productResponse = await productsData.json();
             console.log(productResponse);
             if(productsData.ok){
@@ -21,7 +22,7 @@ function ProductContainer(){
         }
 
         getProducts();
-    }, [productCount])
+    }, [itemPerPage, pageNumber])
 
     return(
         <div className="product-container">
