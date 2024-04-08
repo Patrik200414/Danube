@@ -9,6 +9,7 @@ import com.danube.danube.model.product.product_category.SubCategory;*/
 import com.danube.danube.service.ProductService;
 import com.danube.danube.utility.Converter;
 import com.danube.danube.utility.filellogger.FileLogger;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,83 +18,58 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/product")
 public class ProductController {
 
-    private final Advice controllerAdvice;
     private final ProductService productService;
     private final Converter converter;
 
     @Autowired
-    public ProductController(Advice controllerAdvice, ProductService productService, Converter converter) {
-        this.controllerAdvice = controllerAdvice;
+    public ProductController(ProductService productService, Converter converter) {
         this.productService = productService;
         this.converter = converter;
     }
 
     @GetMapping()
     public ResponseEntity<?> getProducts(@RequestParam(defaultValue = "0") int pageNumber, @RequestParam(defaultValue = "10") int itemPerPage){
-        try{
-            List<ProductShowSmallDTO> products = productService.getProducts(pageNumber, itemPerPage);
-            return ResponseEntity.ok(products);
-        } catch (Exception e){
-            return controllerAdvice.handleException(e);
-        }
+        List<ProductShowSmallDTO> products = productService.getProducts(pageNumber, itemPerPage);
+        return ResponseEntity.ok(products);
     }
 
     @GetMapping("/count")
     public ResponseEntity<?> getProductCount(){
-        try{
-            long productCount = productService.getProductCount();
-            return ResponseEntity.ok(productCount);
-        } catch (Exception e){
-            return controllerAdvice.handleException(e);
-        }
+        long productCount = productService.getProductCount();
+        return ResponseEntity.ok(productCount);
     }
 
 
 
     @GetMapping("/category/subcategory")
     public ResponseEntity<?> getProductCategoriesAndSubCategories(){
-        try{
-            List<CategoryAndSubCategoryDTO> categories = productService.getCategoriesAndSubCategories();
-            return ResponseEntity.ok(categories);
-        } catch (Exception e){
-            return controllerAdvice.handleException(e);
-        }
+        List<CategoryAndSubCategoryDTO> categories = productService.getCategoriesAndSubCategories();
+        return ResponseEntity.ok(categories);
     }
 
     @GetMapping("/category")
     public ResponseEntity<?> getProductCategories(){
-        try{
-            List<CategoryDTO> categories = productService.getCategories();
-            return ResponseEntity.ok(categories);
-        } catch (Exception e){
-            return controllerAdvice.handleException(e);
-        }
+        List<CategoryDTO> categories = productService.getCategories();
+        return ResponseEntity.ok(categories);
     }
 
     @GetMapping("/subcategory/{categoryId}")
     public ResponseEntity<?> getSubCategoriesByCategory(@PathVariable long categoryId){
-        try{
-            List<SubcategoriesDTO> subCategories = productService.getSubCategoriesByCategory(categoryId);
-            return ResponseEntity.ok(subCategories);
-        } catch (Exception e){
-            return controllerAdvice.handleException(e);
-        }
+        List<SubcategoriesDTO> subCategories = productService.getSubCategoriesByCategory(categoryId);
+        return ResponseEntity.ok(subCategories);
     }
 
     @GetMapping("/detail/{subcategoryId}")
     public ResponseEntity<?> getDetailsBySubcategory(@PathVariable long subcategoryId){
-        try{
-            List<DetailDTO> details = productService.getDetailsBySubcategory(subcategoryId);
-            return ResponseEntity.ok(details);
-        } catch (Exception e){
-            return controllerAdvice.handleException(e);
-        }
+        List<DetailDTO> details = productService.getDetailsBySubcategory(subcategoryId);
+        return ResponseEntity.ok(details);
     }
 
 
@@ -105,20 +81,16 @@ public class ProductController {
             @RequestParam("productInformation") String productInformation,
             @RequestParam("userId") long userId,
             @RequestParam("image") MultipartFile[] images
-    ){
-        try{
-            ProductUploadDTO productUploadDTO = converter.convertRequestParamToProductUploadDTO(
-                    productDetail,
-                    productInformation,
-                    userId,
-                    images
-            );
+    ) throws IOException {
+        ProductUploadDTO productUploadDTO = converter.convertRequestParamToProductUploadDTO(
+                productDetail,
+                productInformation,
+                userId,
+                images
+        );
 
-            productService.saveProduct(productUploadDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        } catch (Exception e){
-            return controllerAdvice.handleException(e);
-        }
+        productService.saveProduct(productUploadDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 }
