@@ -1,17 +1,6 @@
-/*INSERT INTO product_category ('category', 'id')
-VALUES ('Cloath', '1');
-
-INSERT INTO product_information ('id', 'product_category_id', 'product_detail_id')
-VALUES (1, 1, 1);
-
-INSERT INTO product_detail (
-                            'delivery_time_in_day',
-                            'price', 'quantity',
-                            'shipping_price',
-                            'id',
-                            'product_category_id',
-                            'product_information_id',
-                            'brand',
-                            'description',
-                            'product_name')
-VALUES (1, 1.0, 10, 1.0, 1, 1, 1, 'Nike', 'T-shirt', 'White Nike T-shirt');*/
+INSERT INTO category(id, name) VALUES(1, 'Cloathing');
+INSERT INTO subcategory(id, name, category_id) VALUES(1, 'Shirt', 1);
+INSERT INTO detail(id, name, subcategory_id) VALUES(1, 'Size', 1);
+INSERT INTO detail(id, name, subcategory_id) VALUES(2, 'Color', 1);
+INSERT INTO detail(id, name, subcategory_id) VALUES(3, 'Material', 1);
+INSERT INTO detail(id, name, subcategory_id) VALUES(4, 'Style', 1);
