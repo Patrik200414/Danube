@@ -1,15 +1,11 @@
     package com.danube.danube.controller;
 
-import com.danube.danube.controller.advice.Advice;
-
 import com.danube.danube.model.dto.product.*;
 /*import com.danube.danube.model.product.ProductDetail;
 import com.danube.danube.model.product.product_category.Category;
 import com.danube.danube.model.product.product_category.SubCategory;*/
 import com.danube.danube.service.ProductService;
 import com.danube.danube.utility.Converter;
-import com.danube.danube.utility.filellogger.FileLogger;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

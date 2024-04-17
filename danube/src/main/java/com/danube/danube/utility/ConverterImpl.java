@@ -42,19 +42,6 @@ public class ConverterImpl implements Converter {
         return user;
     }
 
-    public List<ProductShowSmallDTO> convertProductsToProductShowSmallDTOs(List<Product> products){
-        return products.stream()
-                .map(product -> new ProductShowSmallDTO(
-                        product.getProductName(),
-                        product.getPrice(),
-                        product.getShippingPrice(),
-                        product.getDeliveryTimeInDay(),
-                        product.getQuantity(),
-                        product.getRating(),
-                        product.getSold(),
-                        product.getId()
-                )).toList();
-    }
 
     public List<CategoryDTO> convertCategoryToCategoryDTO(List<Category> categories){
         return categories.stream()
@@ -114,15 +101,14 @@ public class ConverterImpl implements Converter {
     }
 
     @Override
-    public List<Image> convertMultiPartFilesToListOfImages(MultipartFile[] images, Product product, String basePath) {
+    public List<Image> convertMultiPartFilesToListOfImages(MultipartFile[] images, Product product) {
 
         List<Image> convertedImages = new ArrayList<>();
 
         for(MultipartFile image : images){
             Image createdImage = new Image();
             createdImage.setProduct(product);
-            createdImage.setFilePath(basePath);
-
+            createdImage.setFileName(image.getOriginalFilename());
             convertedImages.add(createdImage);
         }
 
@@ -140,7 +126,14 @@ public class ConverterImpl implements Converter {
                         product.getQuantity(),
                         product.getRating(),
                         product.getSold(),
-                        product.getId()
+                        product.getId(),
+                        getProductImageName(product)
                 )).collect(Collectors.toSet());
+    }
+
+    private List<String> getProductImageName(Product product){
+        return product.getImages().stream()
+                .map(image -> image.getFileName())
+                .toList();
     }
 }

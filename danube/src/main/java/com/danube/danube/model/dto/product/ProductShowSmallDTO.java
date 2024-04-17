@@ -1,7 +1,8 @@
 package com.danube.danube.model.dto.product;
 
 
-/*TODO: Add image also*/
+import java.util.List;
+
 public record ProductShowSmallDTO(
         String productName,
         double price,
@@ -10,6 +11,7 @@ public record ProductShowSmallDTO(
         int quantity,
         int rating,
         int sold,
-        long id
+        long id,
+        List<String> images
 ) {
 }

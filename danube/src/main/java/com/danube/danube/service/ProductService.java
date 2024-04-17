@@ -27,12 +27,11 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
     public static final int DEFAULT_ITEM_AMOUNT_PAGE = 10;
-    public static final String BASE_IMAGE_PATH = String.format("%s\\src\\main\\resources\\images\\", System.getProperty("user.dir"));
+    public static final String BASE_IMAGE_PATH = String.format("%s\\src\\main\\resources\\static\\images\\", System.getProperty("user.dir"));
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final SubcategoryRepository subcategoryRepository;
@@ -42,9 +41,10 @@ public class ProductService {
     private final ProductValueRepository productValueRepository;
     private final ImageRepository imageRepository;
     private final Converter converter;
+    private final FileLogger fileLogger;
 
     @Autowired
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, SubcategoryRepository subcategoryRepository, DetailRepository detailRepository, UserRepository userRepository, ValueRepository valueRepository, ProductValueRepository productValueRepository, ImageRepository imageRepository, Converter converter) {
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, SubcategoryRepository subcategoryRepository, DetailRepository detailRepository, UserRepository userRepository, ValueRepository valueRepository, ProductValueRepository productValueRepository, ImageRepository imageRepository, Converter converter, FileLogger fileLogger) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.subcategoryRepository = subcategoryRepository;
@@ -54,6 +54,7 @@ public class ProductService {
         this.productValueRepository = productValueRepository;
         this.imageRepository = imageRepository;
         this.converter = converter;
+        this.fileLogger = fileLogger;
     }
 
 
@@ -121,12 +122,12 @@ public class ProductService {
     public void saveProduct(ProductUploadDTO productUploadDTO) throws IOException {
         UserEntity seller = userValidator(productUploadDTO.userId());
 
-        FileLogger.saveFile(productUploadDTO.images(), BASE_IMAGE_PATH);
+        fileLogger.saveFile(productUploadDTO.images(), BASE_IMAGE_PATH);
         Product product = converter.convertProductDetailUploadDTOToProduct(
                 productUploadDTO.productDetail(), seller
         );
 
-        List<Image> images = converter.convertMultiPartFilesToListOfImages(productUploadDTO.images(), product, BASE_IMAGE_PATH);
+        List<Image> images = converter.convertMultiPartFilesToListOfImages(productUploadDTO.images(), product);
         imageRepository.saveAll(images);
 
         product.setImages(images);
