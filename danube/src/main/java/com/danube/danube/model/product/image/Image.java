@@ -8,18 +8,19 @@ public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
-    private String filePath;
+    private String fileName;
     @ManyToOne
     private Product product;
 
     public Image() {
     }
 
-    public Image(long id, String filePath, Product product) {
+    public Image(long id, String fileName, Product product) {
         this.id = id;
-        this.filePath = filePath;
+        this.fileName = fileName;
         this.product = product;
     }
+
 
     public long getId() {
         return id;
@@ -29,12 +30,12 @@ public class Image {
         this.id = id;
     }
 
-    public String getFilePath() {
-        return filePath;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public Product getProduct() {
