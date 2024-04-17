@@ -114,15 +114,14 @@ public class ConverterImpl implements Converter {
     }
 
     @Override
-    public List<Image> convertMultiPartFilesToListOfImages(MultipartFile[] images, Product product, String basePath) {
+    public List<Image> convertMultiPartFilesToListOfImages(MultipartFile[] images, Product product) {
 
         List<Image> convertedImages = new ArrayList<>();
 
         for(MultipartFile image : images){
             Image createdImage = new Image();
             createdImage.setProduct(product);
-            createdImage.setFilePath(basePath);
-
+            createdImage.setFileName(image.getOriginalFilename());
             convertedImages.add(createdImage);
         }
 

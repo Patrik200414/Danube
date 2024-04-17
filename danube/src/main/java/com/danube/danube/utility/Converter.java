@@ -31,6 +31,6 @@ public interface Converter {
             MultipartFile[] image
     ) throws JsonProcessingException;
 
-    List<Image> convertMultiPartFilesToListOfImages(MultipartFile[] images, Product product, String basePath);
+    List<Image> convertMultiPartFilesToListOfImages(MultipartFile[] images, Product product);
     Set<ProductShowSmallDTO> convertProductToProductShowSmallDTORandomOrder(Page<Product> products);
 }

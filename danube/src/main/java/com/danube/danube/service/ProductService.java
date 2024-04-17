@@ -127,7 +127,7 @@ public class ProductService {
                 productUploadDTO.productDetail(), seller
         );
 
-        List<Image> images = converter.convertMultiPartFilesToListOfImages(productUploadDTO.images(), product, BASE_IMAGE_PATH);
+        List<Image> images = converter.convertMultiPartFilesToListOfImages(productUploadDTO.images(), product);
         imageRepository.saveAll(images);
 
         product.setImages(images);
