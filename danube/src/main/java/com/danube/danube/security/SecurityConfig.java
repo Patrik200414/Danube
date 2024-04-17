@@ -48,6 +48,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/api/user/login").permitAll()
+                                .requestMatchers("/images/**").permitAll()
                                 .requestMatchers("/api/user/registration").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/product").hasRole("SELLER")
                                 .requestMatchers("/api/product/detail/**").hasRole("SELLER")
