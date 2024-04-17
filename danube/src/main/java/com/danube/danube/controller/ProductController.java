@@ -1,4 +1,4 @@
-package com.danube.danube.controller;
+    package com.danube.danube.controller;
 
 import com.danube.danube.controller.advice.Advice;
 
@@ -20,8 +20,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
-@RestController
+    @RestController
 @RequestMapping("/api/product")
 public class ProductController {
 
@@ -36,7 +37,7 @@ public class ProductController {
 
     @GetMapping()
     public ResponseEntity<?> getProducts(@RequestParam(defaultValue = "0") int pageNumber, @RequestParam(defaultValue = "10") int itemPerPage){
-        List<ProductShowSmallDTO> products = productService.getProducts(pageNumber, itemPerPage);
+        Set<ProductShowSmallDTO> products = productService.getProducts(pageNumber, itemPerPage);
         return ResponseEntity.ok(products);
     }
 

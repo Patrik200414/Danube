@@ -9,11 +9,13 @@ import com.danube.danube.model.product.image.Image;
 import com.danube.danube.model.product.subcategory.Subcategory;
 import com.danube.danube.model.user.UserEntity;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Set;
 
 public interface Converter {
     UserEntity convertUserRegistrationDTOToUserEntity(UserRegistrationDTO userRegistrationDTO, PasswordEncoder passwordEncoder);
@@ -30,4 +32,5 @@ public interface Converter {
     ) throws JsonProcessingException;
 
     List<Image> convertMultiPartFilesToListOfImages(MultipartFile[] images, Product product, String basePath);
+    Set<ProductShowSmallDTO> convertProductToProductShowSmallDTORandomOrder(Page<Product> products);
 }
