@@ -42,19 +42,6 @@ public class ConverterImpl implements Converter {
         return user;
     }
 
-    public List<ProductShowSmallDTO> convertProductsToProductShowSmallDTOs(List<Product> products){
-        return products.stream()
-                .map(product -> new ProductShowSmallDTO(
-                        product.getProductName(),
-                        product.getPrice(),
-                        product.getShippingPrice(),
-                        product.getDeliveryTimeInDay(),
-                        product.getQuantity(),
-                        product.getRating(),
-                        product.getSold(),
-                        product.getId()
-                )).toList();
-    }
 
     public List<CategoryDTO> convertCategoryToCategoryDTO(List<Category> categories){
         return categories.stream()
@@ -139,7 +126,14 @@ public class ConverterImpl implements Converter {
                         product.getQuantity(),
                         product.getRating(),
                         product.getSold(),
-                        product.getId()
+                        product.getId(),
+                        getProductImageName(product)
                 )).collect(Collectors.toSet());
+    }
+
+    private List<String> getProductImageName(Product product){
+        return product.getImages().stream()
+                .map(image -> image.getFileName())
+                .toList();
     }
 }

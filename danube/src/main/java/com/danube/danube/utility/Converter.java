@@ -19,7 +19,6 @@ import java.util.Set;
 
 public interface Converter {
     UserEntity convertUserRegistrationDTOToUserEntity(UserRegistrationDTO userRegistrationDTO, PasswordEncoder passwordEncoder);
-    List<ProductShowSmallDTO> convertProductsToProductShowSmallDTOs(List<Product> products);
     List<CategoryDTO> convertCategoryToCategoryDTO(List<Category> categories);
     List<SubcategoriesDTO> convertSubcategoriesToSubcategoryDTOs(List<Subcategory> subcategories);
     List<DetailDTO> convertDetailsToDetailsDTO(List<Detail> details);
