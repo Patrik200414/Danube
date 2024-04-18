@@ -3,6 +3,7 @@
   --hover-deep-blue: #001a99;
   --button-color: #FF9900;
   --white-background-color: #f0f0f0;
+  --disabled-gray: #DEDFE4;
   --success-green-background: #32cd32;
   --success-gree-text-color: rgb(20, 80, 20);
   --image-preview-container-background-color: rgb(201, 201, 201);
@@ -570,4 +571,43 @@ input[type="text"] {
     flex-direction: column;
     margin-top: 15px;
     border-top: 1px solid black;
+}
+
+/*Image switching buttons*/
+.product-image-container{
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+}
+.image-switch-button{
+    justify-self: center;
+    align-self: center;
+    padding: 8px 12px;
+    font-size: 14px; 
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    color: var(--white-background-color);
+    background-color: var(--hover-deep-blue);
+    border: 1px solid var(--hover-deep-blue);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.image-switch-button-disabled{
+    justify-self: center;
+    align-self: center;
+    padding: 8px 12px;
+    font-size: 14px; 
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    color: black;
+    background-color: var(--disabled-gray);
+    border: 1px solid var(--disabled-gray);
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
