@@ -3,9 +3,9 @@ import Proptypes from 'prop-types';
 function ImageContainer({currImage, onPrevImageButtonClick, onNextImageButtonClick, isPrevButtonDisabled, isNextButtonDisabled}){
     return(
         <div className="product-image-container">
-            <button disabled={isPrevButtonDisabled} className="image-pev-button" onClick={onPrevImageButtonClick}>&#8826;</button>
+            <button className={isPrevButtonDisabled ? 'image-switch-button-disabled' : 'image-switch-button'} onClick={onPrevImageButtonClick}>&#8826;</button>
             <img src={currImage}/>
-            <button disabled={isNextButtonDisabled} className="image-next-button" onClick={onNextImageButtonClick}>&#8827;</button>
+            <button className={isNextButtonDisabled ? 'image-switch-button-disabled' : 'image-switch-button'} onClick={onNextImageButtonClick}>&#8827;</button>
         </div>
     )
 }
