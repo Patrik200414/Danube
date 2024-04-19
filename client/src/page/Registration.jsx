@@ -54,7 +54,7 @@ function Registration(){
                 <input type="text" name="firstName" id="firstName" placeholder="First name" value={firstName} onChange={e => setFirstName(e.target.value)}/>
                 <br />
             
-                <label htmlFor="lastName">First name: </label>
+                <label htmlFor="lastName">Last name: </label>
                 <input type="text" name="lastName" id="lastName" placeholder="Last name" value={lastName} onChange={e => setLastName(e.target.value)}/>
                 <br />
 
