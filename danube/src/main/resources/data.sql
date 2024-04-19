@@ -34,24 +34,35 @@ INSERT INTO subcategory(id, name, category_id) VALUES(18, 'Liquid shampoo', 4);
 INSERT INTO subcategory(id, name, category_id) VALUES(19, 'Deodorant', 4);
 INSERT INTO subcategory(id, name, category_id) VALUES(20, 'Sunscreen', 4);
 
---Subcategory details
+--Details
+INSERT INTO detail(id, name) VALUES(1, 'Size');
+INSERT INTO detail(id, name) VALUES(2, 'Color');
+INSERT INTO detail(id, name) VALUES(3, 'Material');
+INSERT INTO detail(id, name) VALUES(4, 'Style');
+INSERT INTO detail(id, name) VALUES(5, 'Fit');
+
+
+--Subcategory_detail
 --Shirt
-INSERT INTO detail(id, name, subcategory_id) VALUES(1, 'Size', 1);
-INSERT INTO detail(id, name, subcategory_id) VALUES(2, 'Color', 1);
-INSERT INTO detail(id, name, subcategory_id) VALUES(3, 'Material', 1);
-INSERT INTO detail(id, name, subcategory_id) VALUES(4, 'Style', 1);
+INSERT INTO subcategory_detail(detail_id, id, subcategory_id) VALUES (1, 1, 1);
+INSERT INTO subcategory_detail(detail_id, id, subcategory_id) VALUES (2, 2, 1);
+INSERT INTO subcategory_detail(detail_id, id, subcategory_id) VALUES (3, 3, 1);
+INSERT INTO subcategory_detail(detail_id, id, subcategory_id) VALUES (4, 4, 1);
+
 --Pants
-INSERT INTO detail(id, name, subcategory_id) VALUES(5, 'Style', 2);
-INSERT INTO detail(id, name, subcategory_id) VALUES(6, 'Color', 2);
-INSERT INTO detail(id, name, subcategory_id) VALUES(7, 'Material', 2);
-INSERT INTO detail(id, name, subcategory_id) VALUES(8, 'Size', 2);
-INSERT INTO detail(id, name, subcategory_id) VALUES(9, 'Fit', 2);
+INSERT INTO subcategory_detail(detail_id, id, subcategory_id) VALUES (4, 5, 2);
+INSERT INTO subcategory_detail(detail_id, id, subcategory_id) VALUES (2, 6, 2);
+INSERT INTO subcategory_detail(detail_id, id, subcategory_id) VALUES (3, 7, 2);
+INSERT INTO subcategory_detail(detail_id, id, subcategory_id) VALUES (1, 8, 2);
+INSERT INTO subcategory_detail(detail_id, id, subcategory_id) VALUES (5, 9, 2);
+
 --Jeans
-INSERT INTO detail(id, name, subcategory_id) VALUES(10, 'Style', 3);
-INSERT INTO detail(id, name, subcategory_id) VALUES(11, 'Color', 3);
-INSERT INTO detail(id, name, subcategory_id) VALUES(12, 'Material', 3);
-INSERT INTO detail(id, name, subcategory_id) VALUES(13, 'Size', 3);
-INSERT INTO detail(id, name, subcategory_id) VALUES(14, 'Fit', 3);
+INSERT INTO subcategory_detail(detail_id, id, subcategory_id) VALUES (4, 10, 3);
+INSERT INTO subcategory_detail(detail_id, id, subcategory_id) VALUES (2, 11, 3);
+INSERT INTO subcategory_detail(detail_id, id, subcategory_id) VALUES (3, 12, 3);
+INSERT INTO subcategory_detail(detail_id, id, subcategory_id) VALUES (1, 13, 3);
+INSERT INTO subcategory_detail(detail_id, id, subcategory_id) VALUES (5, 14, 3);
+/*
 --Coat
 INSERT INTO detail(id, name, subcategory_id) VALUES(15, 'Style', 4);
 INSERT INTO detail(id, name, subcategory_id) VALUES(16, 'Color', 4);
@@ -104,3 +115,4 @@ INSERT INTO detail(id, name, subcategory_id) VALUES(53, 'Material', 10);
 INSERT INTO detail(id, name, subcategory_id) VALUES(54, 'Color', 10);
 INSERT INTO detail(id, name, subcategory_id) VALUES(55, 'Height', 10);
 INSERT INTO detail(id, name, subcategory_id) VALUES(56, 'Width', 10);
+ */
