@@ -9,6 +9,7 @@ import com.danube.danube.model.dto.product.*;
 import com.danube.danube.model.product.Product;
 import com.danube.danube.model.product.category.Category;
 import com.danube.danube.model.product.connection.ProductValue;
+import com.danube.danube.model.product.connection.SubcategoryDetail;
 import com.danube.danube.model.product.detail.Detail;
 import com.danube.danube.model.product.image.Image;
 import com.danube.danube.model.product.subcategory.Subcategory;
@@ -17,6 +18,7 @@ import com.danube.danube.model.user.Role;
 import com.danube.danube.model.user.UserEntity;
 import com.danube.danube.repository.product.*;
 import com.danube.danube.repository.product.connection.ProductValueRepository;
+import com.danube.danube.repository.product.connection.SubcategoryDetailRepository;
 import com.danube.danube.repository.user.UserRepository;
 import com.danube.danube.utility.Converter;
 import com.danube.danube.utility.filellogger.FileLogger;
@@ -40,11 +42,12 @@ public class ProductService {
     private final ValueRepository valueRepository;
     private final ProductValueRepository productValueRepository;
     private final ImageRepository imageRepository;
+    private final SubcategoryDetailRepository subcategoryDetailRepository;
     private final Converter converter;
     private final FileLogger fileLogger;
 
     @Autowired
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, SubcategoryRepository subcategoryRepository, DetailRepository detailRepository, UserRepository userRepository, ValueRepository valueRepository, ProductValueRepository productValueRepository, ImageRepository imageRepository, Converter converter, FileLogger fileLogger) {
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, SubcategoryRepository subcategoryRepository, DetailRepository detailRepository, UserRepository userRepository, ValueRepository valueRepository, ProductValueRepository productValueRepository, ImageRepository imageRepository, SubcategoryDetailRepository subcategoryDetailRepository, Converter converter, FileLogger fileLogger) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.subcategoryRepository = subcategoryRepository;
@@ -53,6 +56,7 @@ public class ProductService {
         this.valueRepository = valueRepository;
         this.productValueRepository = productValueRepository;
         this.imageRepository = imageRepository;
+        this.subcategoryDetailRepository = subcategoryDetailRepository;
         this.converter = converter;
         this.fileLogger = fileLogger;
     }
@@ -115,8 +119,10 @@ public class ProductService {
         }
 
         Subcategory subcategory = searchedSubcategory.get();
-        List<Detail> details = detailRepository.findBySubcategory(subcategory);
-        return converter.convertDetailsToDetailsDTO(details);
+        List<Detail> detailsBySubCategory = subcategoryDetailRepository.findAllBySubcategory(subcategory).stream()
+                .map(SubcategoryDetail::getDetail)
+                .toList();
+        return converter.convertDetailsToDetailsDTO(detailsBySubCategory);
     }
 
     public void saveProduct(ProductUploadDTO productUploadDTO) throws IOException {

@@ -18,7 +18,6 @@ function ProductCard({product}){
     function controllPrevButtonState(imageNumber){
         if(imageNumber > 0){
             setIsPrevButtonDisabled(false);
-            setImageNumber(imageNumber);
         } else{
             setIsPrevButtonDisabled(true);
         }
@@ -27,31 +26,32 @@ function ProductCard({product}){
     function controllNextButtoState(imageNumber){
         if(imageNumber < imagesLength - 1){
             setIsNextButtonDisabled(false);
-            setImageNumber(imageNumber);
         } else{
             setIsNextButtonDisabled(true);
         }
     }
 
-    function handleClickPrevImageButton(){
-        const changedValue = imageNumber - 1;
-        controllPrevButtonState(changedValue);
-        controllNextButtoState(changedValue);
+    function isValidImageChange(changedValue){
+        return changedValue >= 0 && changedValue <= imagesLength - 1;
     }
 
 
-    function handleClickNextImageButton(){
-        const changedValue = imageNumber + 1;
-        controllPrevButtonState(changedValue);
-        controllNextButtoState(changedValue);
+    function handleClickImageButton(direction){
+        const changedValue = imageNumber + direction;
+        const isValidChange = isValidImageChange(changedValue);
+        if(isValidChange){
+            controllPrevButtonState(changedValue);
+            controllNextButtoState(changedValue);
+            setImageNumber(changedValue)
+        }
     }
+
 
     return(
         <div className="product-card">
             {imagesLength ? 
                 <ImageContainer 
-                    onPrevImageButtonClick={handleClickPrevImageButton}
-                    onNextImageButtonClick={handleClickNextImageButton}
+                    onImageButtonClick={handleClickImageButton}
                     currImage={calculateImageSourceName(product.images[imageNumber])}
                     isPrevButtonDisabled={isPrevButtonDisabled}
                     isNextButtonDisabled={isNextButtonDisabled}
