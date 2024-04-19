@@ -1,19 +1,18 @@
 import Proptypes from 'prop-types';
 
-function ImageContainer({currImage, onPrevImageButtonClick, onNextImageButtonClick, isPrevButtonDisabled, isNextButtonDisabled}){
+function ImageContainer({currImage, onImageButtonClick, isPrevButtonDisabled, isNextButtonDisabled}){
     return(
         <div className="product-image-container">
-            <button className={isPrevButtonDisabled ? 'image-switch-button-disabled' : 'image-switch-button'} onClick={onPrevImageButtonClick}>&#8826;</button>
+            <button className={isPrevButtonDisabled ? 'image-switch-button-disabled' : 'image-switch-button'} onClick={() => onImageButtonClick(-1)}>&#8826;</button>
             <img src={currImage}/>
-            <button className={isNextButtonDisabled ? 'image-switch-button-disabled' : 'image-switch-button'} onClick={onNextImageButtonClick}>&#8827;</button>
+            <button className={isNextButtonDisabled ? 'image-switch-button-disabled' : 'image-switch-button'} onClick={() => onImageButtonClick(1)}>&#8827;</button>
         </div>
     )
 }
 
 ImageContainer.propTypes = {
     currImage: Proptypes.string,
-    onPrevImageButtonClick: Proptypes.func,
-    onNextImageButtonClick: Proptypes.func,
+    onImageButtonClick: Proptypes.func,
     isPrevButtonDisabled: Proptypes.bool,
     isNextButtonDisabled: Proptypes.bool
 }
