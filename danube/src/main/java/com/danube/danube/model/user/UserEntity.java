@@ -33,6 +33,16 @@ public class UserEntity {
     public UserEntity() {
     }
 
+    public UserEntity(long id, String firstName, String lastName, String email, String password, Set<Role> roles, List<Product> products) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.roles = roles;
+        this.products = products;
+    }
+
     public long getId() {
         return id;
     }

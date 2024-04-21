@@ -1,11 +1,16 @@
 package com.danube.danube.service;
 
+import com.danube.danube.custom_exception.login_registration.NonExistingUserException;
 import com.danube.danube.custom_exception.product.NonExistingProductCategoryException;
-import com.danube.danube.model.dto.product.CategoryAndSubCategoryDTO;
-import com.danube.danube.model.dto.product.ProductShowSmallDTO;
-import com.danube.danube.model.dto.product.SubcategoriesDTO;
+import com.danube.danube.custom_exception.product.NonExistingSubcategoryException;
+import com.danube.danube.custom_exception.user.InvalidUserCredentialsException;
+import com.danube.danube.model.dto.product.*;
 import com.danube.danube.model.product.category.Category;
+import com.danube.danube.model.product.connection.SubcategoryDetail;
+import com.danube.danube.model.product.detail.Detail;
 import com.danube.danube.model.product.subcategory.Subcategory;
+import com.danube.danube.model.user.Role;
+import com.danube.danube.model.user.UserEntity;
 import com.danube.danube.repository.product.*;
 import com.danube.danube.repository.product.connection.ProductValueRepository;
 import com.danube.danube.repository.product.connection.SubcategoryDetailRepository;
@@ -15,14 +20,15 @@ import com.danube.danube.utility.ConverterImpl;
 import com.danube.danube.utility.filellogger.FileLogger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
-import static org.junit.jupiter.api.BeforeEach.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -280,10 +286,210 @@ class ProductServiceTest {
     }
 
     @Test
-    void getDetailsBySubcategory() {
+    void getDetailsBySubcategory_WithShirtSubCategoryAndWithOneSizeDetail_ShouldReturnExpectedDetailDTOListWithOneElement() {
+        SubcategoryDetail shirtSubcategoryDetail = new SubcategoryDetail();
+
+        Detail sizeDetail = new Detail(
+                1,
+                "Size",
+                List.of(shirtSubcategoryDetail),
+                List.of()
+        );
+
+        Subcategory shirt = new Subcategory(
+                1,
+                "Shirt",
+                new Category(),
+                List.of(shirtSubcategoryDetail)
+        );
+
+        shirtSubcategoryDetail.setId(1);
+        shirtSubcategoryDetail.setSubcategory(shirt);
+        shirtSubcategoryDetail.setDetail(sizeDetail);
+
+
+        when(subcategoryRepositoryMock.findById(1L)).thenReturn(
+                Optional.of(shirt)
+        );
+        when(subcategoryDetailRepositoryMock.findAllBySubcategory(shirt)).thenReturn(
+                List.of(shirtSubcategoryDetail)
+        );
+
+        List<DetailDTO> result = productService.getDetailsBySubcategory(1);
+        List<DetailDTO> expected = List.of(
+                new DetailDTO(
+                        sizeDetail.getName(),
+                        sizeDetail.getId(),
+                        ""
+                )
+        );
+
+
+        assertArrayEquals(expected.toArray(), result.toArray());
+    }
+
+
+    @Test
+    void getDetailsBySubcategory_WithShirtSubCategoryAndJumperSubcategoryAndWithSizeDetailAndHoodieDetail_ShouldReturnExpectedDetailDTOListWithBothSizeDetailAndHoodieDetail() {
+        SubcategoryDetail shirtSubcategoryDetail = new SubcategoryDetail();
+        SubcategoryDetail jumperSubcategoryDetail = new SubcategoryDetail();
+
+        Detail sizeDetail = new Detail(
+                1,
+                "Size",
+                List.of(shirtSubcategoryDetail),
+                List.of()
+        );
+
+        Detail hoodieDetail = new Detail(
+                2,
+                "Has hoodie",
+                List.of(jumperSubcategoryDetail),
+                List.of()
+        );
+
+        Subcategory shirt = new Subcategory(
+                1,
+                "Shirt",
+                new Category(),
+                List.of(shirtSubcategoryDetail)
+        );
+
+        Subcategory jumper = new Subcategory(
+                2,
+                "Jumper",
+                new Category(),
+                List.of(jumperSubcategoryDetail, shirtSubcategoryDetail)
+        );
+
+        shirtSubcategoryDetail.setId(1);
+        shirtSubcategoryDetail.setSubcategory(shirt);
+        shirtSubcategoryDetail.setDetail(sizeDetail);
+
+        jumperSubcategoryDetail.setId(2);
+        jumperSubcategoryDetail.setSubcategory(jumper);
+        jumperSubcategoryDetail.setDetail(hoodieDetail);
+
+
+        when(subcategoryRepositoryMock.findById(2L)).thenReturn(
+                Optional.of(jumper)
+        );
+        when(subcategoryDetailRepositoryMock.findAllBySubcategory(jumper)).thenReturn(
+                List.of(jumperSubcategoryDetail, shirtSubcategoryDetail)
+        );
+
+        List<DetailDTO> result = productService.getDetailsBySubcategory(2);
+        List<DetailDTO> expected = List.of(
+                new DetailDTO(
+                        hoodieDetail.getName(),
+                        hoodieDetail.getId(),
+                        ""
+                ),
+                new DetailDTO(
+                        sizeDetail.getName(),
+                        sizeDetail.getId(),
+                        ""
+                )
+        );
+
+        assertArrayEquals(expected.toArray(), result.toArray());
     }
 
     @Test
-    void saveProduct() {
+    void getDetailsBySubcategory_WithSubcategoryRepositoryShouldReturnEmptyOptional_ShouldThrowNonExistingSubcategoryException(){
+        when(subcategoryRepositoryMock.findById(2L)).thenReturn(
+                Optional.empty()
+        );
+
+
+        assertThrowsExactly(NonExistingSubcategoryException.class, () -> productService.getDetailsBySubcategory(2L));
+    }
+
+    @Test
+    void getDetailsBySubcategory_WithSubcategoryDetailRepositoryIsNull_ShouldReturnEmptyListOfDetailDTO(){
+        SubcategoryDetail shirtSubcategoryDetail = new SubcategoryDetail();
+
+        Detail sizeDetail = new Detail(
+                1,
+                "Size",
+                List.of(shirtSubcategoryDetail),
+                List.of()
+        );
+
+        Subcategory shirt = new Subcategory(
+                1,
+                "Shirt",
+                new Category(),
+                List.of(shirtSubcategoryDetail)
+        );
+
+        shirtSubcategoryDetail.setId(1);
+        shirtSubcategoryDetail.setSubcategory(shirt);
+        shirtSubcategoryDetail.setDetail(sizeDetail);
+
+
+        when(subcategoryRepositoryMock.findById(1L)).thenReturn(
+                Optional.of(shirt)
+        );
+
+        List<DetailDTO> result = productService.getDetailsBySubcategory(1);
+        assertTrue(result.isEmpty());
+    }
+
+
+
+    @Test
+    void saveProduct_WithUserRepositoryReturnsEmptyOptional_ShouldThrowNonExistingUserException() {
+        when(userRepositoryMock.findById(1L)).thenReturn(
+                Optional.empty()
+        );
+
+        ProductDetailUploadDTO productDetailUploadDTO = new ProductDetailUploadDTO(
+                1,
+                10,
+                10,
+                10,
+                "Brand",
+                "This is a product",
+                "Product"
+        );
+
+        ProductUploadDTO productUploadDTO = new ProductUploadDTO(
+                productDetailUploadDTO,
+                new HashMap<>(),
+                1,
+                new MultipartFile[3]
+        );
+
+        assertThrowsExactly(NonExistingUserException.class, () -> productService.saveProduct(productUploadDTO));
+    }
+
+    @Test
+    void saveProduct_WithUserRepositoryReturnsUserWithOnlyCustomerRole_ShouldThrowInvalidUserCredentialsException(){
+        UserEntity user = new UserEntity();
+        user.setRoles(Set.of(Role.ROLE_CUSTOMER));
+
+        when(userRepositoryMock.findById(1L)).thenReturn(
+                Optional.of(user)
+        );
+
+        ProductDetailUploadDTO productDetailUploadDTO = new ProductDetailUploadDTO(
+                1,
+                10,
+                10,
+                10,
+                "Brand",
+                "This is a product",
+                "Product"
+        );
+
+        ProductUploadDTO productUploadDTO = new ProductUploadDTO(
+                productDetailUploadDTO,
+                new HashMap<>(),
+                1,
+                new MultipartFile[3]
+        );
+
+        assertThrowsExactly(InvalidUserCredentialsException.class, () -> productService.saveProduct(productUploadDTO));
     }
 }
