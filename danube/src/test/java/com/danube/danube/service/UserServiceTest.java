@@ -3,7 +3,11 @@ package com.danube.danube.service;
 import com.danube.danube.custom_exception.login_registration.InputTooShortException;
 import com.danube.danube.custom_exception.login_registration.InvalidEmailFormatException;
 import com.danube.danube.custom_exception.login_registration.RegistrationFieldNullException;
+import com.danube.danube.model.dto.jwt.JwtResponse;
+import com.danube.danube.model.dto.user.UserLoginDTO;
 import com.danube.danube.model.dto.user.UserRegistrationDTO;
+import com.danube.danube.model.user.Role;
+import com.danube.danube.model.user.UserEntity;
 import com.danube.danube.repository.user.UserRepository;
 import com.danube.danube.security.jwt.JwtUtils;
 import com.danube.danube.utility.Converter;
@@ -11,7 +15,17 @@ import com.danube.danube.utility.ConverterImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.security.Principal;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -139,7 +153,61 @@ class UserServiceTest {
     }
 
     @Test
-    void loginUser() {
+    void loginUser_WithInvalidEmail_ShouldThrowInvalidEmailFormatException() {
+        UserLoginDTO userLoginDTO = new UserLoginDTO("NotValidEmailFormat", "Password");
+        assertThrowsExactly(InvalidEmailFormatException.class, () -> userService.loginUser(userLoginDTO));
+    }
+
+    @Test
+    void loginUser_WithValidLogin_ShouldReturnExpectedJwtResponse(){
+        String expectedJwtToken = "JWT_TOKEN";
+        UserLoginDTO userLoginDTO = new UserLoginDTO("test@gmail.com", "Password");
+        UserEntity user = new UserEntity(
+                1,
+                "First",
+                "Last",
+                "test@gmail.com",
+                "Password",
+                Set.of(Role.ROLE_CUSTOMER),
+                List.of()
+        );
+        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("CUSTOMER");
+        User principal = new User(
+                userLoginDTO.email(),
+                userLoginDTO.password(),
+                true,
+                true,
+                true,
+                true,
+                List.of(grantedAuthority)
+        );
+
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, userLoginDTO.password(), Set.of(grantedAuthority));
+
+        when(authenticationManagerMock.authenticate(
+                new UsernamePasswordAuthenticationToken(userLoginDTO.email(), userLoginDTO.password())
+        )).thenReturn(
+                authentication
+        );
+        when(jwtUtilsMock.generateJwtToken(authentication)).thenReturn(expectedJwtToken);
+        when(userRepositoryMock.findByEmail(userLoginDTO.email())).thenReturn(
+                Optional.of(user)
+        );
+
+
+        JwtResponse response = userService.loginUser(userLoginDTO);
+        JwtResponse expected = new JwtResponse(
+                expectedJwtToken,
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getId(),
+                List.of("CUSTOMER")
+        );
+
+
+        assertEquals(response, expected);
     }
 
     @Test
