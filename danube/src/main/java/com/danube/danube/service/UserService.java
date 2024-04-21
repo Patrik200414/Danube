@@ -149,13 +149,13 @@ public class UserService {
 
 
     private void registrationValidator(UserRegistrationDTO userRegistrationDTO){
-        if(userRegistrationDTO.email() == null){
+        if(userRegistrationDTO.email() == null || userRegistrationDTO.email().isEmpty()){
             throw new RegistrationFieldNullException("email");
-        } else if(userRegistrationDTO.firstName() == null){
+        } else if(userRegistrationDTO.firstName() == null || userRegistrationDTO.firstName().isEmpty()){
             throw new RegistrationFieldNullException("first name");
-        } else if(userRegistrationDTO.lastName() == null){
+        } else if(userRegistrationDTO.lastName() == null || userRegistrationDTO.lastName().isEmpty()){
             throw new RegistrationFieldNullException("last name");
-        } else if(userRegistrationDTO.password() == null){
+        } else if(userRegistrationDTO.password() == null || userRegistrationDTO.password().isEmpty()){
             throw new RegistrationFieldNullException("password");
         }
 
