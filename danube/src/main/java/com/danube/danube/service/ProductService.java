@@ -32,7 +32,6 @@ import java.util.*;
 
 @Service
 public class ProductService {
-    public static final int DEFAULT_ITEM_AMOUNT_PAGE = 10;
     public static final String BASE_IMAGE_PATH = String.format("%s\\src\\main\\resources\\static\\images\\", System.getProperty("user.dir"));
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
@@ -76,8 +75,7 @@ public class ProductService {
 
     public List<CategoryAndSubCategoryDTO> getCategoriesAndSubCategories(){
         List<Category> categories = categoryRepository.findAll();
-        List<CategoryAndSubCategoryDTO> categoriesAndSubCategories = getCategoryAndSubCategories(categories);
-        return categoriesAndSubCategories;
+        return getCategoryAndSubCategories(categories);
     }
 
 
@@ -151,7 +149,7 @@ public class ProductService {
     private void saveProductValues(Map<String, String> productInformation, Product product){
         for(Map.Entry<String, String> entry : productInformation.entrySet()){
             Detail detail = detailRepository.findByName(entry.getKey()).orElseThrow(
-                    () -> new NonExistingDetailException()
+                    NonExistingDetailException::new
             );
 
             Value value = new Value();
