@@ -76,23 +76,11 @@ public class ProductService {
 
     public List<CategoryAndSubCategoryDTO> getCategoriesAndSubCategories(){
         List<Category> categories = categoryRepository.findAll();
-
-        List<CategoryAndSubCategoryDTO> categoriesAndSubCategories = new ArrayList<>();
-        for(Category category : categories){
-            List<String> subcategories = new ArrayList<>();
-            for(Subcategory subcategory : category.getSubcategories()){
-                subcategories.add(subcategory.getName());
-            }
-            CategoryAndSubCategoryDTO categoryAndSubCategoryDTO = new CategoryAndSubCategoryDTO(
-                    category.getName(),
-                    subcategories
-            );
-
-            categoriesAndSubCategories.add(categoryAndSubCategoryDTO);
-        }
-
+        List<CategoryAndSubCategoryDTO> categoriesAndSubCategories = getCategoryAndSubCategories(categories);
         return categoriesAndSubCategories;
     }
+
+
 
 
     public List<CategoryDTO> getCategories(){
@@ -141,6 +129,22 @@ public class ProductService {
 
         Map<String, String> productInformation = productUploadDTO.productInformation();
         saveProductValues(productInformation, product);
+    }
+
+    private List<CategoryAndSubCategoryDTO> getCategoryAndSubCategories(List<Category> categories) {
+        List<CategoryAndSubCategoryDTO> categoriesAndSubCategories = new ArrayList<>();
+        for(Category category : categories){
+            List<String> subcategories = category.getSubcategories().stream()
+                    .map(Subcategory::getName)
+                    .toList();
+            CategoryAndSubCategoryDTO categoryAndSubCategoryDTO = new CategoryAndSubCategoryDTO(
+                    category.getName(),
+                    subcategories
+            );
+
+            categoriesAndSubCategories.add(categoryAndSubCategoryDTO);
+        }
+        return categoriesAndSubCategories;
     }
 
 
