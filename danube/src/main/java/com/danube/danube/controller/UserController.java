@@ -28,38 +28,31 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserLoginDTO userLoginDTO){
-        JwtResponse jwtResponse = userService.loginUser(userLoginDTO);
-        return ResponseEntity.ok(jwtResponse);
+    public JwtResponse login(@RequestBody UserLoginDTO userLoginDTO){
+        return userService.loginUser(userLoginDTO);
+
     }
 
     @PutMapping("/{id}/role")
-    public ResponseEntity<?> updateUserRole(@PathVariable long id){
-        JwtResponse jwtResponse = userService.addSellerRoleToUser(id);
-        return ResponseEntity.ok(jwtResponse);
+    public JwtResponse updateUserRole(@PathVariable long id){
+        return userService.addSellerRoleToUser(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable long id, @RequestBody UserUpdateDTO userUpdateDTO){
-        JwtResponse jwtResponse = userService.updateUser(id, userUpdateDTO);
-        return ResponseEntity.ok(jwtResponse);
+    public JwtResponse updateUser(@PathVariable long id, @RequestBody UserUpdateDTO userUpdateDTO){
+        return userService.updateUser(id, userUpdateDTO);
     }
 
     @PutMapping("/password/{id}")
-    public ResponseEntity<?> updatePassword(@PathVariable long id, @RequestBody PasswordUpdateDTO passwordUpdateDTO){
+    public HttpStatus updatePassword(@PathVariable long id, @RequestBody PasswordUpdateDTO passwordUpdateDTO){
         userService.updatePassword(id, passwordUpdateDTO);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return HttpStatus.OK;
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<?> verifyProfile(@RequestBody UserVerificationDTO userVerificationDTO){
-        boolean result = userService.verifyUser(userVerificationDTO);
-
-        if(!result){
-            throw new UserEntityPasswordMissMatchException();
-        }
-
-        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    public HttpStatus verifyProfile(@RequestBody UserVerificationDTO userVerificationDTO){
+        userService.verifyUser(userVerificationDTO);
+        return HttpStatus.ACCEPTED;
     }
 
 
