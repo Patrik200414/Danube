@@ -59,6 +59,8 @@ public class UserService {
                 new UsernamePasswordAuthenticationToken(userLoginDTO.email(), userLoginDTO.password())
         );
 
+        UserEntity user = userRepository.findByEmail(userLoginDTO.email()).orElseThrow(() -> new EmailNotFoundException(userLoginDTO.email()));
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
 
@@ -67,7 +69,6 @@ public class UserService {
                 .map(GrantedAuthority::getAuthority)
                 .toList();
 
-        UserEntity user = userRepository.findByEmail(userLoginDTO.email()).orElseThrow(() -> new EmailNotFoundException(userLoginDTO.email()));
 
         return new JwtResponse(jwt, user.getFirstName(), user.getLastName(), user.getEmail(), user.getId(), roles);
     }
@@ -93,6 +94,9 @@ public class UserService {
 
     @Transactional
     public JwtResponse updateUser(long id, UserUpdateDTO userUpdateDTO){
+        validateEmail(userUpdateDTO.email());
+        validateFirstNameAndLastName(userUpdateDTO.firstName(), userUpdateDTO.lastName());
+
         if(id != userUpdateDTO.userId()){
             throw new NotMatchingUserAndUpdateUserIdException();
         }
@@ -105,8 +109,6 @@ public class UserService {
 
         UserEntity user = searchedUser.get();
 
-        validateEmail(userUpdateDTO.email());
-        validateFirstNameAndLastName(userUpdateDTO.firstName(), userUpdateDTO.lastName());
 
         user.setEmail(userUpdateDTO.email());
         user.setFirstName(userUpdateDTO.firstName());
