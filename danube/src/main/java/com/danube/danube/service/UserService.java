@@ -85,7 +85,7 @@ public class UserService {
     public JwtResponse updateUser(long id, UserUpdateDTO userUpdateDTO){
         validateEmail(userUpdateDTO.email());
         validateFirstNameAndLastName(userUpdateDTO.firstName(), userUpdateDTO.lastName());
-        validateUploadIdAndUserIdMatch(id, userUpdateDTO);
+        validateUploadIdAndUserIdMatch(id, userUpdateDTO.userId());
 
         UserEntity user = userRepository.findById(id).orElseThrow(NonExistingUserException::new);
         user.setEmail(userUpdateDTO.email());
@@ -96,8 +96,8 @@ public class UserService {
         return generateJwtResponse(updatedUser);
     }
 
-    private void validateUploadIdAndUserIdMatch(long id, UserUpdateDTO userUpdateDTO) {
-        if(id != userUpdateDTO.userId()){
+    private void validateUploadIdAndUserIdMatch(long id, long userId) {
+        if(id != userId){
             throw new NotMatchingUserAndUpdateUserIdException();
         }
     }
@@ -105,7 +105,7 @@ public class UserService {
     @Transactional
     public void updatePassword(long id, PasswordUpdateDTO passwordUpdateDTO){
         UserEntity user = userRepository.findById(id).orElseThrow(NonExistingUserException::new);
-        validatePasswordUpdate(passwordUpdateDTO, user);
+        validatePasswordUpdate(passwordUpdateDTO, user, id);
         user.setPassword(passwordEncoder.encode(passwordUpdateDTO.newPassword()));
         userRepository.save(user);
     }
@@ -121,7 +121,9 @@ public class UserService {
         return authentication;
     }
 
-    private void validatePasswordUpdate(PasswordUpdateDTO passwordUpdateDTO, UserEntity user) {
+    private void validatePasswordUpdate(PasswordUpdateDTO passwordUpdateDTO, UserEntity user, long id) {
+        validateUploadIdAndUserIdMatch(id, passwordUpdateDTO.userId());
+
         if(!passwordEncoder.matches(passwordUpdateDTO.currentPassword(), user.getPassword())){
             throw new NotMatchingCurrentPasswordException();
         }

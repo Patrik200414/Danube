@@ -14,7 +14,8 @@ function PasswordUpdateForm({user, navigate}){
         const updatedPassword = {
             currentPassword: currentPassword,
             newPassword: newPassword,
-            reenterPassword: reenterPassword
+            reenterPassword: reenterPassword,
+            userId: user.id
         };
 
         
