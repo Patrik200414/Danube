@@ -20,7 +20,7 @@ import com.danube.danube.repository.product.*;
 import com.danube.danube.repository.product.connection.ProductValueRepository;
 import com.danube.danube.repository.product.connection.SubcategoryDetailRepository;
 import com.danube.danube.repository.user.UserRepository;
-import com.danube.danube.utility.Converter;
+import com.danube.danube.utility.converter.Converter;
 import com.danube.danube.utility.filellogger.FileLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

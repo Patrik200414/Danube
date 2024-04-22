@@ -1,4 +1,4 @@
-package com.danube.danube.utility;
+package com.danube.danube.utility.converter;
 
 import com.danube.danube.model.dto.product.*;
 import com.danube.danube.model.dto.user.UserRegistrationDTO;

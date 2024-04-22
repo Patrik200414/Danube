@@ -2,11 +2,10 @@
 
 import com.danube.danube.model.dto.product.*;
 import com.danube.danube.service.ProductService;
-import com.danube.danube.utility.Converter;
+import com.danube.danube.utility.converter.Converter;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
