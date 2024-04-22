@@ -1,15 +1,11 @@
     package com.danube.danube.controller;
 
 import com.danube.danube.model.dto.product.*;
-/*import com.danube.danube.model.product.ProductDetail;
-import com.danube.danube.model.product.product_category.Category;
-import com.danube.danube.model.product.product_category.SubCategory;*/
 import com.danube.danube.service.ProductService;
-import com.danube.danube.utility.Converter;
+import com.danube.danube.utility.converter.Converter;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,48 +28,42 @@ public class ProductController {
     }
 
     @GetMapping()
-    public ResponseEntity<?> getProducts(@RequestParam(defaultValue = "0") int pageNumber, @RequestParam(defaultValue = "10") int itemPerPage){
-        Set<ProductShowSmallDTO> products = productService.getProducts(pageNumber, itemPerPage);
-        return ResponseEntity.ok(products);
+    public Set<ProductShowSmallDTO> getProducts(@RequestParam(defaultValue = "0") int pageNumber, @RequestParam(defaultValue = "10") int itemPerPage){
+        return productService.getProducts(pageNumber, itemPerPage);
     }
 
     @GetMapping("/count")
-    public ResponseEntity<?> getProductCount(){
-        long productCount = productService.getProductCount();
-        return ResponseEntity.ok(productCount);
+    public long getProductCount(){
+        return productService.getProductCount();
     }
 
 
 
     @GetMapping("/category/subcategory")
-    public ResponseEntity<?> getProductCategoriesAndSubCategories(){
-        List<CategoryAndSubCategoryDTO> categories = productService.getCategoriesAndSubCategories();
-        return ResponseEntity.ok(categories);
+    public List<CategoryAndSubCategoryDTO> getProductCategoriesAndSubCategories(){
+        return productService.getCategoriesAndSubCategories();
     }
 
     @GetMapping("/category")
-    public ResponseEntity<?> getProductCategories(){
-        List<CategoryDTO> categories = productService.getCategories();
-        return ResponseEntity.ok(categories);
+    public List<CategoryDTO> getProductCategories(){
+        return productService.getCategories();
     }
 
     @GetMapping("/subcategory/{categoryId}")
-    public ResponseEntity<?> getSubCategoriesByCategory(@PathVariable long categoryId){
-        List<SubcategoriesDTO> subCategories = productService.getSubCategoriesByCategory(categoryId);
-        return ResponseEntity.ok(subCategories);
+    public List<SubcategoriesDTO> getSubCategoriesByCategory(@PathVariable long categoryId){
+        return productService.getSubCategoriesByCategory(categoryId);
     }
 
     @GetMapping("/detail/{subcategoryId}")
-    public ResponseEntity<?> getDetailsBySubcategory(@PathVariable long subcategoryId){
-        List<DetailDTO> details = productService.getDetailsBySubcategory(subcategoryId);
-        return ResponseEntity.ok(details);
+    public List<DetailDTO> getDetailsBySubcategory(@PathVariable long subcategoryId){
+        return productService.getDetailsBySubcategory(subcategoryId);
     }
 
 
     @Async
     @Transactional
     @PostMapping()
-    public ResponseEntity<?> saveProduct(
+    public HttpStatus saveProduct(
             @RequestParam("productDetail") String productDetail,
             @RequestParam("productInformation") String productInformation,
             @RequestParam("userId") long userId,
@@ -87,7 +77,7 @@ public class ProductController {
         );
 
         productService.saveProduct(productUploadDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return HttpStatus.CREATED;
     }
 
 }

@@ -125,12 +125,6 @@ public class Advice {
         );
     }
 
-    @ExceptionHandler(Exception.class)
-    public final ResponseEntity<?> handleException(Exception e){
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                new UserErrorMessage(e.getMessage())
-        );
-    }
 
     private UserErrorMessage handleInputTooShortError(InputTooShortException e){
         String fieldName = e.getMessage().split("-")[0];

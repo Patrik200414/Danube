@@ -20,7 +20,7 @@ import com.danube.danube.repository.product.*;
 import com.danube.danube.repository.product.connection.ProductValueRepository;
 import com.danube.danube.repository.product.connection.SubcategoryDetailRepository;
 import com.danube.danube.repository.user.UserRepository;
-import com.danube.danube.utility.Converter;
+import com.danube.danube.utility.converter.Converter;
 import com.danube.danube.utility.filellogger.FileLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -32,7 +32,6 @@ import java.util.*;
 
 @Service
 public class ProductService {
-    public static final int DEFAULT_ITEM_AMOUNT_PAGE = 10;
     public static final String BASE_IMAGE_PATH = String.format("%s\\src\\main\\resources\\static\\images\\", System.getProperty("user.dir"));
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
@@ -76,23 +75,10 @@ public class ProductService {
 
     public List<CategoryAndSubCategoryDTO> getCategoriesAndSubCategories(){
         List<Category> categories = categoryRepository.findAll();
-
-        List<CategoryAndSubCategoryDTO> categoriesAndSubCategories = new ArrayList<>();
-        for(Category category : categories){
-            List<String> subcategories = new ArrayList<>();
-            for(Subcategory subcategory : category.getSubcategories()){
-                subcategories.add(subcategory.getName());
-            }
-            CategoryAndSubCategoryDTO categoryAndSubCategoryDTO = new CategoryAndSubCategoryDTO(
-                    category.getName(),
-                    subcategories
-            );
-
-            categoriesAndSubCategories.add(categoryAndSubCategoryDTO);
-        }
-
-        return categoriesAndSubCategories;
+        return getCategoryAndSubCategories(categories);
     }
+
+
 
 
     public List<CategoryDTO> getCategories(){
@@ -143,11 +129,27 @@ public class ProductService {
         saveProductValues(productInformation, product);
     }
 
+    private List<CategoryAndSubCategoryDTO> getCategoryAndSubCategories(List<Category> categories) {
+        List<CategoryAndSubCategoryDTO> categoriesAndSubCategories = new ArrayList<>();
+        for(Category category : categories){
+            List<String> subcategories = category.getSubcategories().stream()
+                    .map(Subcategory::getName)
+                    .toList();
+            CategoryAndSubCategoryDTO categoryAndSubCategoryDTO = new CategoryAndSubCategoryDTO(
+                    category.getName(),
+                    subcategories
+            );
+
+            categoriesAndSubCategories.add(categoryAndSubCategoryDTO);
+        }
+        return categoriesAndSubCategories;
+    }
+
 
     private void saveProductValues(Map<String, String> productInformation, Product product){
         for(Map.Entry<String, String> entry : productInformation.entrySet()){
             Detail detail = detailRepository.findByName(entry.getKey()).orElseThrow(
-                    () -> new NonExistingDetailException()
+                    NonExistingDetailException::new
             );
 
             Value value = new Value();

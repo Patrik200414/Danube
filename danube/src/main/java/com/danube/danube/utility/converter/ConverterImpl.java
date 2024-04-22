@@ -1,4 +1,4 @@
-package com.danube.danube.utility;
+package com.danube.danube.utility.converter;
 
 import com.danube.danube.model.dto.product.*;
 import com.danube.danube.model.dto.user.UserRegistrationDTO;
@@ -9,11 +9,9 @@ import com.danube.danube.model.product.image.Image;
 import com.danube.danube.model.product.subcategory.Subcategory;
 import com.danube.danube.model.user.Role;
 import com.danube.danube.model.user.UserEntity;
-import com.danube.danube.utility.Converter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
