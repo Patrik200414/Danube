@@ -23,7 +23,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -55,13 +54,9 @@ public class UserService {
     public JwtResponse loginUser(UserLoginDTO userLoginDTO){
         validateEmail(userLoginDTO.email());
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userLoginDTO.email(), userLoginDTO.password())
-        );
+        Authentication authentication = verifyUser(userLoginDTO.email(), userLoginDTO.password());
 
         UserEntity user = userRepository.findByEmail(userLoginDTO.email()).orElseThrow(() -> new EmailNotFoundException(userLoginDTO.email()));
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
 
         User userDetails = (User) authentication.getPrincipal();
@@ -74,13 +69,7 @@ public class UserService {
     }
 
     public JwtResponse addSellerRoleToUser(long id){
-        Optional<UserEntity> searchedUser = userRepository.findById(id);
-
-        if(searchedUser.isEmpty()){
-            throw new NonExistingUserException();
-        }
-
-        UserEntity user = searchedUser.get();
+        UserEntity user = userRepository.findById(id).orElseThrow(NonExistingUserException::new);
 
         Set<Role> userRoles = user.getRoles();
         userRoles.add(Role.ROLE_SELLER);
@@ -96,20 +85,9 @@ public class UserService {
     public JwtResponse updateUser(long id, UserUpdateDTO userUpdateDTO){
         validateEmail(userUpdateDTO.email());
         validateFirstNameAndLastName(userUpdateDTO.firstName(), userUpdateDTO.lastName());
+        validateUploadIdAndUserIdMatch(id, userUpdateDTO);
 
-        if(id != userUpdateDTO.userId()){
-            throw new NotMatchingUserAndUpdateUserIdException();
-        }
-
-
-        Optional<UserEntity> searchedUser = userRepository.findById(id);
-        if(searchedUser.isEmpty()){
-            throw new NonExistingUserException();
-        }
-
-        UserEntity user = searchedUser.get();
-
-
+        UserEntity user = userRepository.findById(id).orElseThrow(NonExistingUserException::new);
         user.setEmail(userUpdateDTO.email());
         user.setFirstName(userUpdateDTO.firstName());
         user.setLastName(userUpdateDTO.lastName());
@@ -118,16 +96,32 @@ public class UserService {
         return generateJwtResponse(updatedUser);
     }
 
+    private void validateUploadIdAndUserIdMatch(long id, UserUpdateDTO userUpdateDTO) {
+        if(id != userUpdateDTO.userId()){
+            throw new NotMatchingUserAndUpdateUserIdException();
+        }
+    }
+
     @Transactional
     public void updatePassword(long id, PasswordUpdateDTO passwordUpdateDTO){
-        Optional<UserEntity> searchedUser = userRepository.findById(id);
+        UserEntity user = userRepository.findById(id).orElseThrow(NonExistingUserException::new);
+        validatePasswordUpdate(passwordUpdateDTO, user);
+        user.setPassword(passwordEncoder.encode(passwordUpdateDTO.newPassword()));
+        userRepository.save(user);
+    }
 
-        if(searchedUser.isEmpty()){
-            throw new NonExistingUserException();
-        }
 
-        UserEntity user = searchedUser.get();
 
+    public Authentication verifyUser(String email, String password){
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email, password)
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        return authentication;
+    }
+
+    private void validatePasswordUpdate(PasswordUpdateDTO passwordUpdateDTO, UserEntity user) {
         if(!passwordEncoder.matches(passwordUpdateDTO.currentPassword(), user.getPassword())){
             throw new NotMatchingCurrentPasswordException();
         }
@@ -135,22 +129,24 @@ public class UserService {
         if(!passwordUpdateDTO.newPassword().equals(passwordUpdateDTO.reenterPassword())){
             throw new NotMatchingNewPasswordAndReenterPasswordException();
         }
-
-        user.setPassword(passwordEncoder.encode(passwordUpdateDTO.newPassword()));
-        userRepository.save(user);
-    }
-
-    public boolean verifyUser(UserVerificationDTO userVerificationDTO){
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userVerificationDTO.email(), userVerificationDTO.password())
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        return true;
     }
 
 
     private void registrationValidator(UserRegistrationDTO userRegistrationDTO){
+        validateFieldNotEmpty(userRegistrationDTO);
+        validateFirstNameAndLastName(userRegistrationDTO.firstName(), userRegistrationDTO.lastName());
+        validatePasswordLength(userRegistrationDTO.password());
+
+        validateEmail(userRegistrationDTO.email());
+    }
+
+    private static void validatePasswordLength(String password) {
+        if (password.length() < MIN_LENGTH_PASSWORD) {
+            throw new InputTooShortException("password", MIN_LENGTH_PASSWORD);
+        }
+    }
+
+    private void validateFieldNotEmpty(UserRegistrationDTO userRegistrationDTO) {
         if(userRegistrationDTO.email() == null || userRegistrationDTO.email().isEmpty()){
             throw new RegistrationFieldNullException("email");
         } else if(userRegistrationDTO.firstName() == null || userRegistrationDTO.firstName().isEmpty()){
@@ -160,14 +156,6 @@ public class UserService {
         } else if(userRegistrationDTO.password() == null || userRegistrationDTO.password().isEmpty()){
             throw new RegistrationFieldNullException("password");
         }
-
-
-        validateFirstNameAndLastName(userRegistrationDTO.firstName(), userRegistrationDTO.lastName());
-        if(userRegistrationDTO.password().length() < MIN_LENGTH_PASSWORD){
-            throw new InputTooShortException("password", MIN_LENGTH_PASSWORD);
-        }
-
-        validateEmail(userRegistrationDTO.email());
     }
 
     private JwtResponse generateJwtResponse(UserEntity user){

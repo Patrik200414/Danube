@@ -51,7 +51,7 @@ public class UserController {
 
     @PostMapping("/verify")
     public HttpStatus verifyProfile(@RequestBody UserVerificationDTO userVerificationDTO){
-        userService.verifyUser(userVerificationDTO);
+        userService.verifyUser(userVerificationDTO.email(), userVerificationDTO.password());
         return HttpStatus.ACCEPTED;
     }
 
