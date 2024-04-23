@@ -59,4 +59,8 @@ public class Value {
     public void setProductValues(List<ProductValue> productValues) {
         this.productValues = productValues;
     }
+
+    public String getDetailName(){
+        return detail.getName();
+    }
 }
