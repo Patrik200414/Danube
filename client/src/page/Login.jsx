@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
+import fetchPostJSON from "../utility/fetchPostJSON";
 
 function Login(){
     const [email, setEmail] = useState('');
@@ -18,14 +19,8 @@ function Login(){
             password
         };
 
-        const loginResponseData = await fetch('/api/user/login', {
-            method: 'POST',
-            headers: {
-                'Content-type': 'Application/json'
-            },
-            body: JSON.stringify(userLogin)
-        });
 
+        const loginResponseData = await fetchPostJSON('/api/user/login', userLogin)
         const loginResponse = await loginResponseData.json();
 
         if(loginResponseData.ok){

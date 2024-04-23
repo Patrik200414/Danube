@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import UserAccountInformation from "../component/user/UserAccountInformation";
+import fetchPostAuthorizationFetch from "../utility/fetchPostAuthorizationFetch";
 
 
 function Verification({verificationToPages}){
@@ -51,14 +52,7 @@ function Verification({verificationToPages}){
             password: password
         };
 
-        const verificationResult = await fetch('/api/user/verify', {
-            method: 'POST',
-            headers: {
-                'Content-type': 'Application/json',
-                'Authorization': `Bearer ${user.jwt}`
-            },
-            body: JSON.stringify(userVerification)
-        });
+        const verificationResult = await fetchPostAuthorizationFetch('/api/user/verify', user.jwt, userVerification);
 
         if(verificationResult.ok){
             navigate(url);
