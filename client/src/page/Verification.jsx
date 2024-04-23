@@ -37,7 +37,7 @@ function Verification({verificationToPages}){
             navigate('/');
         }
 
-    }, []);
+    }, [verificationToPages, navigate]);
 
     async function handleSubmit(e){
         e.preventDefault();
