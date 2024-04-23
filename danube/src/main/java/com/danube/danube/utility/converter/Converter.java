@@ -11,7 +11,6 @@ import com.danube.danube.model.user.UserEntity;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -32,4 +31,5 @@ public interface Converter {
 
     List<Image> convertMultiPartFilesToListOfImages(MultipartFile[] images, Product product);
     Set<ProductShowSmallDTO> convertProductToProductShowSmallDTORandomOrder(Page<Product> products);
+    ProductItemDTO convertProductToProductItemDTO(Product product);
 }
