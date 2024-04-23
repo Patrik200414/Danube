@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
-import UserAccountInformation from "../component/UserAccountInformation";
+import UserAccountInformation from "../component/user/UserAccountInformation";
 
 
 function Verification({verificationToPages}){

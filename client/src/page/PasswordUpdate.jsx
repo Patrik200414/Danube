@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import NavBar from "../component/NavBar";
 import { useNavigate } from "react-router-dom";
-import PasswordUpdateForm from "../component/PasswordUpdateForm";
+import PasswordUpdateForm from "../component/user/PasswordUpdateForm";
 
 function PasswordUpdate(){
     const [user, setUser] = useState();
@@ -17,7 +17,7 @@ function PasswordUpdate(){
         }
 
         setUser(userData);
-    }, []);
+    }, [navigate]);
 
     return(
         <div className="password-update">

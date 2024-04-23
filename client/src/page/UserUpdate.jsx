@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import NavBar from "../component/NavBar";
-import UserUpdateForm from "../component/UserUpdateForm";
+import UserUpdateForm from "../component/user/UserUpdateForm";
 
 function UserUpdate(){
 

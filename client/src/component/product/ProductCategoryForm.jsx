@@ -32,7 +32,7 @@ function ProductCategoryForm({onSelectCategoryIdChange, selectedCategoryId, sele
         if(selectedCategoryId){
             getSubCategories();
         }
-    }, [selectedCategoryId]);
+    }, [selectedCategoryId, onSelectedSubCategoryIdChange]);
 
     return(
         <>

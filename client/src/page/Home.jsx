@@ -1,5 +1,5 @@
 import NavBar from "../component/NavBar";
-import ProductContainer from "../component/ProductContainer";
+import ProductContainer from "../component/product/ProductContainer";
 import { useEffect, useState } from "react";
 
 function Home(){

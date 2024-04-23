@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import NavBar from "../component/NavBar";
-import ProductInformationForm from "../component/ProductInformationForm"
+import ProductInformationForm from "../component/product/ProductInformationForm"
 import { useNavigate } from "react-router-dom";
-import ProductCategoryForm from "../component/ProductCategoryForm";
-import ProductDetailsForm from "../component/ProductDetailsForm";
-import UploadedImages from "../component/UploadedImages";
+import ProductCategoryForm from "../component/product/ProductCategoryForm";
+import ProductDetailsForm from "../component/product/ProductDetailsForm";
+import UploadedImages from "../component/product/UploadedImages";
 
 function ProductUpload(){
     const SUCCESS_MESSAGE_TIME_IN_SECONDS = 2;
@@ -48,7 +48,7 @@ function ProductUpload(){
             'Delivery time in day': '',
             'Description': '',
         })
-    }, []);
+    }, [navigate]);
 
     useEffect(() => {
         if(successUploadCount){
