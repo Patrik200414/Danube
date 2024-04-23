@@ -1,14 +1,16 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-function Product(){
+function Item(){
     const {id} = useParams();
     const navigate = useNavigate();
 
     useEffect(() => {
         if(isNaN(id)){
-            navigate('/')
+            navigate('/');
         }
+
+        
     }, [id, navigate])
 
     return(
@@ -18,4 +20,4 @@ function Product(){
     )
 }
 
-export default Product;
+export default Item;
