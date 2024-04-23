@@ -98,4 +98,7 @@ public class UserEntity {
     public void setProducts(List<Product> products) {
         this.products = products;
     }
+    public String getFullName(){
+        return String.format("%s %s", firstName, lastName);
+    }
 }
