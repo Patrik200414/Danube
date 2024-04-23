@@ -21,7 +21,6 @@ function PasswordUpdate(){
 
     return(
         <div className="password-update">
-            <NavBar />
             <PasswordUpdateForm user={user} navigate={(path) => navigate(path)}/>
         </div>
     )

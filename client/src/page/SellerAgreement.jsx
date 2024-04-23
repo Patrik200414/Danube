@@ -1,5 +1,4 @@
 import { useState } from "react";
-import NavBar from "../component/NavBar";
 import { useNavigate } from "react-router-dom";
 import fetchPutAuthorizationFetch from "../utility/fetchPutAuthorizationFetch";
 
@@ -33,7 +32,6 @@ function SellerAgreement(){
 
     return(
         <div className="seller-agreement">
-            <NavBar />
             <div className="agreement">
                 <p className="emplanation-text">By proceeding to sell products on Danube&apos;s website, I, {user.firstName}, hereby acknowledge and agree to the following terms and conditions:</p>
                 <ol className="agreement">

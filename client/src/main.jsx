@@ -11,13 +11,40 @@ import Verification from './page/Verification';
 import ProductUpload from './page/ProductUpload';
 import UserUpdate from './page/UserUpdate';
 import PasswordUpdate from './page/PasswordUpdate';
+import NavBar from './component/NavBar';
 
 const verificationToPages = ['upload', 'update'];
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Home />
+    element: <NavBar />,
+    children: [
+      {
+        path: '',
+        element: <Home />
+      },
+      {
+        path: 'profile',
+        element: <Profile />
+      },
+      {
+        path: 'seller/agreement',
+        element: <SellerAgreement />
+      },
+      {
+        path: 'product/upload',
+        element: <ProductUpload />
+      },
+      {
+        path: '/user/update',
+        element: <UserUpdate />
+      },
+      {
+        path: '/user/update/password',
+        element: <PasswordUpdate />
+      }
+    ]
   },
   {
     path: '/login',
@@ -28,28 +55,8 @@ const router = createBrowserRouter([
     element: <Registration />
   },
   {
-    path: '/profile',
-    element: <Profile />
-  },
-  {
-    path: '/seller/agreement',
-    element: <SellerAgreement />
-  },
-  {
     path: '/verification/:verificationBy/:to',
     element: <Verification verificationToPages={verificationToPages}/>
-  },
-  {
-    path: '/product/upload',
-    element: <ProductUpload />
-  },
-  {
-    path: '/user/update',
-    element: <UserUpdate />
-  },
-  {
-    path: '/user/update/password',
-    element: <PasswordUpdate />
   }
 ])
 

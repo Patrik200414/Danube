@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import UserProfileImage from "./user/UserProfileImage";
 import ShoppingCart from "./ShoppingCart";
 
@@ -23,6 +23,7 @@ function NavBar(){
 
 
     return(
+        <>
         <nav className="nav-bar">
             <div className="top-part">
                 <h1 className="logo">
@@ -49,6 +50,8 @@ function NavBar(){
                 </ul>
             </div>
         </nav>
+        <Outlet />
+        </>
     )
 }
 

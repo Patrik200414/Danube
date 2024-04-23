@@ -1,4 +1,3 @@
-import NavBar from "../component/NavBar";
 import ProductContainer from "../component/product/ProductContainer";
 import { useEffect, useState } from "react";
 
@@ -27,7 +26,6 @@ function Home(){
 
     return(
         <div className="home">
-            <NavBar />
             {error && <p className="error-message">{error}</p>}
             <ProductContainer products={products}/>
         </div>

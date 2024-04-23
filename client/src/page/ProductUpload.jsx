@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import NavBar from "../component/NavBar";
 import ProductInformationForm from "../component/product/ProductInformationForm"
 import { useNavigate } from "react-router-dom";
 import ProductCategoryForm from "../component/product/ProductCategoryForm";
@@ -227,7 +226,6 @@ function ProductUpload(){
         <div className="product-upload">
             {user && 
                 <>
-                    <NavBar />
                     {successMessage && <h3 className="success-message">{successMessage}</h3>}
                     <ProductInformationForm onDetailsChange={handleProductChange} productDetail={product}/>
                     <ProductCategoryForm 
