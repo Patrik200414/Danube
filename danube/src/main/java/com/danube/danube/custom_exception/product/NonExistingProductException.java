@@ -1,2 +1,4 @@
-package com.danube.danube.custom_exception.product;public class NonExistingProductException {
+package com.danube.danube.custom_exception.product;
+
+public class NonExistingProductException extends RuntimeException{
 }
