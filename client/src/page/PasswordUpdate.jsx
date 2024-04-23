@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import NavBar from "../component/NavBar";
 import { useNavigate } from "react-router-dom";
 import PasswordUpdateForm from "../component/user/PasswordUpdateForm";
 
