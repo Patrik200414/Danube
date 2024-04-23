@@ -5,6 +5,7 @@ import com.danube.danube.custom_exception.login_registration.InvalidEmailFormatE
 import com.danube.danube.custom_exception.login_registration.NonExistingUserException;
 import com.danube.danube.custom_exception.login_registration.RegistrationFieldNullException;
 import com.danube.danube.custom_exception.product.IncorrectProductObjectFormException;
+import com.danube.danube.custom_exception.product.NonExistingProductException;
 import com.danube.danube.custom_exception.product.NonExistingSubcategoryException;
 import com.danube.danube.custom_exception.user.NotMatchingNewPasswordAndReenterPasswordException;
 import com.danube.danube.custom_exception.user.NotMatchingCurrentPasswordException;
@@ -122,6 +123,13 @@ public class Advice {
     public ResponseEntity<UserErrorMessage> handleIOExceptionAndJsonProcessingException(){
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                 new UserErrorMessage("Something went wrong! Couldn't save product! Please try again!")
+        );
+    }
+
+    @ExceptionHandler(NonExistingProductException.class)
+    public ResponseEntity<UserErrorMessage> handleNonExistingProductException(){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new UserErrorMessage("The selected item is not found!")
         );
     }
 
