@@ -156,4 +156,7 @@ public class Product {
     public void setImages(List<Image> images) {
         this.images = images;
     }
+    public String getSellerFullName(){
+        return seller.getFullName();
+    }
 }
