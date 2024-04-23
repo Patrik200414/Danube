@@ -50,4 +50,12 @@ public class ProductValue {
     public void setValue(Value value) {
         this.value = value;
     }
+
+    public String getValueName(){
+        return value.getValue();
+    }
+
+    public String getDetailName(){
+        return value.getDetailName();
+    }
 }
