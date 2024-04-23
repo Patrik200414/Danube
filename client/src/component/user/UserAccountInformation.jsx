@@ -1,4 +1,4 @@
-import userImage from "../static/userImage.svg";
+import userImage from "../../static/userImage.svg";
 import Proptypes from "prop-types"
 
 function UserAccountInformation({user}){

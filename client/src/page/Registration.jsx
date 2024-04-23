@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
+import fetchPostJSON from "../utility/fetchPostJSON";
 
 function Registration(){
     const [firstName, setFirstName] = useState('');
@@ -26,14 +27,7 @@ function Registration(){
             password
         };
 
-        const registrationResponseData = await fetch('/api/user/registration', {
-            method: 'POST',
-            headers: {
-                'Content-type': 'Application/json'
-            },
-            body: JSON.stringify(newUser)
-        });
-
+        const registrationResponseData = await fetchPostJSON('/api/user/registration', newUser);
         
 
         if(registrationResponseData.ok){

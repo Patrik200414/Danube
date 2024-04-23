@@ -1,5 +1,5 @@
 import NavBar from "../component/NavBar";
-import ProductContainer from "../component/ProductContainer";
+import ProductContainer from "../component/product/ProductContainer";
 import { useEffect, useState } from "react";
 
 function Home(){
@@ -13,7 +13,6 @@ function Home(){
         const getProducts = async () => {
             const productsData = await fetch(`/api/product?pageNumber=${pageNumber}&itemPerPage=${itemPerPage}`);
             const productResponse = await productsData.json();
-            console.log(productResponse);
             if(productsData.ok){
                 setProducts(productResponse);
                 setError();

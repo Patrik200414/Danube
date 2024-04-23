@@ -18,7 +18,7 @@ function Profile(){
             navigate('/')
         }
 
-    }, [])
+    }, [navigate])
 
 
     return(

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import defaultProductImage from '../static/defaultProduct.jpg';
+import defaultProductImage from '../../static/defaultProduct.jpg';
 import Proptypes from 'prop-types';
 import ImageContainer from './ImageContainer';
 
