@@ -3,6 +3,7 @@ package com.danube.danube.service;
 import com.danube.danube.custom_exception.login_registration.NonExistingUserException;
 import com.danube.danube.custom_exception.product.NonExistingDetailException;
 import com.danube.danube.custom_exception.product.NonExistingProductCategoryException;
+import com.danube.danube.custom_exception.product.NonExistingProductException;
 import com.danube.danube.custom_exception.product.NonExistingSubcategoryException;
 import com.danube.danube.custom_exception.user.InvalidUserCredentialsException;
 import com.danube.danube.model.dto.product.*;
@@ -143,6 +144,11 @@ public class ProductService {
             categoriesAndSubCategories.add(categoryAndSubCategoryDTO);
         }
         return categoriesAndSubCategories;
+    }
+
+    public ProductItemDTO getProductItem(long id){
+        Product product = productRepository.findById(id).orElseThrow(NonExistingProductException::new);
+        return converter.convertProductToProductItemDTO(product);
     }
 
 
