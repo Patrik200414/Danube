@@ -50,6 +50,7 @@ public class SecurityConfig {
                         auth.requestMatchers("/api/user/login").permitAll()
                                 .requestMatchers("/images/**").permitAll()
                                 .requestMatchers("/api/user/registration").permitAll()
+                                .requestMatchers("/api/product/item/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/product").hasRole("SELLER")
                                 .requestMatchers("/api/product/detail/**").hasRole("SELLER")
                                 .requestMatchers(HttpMethod.GET, "/api/product").permitAll()

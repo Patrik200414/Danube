@@ -59,7 +59,10 @@ public class ProductController {
         return productService.getDetailsBySubcategory(subcategoryId);
     }
 
-
+    @GetMapping("/item/{id}")
+    public ProductItemDTO getProductItems(@PathVariable long id){
+        return productService.getProductItem(id);
+    }
     @Async
     @Transactional
     @PostMapping()

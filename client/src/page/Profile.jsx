@@ -1,6 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import NavBar from "../component/NavBar";
 
 import seller from "../static/seller.svg";
 import settings from "../static/settings.svg"
@@ -23,7 +22,6 @@ function Profile(){
 
     return(
         <div className="profile">
-            <NavBar />
             {userRoles && 
             <>
                 <div className="profile-services">

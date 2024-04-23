@@ -134,4 +134,31 @@ public class ConverterImpl implements Converter {
                 .map(image -> image.getFileName())
                 .toList();
     }
+
+    @Override
+    public ProductItemDTO convertProductToProductItemDTO(Product product) {
+        List<DetailValueDTO> detailValues = product.getProductValues().stream()
+                .map(productValue -> new DetailValueDTO(
+                        productValue.getDetailName(),
+                        productValue.getValueName()
+                )).toList();
+
+
+        return new ProductItemDTO(
+                product.getProductName(),
+                product.getPrice(),
+                product.getDeliveryTimeInDay(),
+                product.getQuantity(),
+                product.getRating(),
+                product.getShippingPrice(),
+                product.getSold(),
+                product.getBrand(),
+                product.getDescription(),
+                product.getSeller().getFullName(),
+                product.getImages().stream()
+                        .map(Image::getFileName)
+                        .toList(),
+                detailValues
+        );
+    }
 }

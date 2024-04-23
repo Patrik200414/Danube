@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import NavBar from "../component/NavBar";
 import { useNavigate } from "react-router-dom";
 import PasswordUpdateForm from "../component/user/PasswordUpdateForm";
 
@@ -21,7 +20,6 @@ function PasswordUpdate(){
 
     return(
         <div className="password-update">
-            <NavBar />
             <PasswordUpdateForm user={user} navigate={(path) => navigate(path)}/>
         </div>
     )
