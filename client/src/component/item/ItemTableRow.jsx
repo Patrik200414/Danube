@@ -1,17 +1,17 @@
 import Proptypes from 'prop-types';
 
-function ItemTableRow({productDetailName, productDetailValue}){
+function ItemTableRow({productPropertyName, productPropertyValue}){
     return(
         <tr>
-            <th>{productDetailName}</th>
-            <td>{productDetailValue}</td>
+            <th>{productPropertyName}</th>
+            <td>{productPropertyValue}</td>
         </tr>
     )
 }
 
 ItemTableRow.propTypes = {
-    productDetailName: Proptypes.string,
-    productDetailValue: Proptypes.string
+    productPropertyName: Proptypes.string,
+    productPropertyValue: Proptypes.any,
 }
 
 export default ItemTableRow;

@@ -145,16 +145,18 @@ public class ConverterImpl implements Converter {
 
 
         return new ProductItemDTO(
-                product.getProductName(),
-                product.getPrice(),
-                product.getDeliveryTimeInDay(),
-                product.getQuantity(),
-                product.getRating(),
-                product.getShippingPrice(),
-                product.getSold(),
-                product.getBrand(),
-                product.getDescription(),
-                product.getSeller().getFullName(),
+                new ProductInformation(
+                        product.getProductName(),
+                        product.getPrice(),
+                        product.getDeliveryTimeInDay(),
+                        product.getQuantity(),
+                        product.getRating(),
+                        product.getShippingPrice(),
+                        product.getSold(),
+                        product.getBrand(),
+                        product.getDescription(),
+                        product.getSeller().getFullName()
+                ),
                 product.getImages().stream()
                         .map(Image::getFileName)
                         .toList(),
