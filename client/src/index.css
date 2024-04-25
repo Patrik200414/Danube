@@ -661,3 +661,43 @@ input[type="text"] {
   }
   
 
+  /*Item images*/
+  .item-image-container {
+    position: relative;
+    width: 100%;
+    max-width: 300px; /* adjust max-width to fit your design */
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .item-image-container img {
+    width: 200px;
+    height: 200px;
+    display: block;
+    max-width: 150px;
+    max-height: 200px;
+    align-self: center;
+  }
+
+  .item-image-container > .uploaded-images-container{
+    width: 100%;
+  }
+
+  .item-image-container > .uploaded-images-container > .product-image{
+    padding: 10px;
+    width: 70px;
+    height: 70px;
+    cursor: pointer;
+  }
+  
+  @media only screen and (max-width: 768px) {
+    .multiple-image-container img {
+      width: calc(33.33% - 8px);
+    }
+  }
+  
+  
+

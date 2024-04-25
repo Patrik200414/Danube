@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import fetchGet from "../utility/fetchGet";
+import ItemImageViewer from "../component/item/ItemImageViewer";
 import ItemTable from "../component/item/ItemTable";
 
 function Item(){
@@ -36,7 +37,8 @@ function Item(){
             <h1 className="item-not-found-error">{error}</h1> : 
             product &&
             <div>
-                
+                <ItemImageViewer images={product.images}/>
+                <ItemTable detailValues={product.detailValues}/>
             </div>
             }
         </div>
