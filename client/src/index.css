@@ -628,3 +628,36 @@ input[type="text"] {
     margin-top: 20%;
 }
 
+/*Detail table*/
+/* CSS for product-detail-table */
+.product-detail-table {
+    width: 100%;
+    max-width: 500px;
+    border-collapse: collapse;
+    border-spacing: 0;
+    border: 1px solid lightgray;
+  }
+  
+  .product-detail-table th,
+  .product-detail-table td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+  tr:nth-child(even) {background-color: #f2f2f2;}
+  
+  /* Responsive CSS */
+  @media only screen and (max-width: 600px) {
+    .product-detail-table th,
+    .product-detail-table td {
+      display: block;
+      width: 100%;
+    }
+    
+    .product-detail-table th {
+      text-align: center;
+    }
+  }
+  
+

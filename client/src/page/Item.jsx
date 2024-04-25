@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import fetchGet from "../utility/fetchGet";
+import ItemTable from "../component/item/ItemTable";
 
 function Item(){
     const [product, setProduct] = useState();
@@ -19,6 +20,7 @@ function Item(){
             const searchedProduct = await fetchGet(`/api/product/item/${id}`);
             const productResult = await searchedProduct.json();
             if(searchedProduct.ok){
+                console.log(productResult);
                 setProduct(productResult);
             }
             setError(!searchedProduct.ok ? productResult.errorMessage : '');
@@ -32,7 +34,10 @@ function Item(){
         <div className="product-info-container">
             {error ? 
             <h1 className="item-not-found-error">{error}</h1> : 
-            <div> asd</div>
+            product &&
+            <div>
+                
+            </div>
             }
         </div>
     )
