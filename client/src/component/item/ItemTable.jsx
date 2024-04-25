@@ -1,18 +1,17 @@
-import ItemTableRow from "./ItemTableRow";
 import PropTypes from 'prop-types';
 
-function ItemTable({detailValues}){
+function ItemTable({renderElement}){
     return(
         <table className="product-detail-table">
             <tbody>
-                {detailValues.map(detailValue => <ItemTableRow key={detailValue.detail} productDetailName={detailValue.detail} productDetailValue={detailValue.value}/>)}
+                {renderElement()}
             </tbody>
         </table>
     )
 }
 
 ItemTable.propTypes = {
-    detailValues: PropTypes.object
+    renderElement: PropTypes.func
 }
 
 export default ItemTable;

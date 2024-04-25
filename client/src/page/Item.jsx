@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import fetchGet from "../utility/fetchGet";
 import ItemImageViewer from "../component/item/ItemImageViewer";
 import ItemTable from "../component/item/ItemTable";
+import ItemTableRow from '../component/item/ItemTableRow';
 
 function Item(){
     const [product, setProduct] = useState();
@@ -10,6 +11,14 @@ function Item(){
 
     const {id} = useParams();
     const navigate = useNavigate();
+
+    function renderProductDetails(detailValues){
+        return detailValues.map(detailValue => <ItemTableRow key={detailValue.detail} productPropertyName={detailValue.detail} productPropertyValue={detailValue.value}/>);
+    }
+
+    function renderProductInformation(productInformation){
+        return Object.keys(productInformation).map(productInformationKey => <ItemTableRow key={productInformationKey} productPropertyName={productInformationKey} productPropertyValue={productInformation[productInformationKey]}/>);
+    }
 
     useEffect(() => {
         if(isNaN(id)){
@@ -21,7 +30,6 @@ function Item(){
             const searchedProduct = await fetchGet(`/api/product/item/${id}`);
             const productResult = await searchedProduct.json();
             if(searchedProduct.ok){
-                console.log(productResult);
                 setProduct(productResult);
             }
             setError(!searchedProduct.ok ? productResult.errorMessage : '');
@@ -38,7 +46,10 @@ function Item(){
             product &&
             <div>
                 <ItemImageViewer images={product.images}/>
-                <ItemTable detailValues={product.detailValues}/>
+                <h3>Product Information: </h3>
+                <ItemTable renderElement={() => renderProductInformation(product.productInformation)}/>
+                <h3>Product Details: </h3>
+                <ItemTable renderElement={() => renderProductDetails(product.detailValues)}/>
             </div>
             }
         </div>
