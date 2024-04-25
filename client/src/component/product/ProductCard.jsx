@@ -3,10 +3,10 @@ import defaultProductImage from '../../static/defaultProduct.jpg';
 import Proptypes from 'prop-types';
 import ImageContainer from './ImageContainer';
 import calculateImageSourceName from '../../utility/calculateImageSourceName';
+import { Link } from 'react-router-dom';
 
 function ProductCard({product}){
     const imagesLength = product.images.length;
-    console.log(imagesLength );
 
     const [imageNumber, setImageNumber] = useState(0);
     const [isPrevButtonDisabled, setIsPrevButtonDisabled] = useState(true);
@@ -64,7 +64,9 @@ function ProductCard({product}){
                 <span>Quantity: {product.quantity}</span>
                 <span>Delivery time in day: {product.deliveryTimeInDay}</span>
             </div>
-
+            <Link to={`/item/${product.id}`}>
+                <button className='submit-button'>Visit product!</button>
+            </Link>
         </div>
     )
 }

@@ -554,7 +554,7 @@ input[type="text"] {
 
 .product-card{
     max-width: 350px;
-    max-height: 350px;
+    max-height: 385px;
     border: 1px solid black;
     border-radius: 15px;
     max-width: 250px;
