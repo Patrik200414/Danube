@@ -621,3 +621,10 @@ input[type="text"] {
     align-items: center;
 }
 
+/*Item not found*/
+.item-not-found-error{
+    color: red;
+    text-align: center;
+    margin-top: 20%;
+}
+
