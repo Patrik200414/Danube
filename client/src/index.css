@@ -611,3 +611,93 @@ input[type="text"] {
     opacity: 0.5;
     transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
+
+/*404 page not found*/
+.not-found-container{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/*Item not found*/
+.item-not-found-error{
+    color: red;
+    text-align: center;
+    margin-top: 20%;
+}
+
+/*Detail table*/
+/* CSS for product-detail-table */
+.product-detail-table {
+    width: 100%;
+    max-width: 500px;
+    border-collapse: collapse;
+    border-spacing: 0;
+    border: 1px solid lightgray;
+  }
+  
+  .product-detail-table th,
+  .product-detail-table td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+  tr:nth-child(even) {background-color: #f2f2f2;}
+  
+  /* Responsive CSS */
+  @media only screen and (max-width: 600px) {
+    .product-detail-table th,
+    .product-detail-table td {
+      display: block;
+      width: 100%;
+    }
+    
+    .product-detail-table th {
+      text-align: center;
+    }
+  }
+  
+
+  /*Item images*/
+  .item-image-container {
+    position: relative;
+    width: 100%;
+    max-width: 300px; /* adjust max-width to fit your design */
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .item-image-container img {
+    width: 200px;
+    height: 200px;
+    display: block;
+    max-width: 150px;
+    max-height: 200px;
+    align-self: center;
+  }
+
+  .item-image-container > .uploaded-images-container{
+    width: 100%;
+  }
+
+  .item-image-container > .uploaded-images-container > .product-image{
+    padding: 10px;
+    width: 70px;
+    height: 70px;
+    cursor: pointer;
+  }
+  
+  @media only screen and (max-width: 768px) {
+    .multiple-image-container img {
+      width: calc(33.33% - 8px);
+    }
+  }
+  
+  
+

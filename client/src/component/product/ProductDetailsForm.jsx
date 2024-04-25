@@ -1,16 +1,12 @@
 import Proptypes from "prop-types";
 import { useEffect } from "react";
+import fetchGetAuthorization from "../../utility/fetchGetAuthorization";
 
 function ProductDetailsForm({details, onDetailsChange, subCategoryId, user, onDetailsSet, onImageUpload}){
 
     useEffect(() => {
         const getDetails = async () => {
-            const detailsData = await fetch(`/api/product/detail/${subCategoryId}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${user.jwt}`
-                }
-            });
+            const detailsData = await fetchGetAuthorization(`/api/product/detail/${subCategoryId}`, user.jwt);
             const detailResponse = await detailsData.json();
             onDetailsSet(detailResponse);
         }

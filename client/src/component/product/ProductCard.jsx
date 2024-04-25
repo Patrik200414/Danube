@@ -2,6 +2,7 @@ import { useState } from 'react';
 import defaultProductImage from '../../static/defaultProduct.jpg';
 import Proptypes from 'prop-types';
 import ImageContainer from './ImageContainer';
+import calculateImageSourceName from '../../utility/calculateImageSourceName';
 
 function ProductCard({product}){
     const imagesLength = product.images.length;
@@ -10,10 +11,6 @@ function ProductCard({product}){
     const [imageNumber, setImageNumber] = useState(0);
     const [isPrevButtonDisabled, setIsPrevButtonDisabled] = useState(true);
     const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(!(imagesLength > 1));
-
-    function calculateImageSourceName(imageName){
-        return `http://localhost:8080/images/${imageName}`;
-    }
 
     function controllPrevButtonState(imageNumber){
         if(imageNumber > 0){

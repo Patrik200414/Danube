@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Proptypes from "prop-types";
+import fetchGet from "../../utility/fetchGet";
 
 function ProductCategoryForm({onSelectCategoryIdChange, selectedCategoryId, selectedSubcategoryId, onSelectedSubCategoryIdChange}){
     const [avaibleCategories, setAvaibleCategories] = useState();
@@ -7,7 +8,7 @@ function ProductCategoryForm({onSelectCategoryIdChange, selectedCategoryId, sele
 
     useEffect(() => {
         const getCategories = async () => {
-            const categoryData = await fetch('/api/product/category');
+            const categoryData = await fetchGet('/api/product/category');
             const categoryResponse = await categoryData.json();
 
             setAvaibleCategories(categoryResponse);
@@ -23,7 +24,7 @@ function ProductCategoryForm({onSelectCategoryIdChange, selectedCategoryId, sele
         }
 
         const getSubCategories = async () => {
-            const subCategoryData = await fetch(`/api/product/subcategory/${selectedCategoryId}`);
+            const subCategoryData = await fetchGet(`/api/product/subcategory/${selectedCategoryId}`)
             const subCategoryResponse = await subCategoryData.json();
 
             setAvaibleSubCategories(subCategoryResponse);
