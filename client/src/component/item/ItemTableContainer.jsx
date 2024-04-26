@@ -1,4 +1,5 @@
 import ItemTable from "./ItemTable";
+import Proptypes from "prop-types";
 
 function ItemTableContainer({tableName, renderElement}){
     return(
@@ -7,6 +8,11 @@ function ItemTableContainer({tableName, renderElement}){
             <ItemTable renderElement={renderElement}/>
         </div>
     )
+}
+
+ItemTableContainer.propTypes = {
+    tableName: Proptypes.string,
+    renderElement: Proptypes.func
 }
 
 export default ItemTableContainer;

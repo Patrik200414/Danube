@@ -40,6 +40,7 @@ function Item(){
         
     }, [id, navigate])
 
+
     return(
         <div className="product-info-container">
             {error ? 
