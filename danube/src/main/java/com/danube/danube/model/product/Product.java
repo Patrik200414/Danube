@@ -2,6 +2,7 @@ package com.danube.danube.model.product;
 
 import com.danube.danube.model.product.connection.ProductValue;
 import com.danube.danube.model.product.image.Image;
+import com.danube.danube.model.product.subcategory.Subcategory;
 import com.danube.danube.model.user.UserEntity;
 import jakarta.persistence.*;
 
@@ -34,10 +35,13 @@ public class Product {
     @OneToMany(mappedBy = "product")
     private List<Image> images;
 
+    @ManyToOne
+    public Subcategory subcategory;
+
     public Product() {
     }
 
-    public Product(long id, List<ProductValue> productValues, String productName, double price, String brand, int quantity, String description, double shippingPrice, int deliveryTimeInDay, int rating, int sold, UserEntity seller, List<Image> images) {
+    public Product(long id, List<ProductValue> productValues, String productName, double price, String brand, int quantity, String description, double shippingPrice, int deliveryTimeInDay, int rating, int sold, UserEntity seller, List<Image> images, Subcategory subcategory) {
         this.id = id;
         this.productValues = productValues;
         this.productName = productName;
@@ -51,6 +55,7 @@ public class Product {
         this.sold = sold;
         this.seller = seller;
         this.images = images;
+        this.subcategory = subcategory;
     }
 
     public long getId() {
@@ -158,5 +163,13 @@ public class Product {
     }
     public String getSellerFullName(){
         return seller.getFullName();
+    }
+
+    public Subcategory getSubcategory() {
+        return subcategory;
+    }
+
+    public void setSubcategory(Subcategory subcategory) {
+        this.subcategory = subcategory;
     }
 }
