@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import fetchGet from "../utility/fetchGet";
 import ItemImageViewer from "../component/item/ItemImageViewer";
-import ItemTable from "../component/item/ItemTable";
 import ItemTableRow from '../component/item/ItemTableRow';
+import ItemTableContainer from '../component/item/ItemTableContainer';
+
 
 function Item(){
     const [product, setProduct] = useState();
@@ -39,17 +40,18 @@ function Item(){
         
     }, [id, navigate])
 
+
     return(
         <div className="product-info-container">
             {error ? 
             <h1 className="item-not-found-error">{error}</h1> : 
             product &&
-            <div>
+            <div className="item-container">
                 <ItemImageViewer images={product.images}/>
-                <h3>Product Information: </h3>
-                <ItemTable renderElement={() => renderProductInformation(product.productInformation)}/>
-                <h3>Product Details: </h3>
-                <ItemTable renderElement={() => renderProductDetails(product.detailValues)}/>
+                <div className="item-information-container">
+                    <ItemTableContainer tableName="Product Information" renderElement={() => renderProductInformation(product.productInformation)}/>
+                    <ItemTableContainer tableName="Product Details" renderElement={() => renderProductDetails(product.detailValues)}/>
+                </div>
             </div>
             }
         </div>
