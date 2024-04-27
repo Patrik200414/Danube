@@ -26,6 +26,7 @@ import com.danube.danube.utility.filellogger.FileLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -34,6 +35,7 @@ import java.util.*;
 @Service
 public class ProductService {
     public static final String BASE_IMAGE_PATH = String.format("%s\\src\\main\\resources\\static\\images\\", System.getProperty("user.dir"));
+    public static final int SIMILAR_RECOMENDED_PRODUCTS_RESULT_COUNT = 15;
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final SubcategoryRepository subcategoryRepository;
@@ -110,6 +112,15 @@ public class ProductService {
                 .map(SubcategoryDetail::getDetail)
                 .toList();
         return converter.convertDetailsToDetailsDTO(detailsBySubCategory);
+    }
+
+    public List<ProductShowSmallDTO> getSimilarProducts(long productFromId){
+        Product product = productRepository.findById(productFromId)
+                .orElseThrow(NonExistingProductException::new);
+
+        Pageable pageable = PageRequest.of(0, SIMILAR_RECOMENDED_PRODUCTS_RESULT_COUNT);
+        List<Product> similarProducts = productRepository.findBySubcategoryAndIdNotOrderBySoldDescRatingDesc(product.getSubcategory(), productFromId, pageable);
+        return converter.convertProductsToProductShowSmallDTO(similarProducts);
     }
 
     public void saveProduct(ProductUploadDTO productUploadDTO) throws IOException {
