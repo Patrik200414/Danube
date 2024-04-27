@@ -4,7 +4,7 @@ import fetchGet from "../utility/fetchGet";
 import ItemImageViewer from "../component/item/ItemImageViewer";
 import ItemTableRow from '../component/item/ItemTableRow';
 import ItemTableContainer from '../component/item/ItemTableContainer';
-import ItemSimularContainer from "../component/item/ItemSimularContainer";
+import ItemSimilarContainer from "../component/item/ItemSimilarContainer";
 import handlePromiseAllError from "../utility/handlePromiseAllError";
 
 
@@ -62,7 +62,7 @@ function Item(){
                         <ItemTableContainer tableName="Product Details" renderElement={() => renderProductDetails(product.detailValues)}/>
                     </div>
                 </div>
-                <ItemSimularContainer similarProducts={simularProducts}/>
+                <ItemSimilarContainer similarProducts={simularProducts}/>
             </div>
             }
         </div>
