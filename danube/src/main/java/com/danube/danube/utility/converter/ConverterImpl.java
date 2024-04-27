@@ -129,7 +129,7 @@ public class ConverterImpl implements Converter {
 
     private List<String> getProductImageName(Product product){
         return product.getImages().stream()
-                .map(image -> image.getFileName())
+                .map(Image::getFileName)
                 .toList();
     }
 
