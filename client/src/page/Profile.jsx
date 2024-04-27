@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import seller from "../static/seller.svg";
 import settings from "../static/settings.svg"
 import sellProduct from "../static/sellProduct.svg";
+import updateProduct from "../static/updateProduct.svg";
 
 function Profile(){
     const [userRoles, setUserRoles] = useState(null);
@@ -35,13 +36,22 @@ function Profile(){
                         </div>
                     }
                     {userRoles.includes("ROLE_SELLER") &&
-                        <div className="service">
-                            <Link to='/verification/product/upload'>
-                                <img src={sellProduct} />
-                                <h2>Upload product</h2>
-                                <p>This service offers a comprehensive set of features and functionalities to empower sellers in showcasing their products effectively and maximizing sales potential.</p>
-                            </Link>
-                        </div>
+                        <>
+                            <div className="service">
+                                <Link to='/verification/product/upload'>
+                                    <img src={sellProduct} />
+                                    <h2>Upload product</h2>
+                                    <p>This service offers a comprehensive set of features and functionalities to empower sellers in showcasing their products effectively and maximizing sales potential.</p>
+                                </Link>
+                            </div>
+                            <div className="service">
+                                <Link to='/product/update'>
+                                    <img src={updateProduct} />
+                                    <h2>Update product</h2>
+                                    <p>Unlock a suite of robust features designed to elevate your online storefront. Seamlessly update product details, upload fresh images, and refine descriptions with ease. Stay ahead in the market by showcasing your inventory in its best light and optimizing sales opportunities effortlessly.</p>
+                                </Link>
+                            </div>
+                        </>
                     }
 
                     <div className="service">
