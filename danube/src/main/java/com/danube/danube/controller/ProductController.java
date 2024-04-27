@@ -59,6 +59,11 @@ public class ProductController {
         return productService.getDetailsBySubcategory(subcategoryId);
     }
 
+    @GetMapping("/similar/{productFromId}")
+    public List<ProductShowSmallDTO> getSimilarProducts(@PathVariable long productFromId){
+        return productService.getSimilarProducts(productFromId);
+    }
+
     @GetMapping("/item/{id}")
     public ProductItemDTO getProductItems(@PathVariable long id){
         return productService.getProductItem(id);
