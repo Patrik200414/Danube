@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -32,4 +33,5 @@ public interface Converter {
     List<Image> convertMultiPartFilesToListOfImages(MultipartFile[] images, Product product);
     Set<ProductShowSmallDTO> convertProductToProductShowSmallDTORandomOrder(Page<Product> products);
     ProductItemDTO convertProductToProductItemDTO(Product product);
+    List<ProductShowSmallDTO> convertProductsToProductShowSmallDTO(Collection<Product> products);
 }

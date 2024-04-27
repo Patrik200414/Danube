@@ -16,10 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ConverterImpl implements Converter {
@@ -163,5 +160,21 @@ public class ConverterImpl implements Converter {
                         .toList(),
                 detailValues
         );
+    }
+
+    @Override
+    public List<ProductShowSmallDTO> convertProductsToProductShowSmallDTO(Collection<Product> products) {
+        return products.stream()
+                .map(product -> new ProductShowSmallDTO(
+                        product.getProductName(),
+                        product.getPrice(),
+                        product.getShippingPrice(),
+                        product.getDeliveryTimeInDay(),
+                        product.getQuantity(),
+                        product.getRating(),
+                        product.getSold(),
+                        product.getId(),
+                        product.getImages().stream().map(Image::getFileName).toList()
+                )).toList();
     }
 }
