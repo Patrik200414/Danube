@@ -123,6 +123,7 @@ function ProductUpload(){
             
             
             const formData = createFormData(convertedProduct, convertedDetails);
+            console.log(formData);
             
 
             const uploadProductResponse = await fetch('/api/product', {
@@ -195,7 +196,7 @@ function ProductUpload(){
     
 
     function fieldNameConverter(information){
-        const convertedInformations = {};
+        const convertedInformations = {subcategoryId: Number(selectedSubcategoryId)};
         for(const key in information){
             const splitted = key.split(' '); 
             if(splitted.length > 1){

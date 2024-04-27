@@ -21,7 +21,7 @@ public interface Converter {
     List<CategoryDTO> convertCategoryToCategoryDTO(List<Category> categories);
     List<SubcategoriesDTO> convertSubcategoriesToSubcategoryDTOs(List<Subcategory> subcategories);
     List<DetailDTO> convertDetailsToDetailsDTO(List<Detail> details);
-    Product convertProductDetailUploadDTOToProduct(ProductDetailUploadDTO productDetails, UserEntity seller);
+    Product convertProductDetailUploadDTOToProduct(ProductDetailUploadDTO productDetails, UserEntity seller, Subcategory subcategory);
     ProductUploadDTO convertRequestParamToProductUploadDTO(
             String productDetail,
             String productInformation,

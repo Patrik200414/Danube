@@ -69,7 +69,7 @@ public class ConverterImpl implements Converter {
     }
 
     @Override
-    public Product convertProductDetailUploadDTOToProduct(ProductDetailUploadDTO productDetails, UserEntity seller) {
+    public Product convertProductDetailUploadDTOToProduct(ProductDetailUploadDTO productDetails, UserEntity seller, Subcategory subcategory) {
         Product product = new Product();
         product.setProductName(productDetails.productName());
         product.setBrand(productDetails.brand());
@@ -81,6 +81,7 @@ public class ConverterImpl implements Converter {
         product.setShippingPrice(productDetails.shippingPrice());
         product.setSold(0);
         product.setSeller(seller);
+        product.setSubcategory(subcategory);
         return product;
     }
 

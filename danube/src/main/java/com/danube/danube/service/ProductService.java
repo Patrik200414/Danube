@@ -114,10 +114,14 @@ public class ProductService {
 
     public void saveProduct(ProductUploadDTO productUploadDTO) throws IOException {
         UserEntity seller = userValidator(productUploadDTO.userId());
+        Subcategory subcategory = subcategoryRepository.findById(productUploadDTO.productDetail().subcategoryId())
+                        .orElseThrow(NonExistingSubcategoryException::new);
 
         fileLogger.saveFile(productUploadDTO.images(), BASE_IMAGE_PATH);
         Product product = converter.convertProductDetailUploadDTOToProduct(
-                productUploadDTO.productDetail(), seller
+                productUploadDTO.productDetail(),
+                seller,
+                subcategory
         );
 
         List<Image> images = converter.convertMultiPartFilesToListOfImages(productUploadDTO.images(), product);

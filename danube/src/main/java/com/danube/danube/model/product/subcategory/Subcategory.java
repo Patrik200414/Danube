@@ -1,5 +1,6 @@
 package com.danube.danube.model.product.subcategory;
 
+import com.danube.danube.model.product.Product;
 import com.danube.danube.model.product.category.Category;
 import com.danube.danube.model.product.connection.SubcategoryDetail;
 import com.danube.danube.model.product.detail.Detail;
@@ -20,14 +21,18 @@ public class Subcategory {
     @OneToMany(mappedBy = "subcategory")
     private List<SubcategoryDetail> subcategoryDetails;
 
+    @OneToMany(mappedBy = "subcategory")
+    private List<Product> products;
+
     public Subcategory() {
     }
 
-    public Subcategory(long id, String name, Category category, List<SubcategoryDetail> subcategoryDetails) {
+    public Subcategory(long id, String name, Category category, List<SubcategoryDetail> subcategoryDetails, List<Product> products) {
         this.id = id;
         this.name = name;
         this.category = category;
         this.subcategoryDetails = subcategoryDetails;
+        this.products = products;
     }
 
 
@@ -61,5 +66,13 @@ public class Subcategory {
 
     public void setSubcategoryDetails(List<SubcategoryDetail> subcategoryDetails) {
         this.subcategoryDetails = subcategoryDetails;
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
     }
 }

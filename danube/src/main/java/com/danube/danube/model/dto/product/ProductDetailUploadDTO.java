@@ -1,5 +1,7 @@
 package com.danube.danube.model.dto.product;
 
+import com.danube.danube.model.product.subcategory.Subcategory;
+
 public record ProductDetailUploadDTO(
         int deliveryTimeInDay,
         double price,
@@ -7,6 +9,7 @@ public record ProductDetailUploadDTO(
         double shippingPrice,
         String brand,
         String description,
-        String productName
+        String productName,
+        long subcategoryId
 ) {
 }
