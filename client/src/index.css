@@ -512,6 +512,7 @@ input[type="text"] {
     gap: 20px;
     overflow-x: scroll;
     background-color: var(--image-preview-container-background-color);
+    margin-top: 10%;
 }
 
 .image-preview-container{
@@ -539,6 +540,12 @@ input[type="text"] {
     font-size: 24px;
     cursor: pointer;
 }
+
+@media only screen and (max-width: 768px) {
+    .uploaded-images-container{
+        margin-top: 0%;
+    }
+  }
 
 /*Product-container and product count*/
 
