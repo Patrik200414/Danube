@@ -625,7 +625,6 @@ input[type="text"] {
 .item-not-found-error{
     color: red;
     text-align: center;
-    margin-top: 20%;
 }
 
 /*Detail table*/
@@ -742,6 +741,14 @@ input[type="text"] {
     .item-information-container td{
         text-align: center;
     }
+  }
+
+  .multiple-error-container{
+    height: 88.2vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 
 
