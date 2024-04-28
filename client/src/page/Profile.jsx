@@ -45,7 +45,7 @@ function Profile(){
                                 </Link>
                             </div>
                             <div className="service">
-                                <Link to='/product/update'>
+                                <Link to='/verification/product/update'>
                                     <img src={updateProduct} />
                                     <h2>Update product</h2>
                                     <p>Unlock a suite of robust features designed to elevate your online storefront. Seamlessly update product details, upload fresh images, and refine descriptions with ease. Stay ahead in the market by showcasing your inventory in its best light and optimizing sales opportunities effortlessly.</p>
