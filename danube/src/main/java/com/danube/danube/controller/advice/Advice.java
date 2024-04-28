@@ -7,10 +7,7 @@ import com.danube.danube.custom_exception.login_registration.RegistrationFieldNu
 import com.danube.danube.custom_exception.product.IncorrectProductObjectFormException;
 import com.danube.danube.custom_exception.product.NonExistingProductException;
 import com.danube.danube.custom_exception.product.NonExistingSubcategoryException;
-import com.danube.danube.custom_exception.user.NotMatchingNewPasswordAndReenterPasswordException;
-import com.danube.danube.custom_exception.user.NotMatchingCurrentPasswordException;
-import com.danube.danube.custom_exception.user.NotMatchingUserAndUpdateUserIdException;
-import com.danube.danube.custom_exception.user.UserEntityPasswordMissMatchException;
+import com.danube.danube.custom_exception.user.*;
 import com.danube.danube.model.error.UserErrorMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -130,6 +127,13 @@ public class Advice {
     public ResponseEntity<UserErrorMessage> handleNonExistingProductException(){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 new UserErrorMessage("The selected item is not found!")
+        );
+    }
+
+    @ExceptionHandler(UserNotSellerException.class)
+    public ResponseEntity<UserErrorMessage> handleUserNotSellerException(){
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                new UserErrorMessage("The current user don't have seller permission!")
         );
     }
 

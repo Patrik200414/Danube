@@ -53,6 +53,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/product/item/**").permitAll()
                                 .requestMatchers("/api/product/similar/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/product").hasRole("SELLER")
+                                .requestMatchers("/api/product/myProducts/**").hasRole("SELLER")
                                 .requestMatchers("/api/product/detail/**").hasRole("SELLER")
                                 .requestMatchers(HttpMethod.GET, "/api/product").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/product/count").permitAll()

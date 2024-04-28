@@ -68,6 +68,13 @@ public class ProductController {
     public ProductItemDTO getProductItems(@PathVariable long id){
         return productService.getProductItem(id);
     }
+
+
+    @GetMapping("/myProducts/{userId}")
+    public List<ProductShowSmallDTO> getMyProducts(@PathVariable long userId){
+        return productService.getMyProducts(userId);
+    }
+
     @Async
     @Transactional
     @PostMapping()

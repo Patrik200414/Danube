@@ -6,6 +6,7 @@ import com.danube.danube.custom_exception.product.NonExistingProductCategoryExce
 import com.danube.danube.custom_exception.product.NonExistingProductException;
 import com.danube.danube.custom_exception.product.NonExistingSubcategoryException;
 import com.danube.danube.custom_exception.user.InvalidUserCredentialsException;
+import com.danube.danube.custom_exception.user.UserNotSellerException;
 import com.danube.danube.model.dto.product.*;
 import com.danube.danube.model.product.Product;
 import com.danube.danube.model.product.category.Category;
@@ -143,6 +144,16 @@ public class ProductService {
 
         Map<String, String> productInformation = productUploadDTO.productInformation();
         saveProductValues(productInformation, product);
+    }
+
+    public List<ProductShowSmallDTO> getMyProducts(long userId){
+        UserEntity seller = userRepository.findById(userId).orElseThrow(NonExistingUserException::new);
+        if(!seller.getRoles().contains(Role.ROLE_SELLER)){
+            throw new UserNotSellerException();
+        }
+
+        List<Product> products = productRepository.findBySeller(seller);
+        return converter.convertProductsToProductShowSmallDTO(products);
     }
 
     private List<CategoryAndSubCategoryDTO> getCategoryAndSubCategories(List<Category> categories) {
