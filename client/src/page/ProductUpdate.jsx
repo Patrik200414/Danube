@@ -1,10 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import verifySellerRole from '../utility/verifySellerRole';
+import fetchGetAuthorization from "../utility/fetchGetAuthorization";
+import ProductsTable from "../component/product/ProductsTable";
+
+import buttonObjectGenerator from '../utility/buttonObjectGenerator';
+import productUpdateTableItemGenerator from '../utility/productUpdateTableItemGenerator';
 
 function ProductUpdate(){
-    const [user, setUser] = useState();
+    const [, setUser] = useState();
     const [error, setError] = useState();
+    const [myProducts, setMyProducts] = useState();
 
     const navigate = useNavigate();
 
@@ -16,13 +22,34 @@ function ProductUpdate(){
         }
 
         setUser(userData);
+        
+        const getUserProducts = async () => {
+            const userProducts = await fetchGetAuthorization(`/api/product/myProducts/${userData.id}`, userData.jwt);
+            const productsResponse = await userProducts.json();
+            if(userProducts.ok){
+                const productUpdateItems = productsResponse.map(product => productUpdateTableItemGenerator(product));
+                setMyProducts(productUpdateItems);
+            } else {
+                setError(productsResponse.errorMessage);
+            }
+        }
+
+        getUserProducts();
 
     }, [navigate])
 
     return(
         <div className="product-update-container">
-            <h2>Product update</h2>
-
+            {error && <h1 key={error} className="item-not-found-error">{error}</h1>}
+            {myProducts &&
+                <>
+                    <h2>Product update</h2>
+                    <ProductsTable products={myProducts} buttons={[
+                        buttonObjectGenerator('Update', 'Update', true, '/item'),
+                        buttonObjectGenerator('Delete', 'Delete', true, '', (id) => console.log(`Delete ${id}`))
+                        ]}/>
+                </>
+            }
         </div>
     )
 }
