@@ -12,6 +12,7 @@ public record ProductShowSmallDTO(
         int rating,
         int sold,
         long id,
-        List<String> images
+        List<String> images,
+        String sellerName
 ) {
 }

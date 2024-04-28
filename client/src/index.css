@@ -760,4 +760,49 @@ input[type="text"] {
 
 
   
+  /*Product table*/
+  .products-table {
+    width: 100%;
+    text-align: left;
+    border-collapse: collapse;
+    margin-top: 20px;
+    width: 70%;
+  }
+  
+  .products-table tbody tr {
+    background-color: rgb(198, 218, 255);
+  }
+  
+  .products-table tbody tr:nth-child(even) {
+    background-color: rgb(219, 230, 255);
+  }
+  
+  .products-table td,
+  .products-table th {
+    padding: 0.2rem;
+  }
+  
+  .products-table button {
+    padding: 0.2rem 1rem;
+    margin: 0.1rem;
+  }
 
+
+  /*MyProduct image*/
+  .my-product-image{
+    max-width: 100px;
+    max-height: 100px;
+  }
+
+  /*Product update container*/
+  .product-update-container{
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .product-update-container h2{
+    align-self: flex-start;
+  }

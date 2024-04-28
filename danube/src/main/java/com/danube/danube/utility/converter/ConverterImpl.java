@@ -123,7 +123,8 @@ public class ConverterImpl implements Converter {
                         product.getRating(),
                         product.getSold(),
                         product.getId(),
-                        getProductImageName(product)
+                        getProductImageName(product),
+                        product.getSellerFullName()
                 )).collect(Collectors.toSet());
     }
 
@@ -174,7 +175,8 @@ public class ConverterImpl implements Converter {
                         product.getRating(),
                         product.getSold(),
                         product.getId(),
-                        product.getImages().stream().map(Image::getFileName).toList()
+                        product.getImages().stream().map(Image::getFileName).toList(),
+                        product.getSellerFullName()
                 )).toList();
     }
 }
