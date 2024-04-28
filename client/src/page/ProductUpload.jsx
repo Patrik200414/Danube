@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import ProductCategoryForm from "../component/product/ProductCategoryForm";
 import ProductDetailsForm from "../component/product/ProductDetailsForm";
 import UploadedImages from "../component/product/UploadedImages";
+import verifySellerRole from "../utility/verifySellerRole";
 
 function ProductUpload(){
     const SUCCESS_MESSAGE_TIME_IN_SECONDS = 2;
@@ -27,14 +28,8 @@ function ProductUpload(){
     useEffect(() => {
         const userData = JSON.parse(sessionStorage.getItem('USER_JWT'));
 
-        if(!userData){
+        if(!verifySellerRole(userData)){
             navigate('/');
-            return;
-        }
-
-        if(!userData.roles.includes('ROLE_SELLER')){
-            navigate('/profile');
-            return;
         }
 
         setUser(userData);
