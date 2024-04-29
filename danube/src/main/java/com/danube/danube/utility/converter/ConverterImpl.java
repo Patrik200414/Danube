@@ -12,6 +12,7 @@ import com.danube.danube.model.user.UserEntity;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hibernate.internal.util.collections.LinkedIdentityHashMap;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
@@ -136,9 +137,10 @@ public class ConverterImpl implements Converter {
 
     @Override
     public ProductItemDTO convertProductToProductItemDTO(Product product) {
-        List<DetailValueDTO> detailValues = product.getProductValues().stream()
-                .map(productValue -> new DetailValueDTO(
+        List<DetailDTO> detailValues = product.getProductValues().stream()
+                .map(productValue -> new DetailDTO(
                         productValue.getDetailName(),
+                        productValue.getDetailId(),
                         productValue.getValueName()
                 )).toList();
 
@@ -154,7 +156,8 @@ public class ConverterImpl implements Converter {
                         product.getSold(),
                         product.getBrand(),
                         product.getDescription(),
-                        product.getSeller().getFullName()
+                        product.getSeller().getFullName(),
+                        product.getSubcategory().getId()
                 ),
                 product.getImages().stream()
                         .map(Image::getFileName)
@@ -178,5 +181,15 @@ public class ConverterImpl implements Converter {
                         product.getImages().stream().map(Image::getFileName).toList(),
                         product.getSellerFullName()
                 )).toList();
+    }
+
+    @Override
+    public Map<String, String> convertProductToMyProductInformation(Product product) {
+        Map<String, String> myProductInformation = new LinkedIdentityHashMap<>();
+        myProductInformation.put("Product image", product.getFirstProductImage().getFileName());
+        myProductInformation.put("Product name", product.getProductName());
+        myProductInformation.put("Owner", product.getSellerFullName());
+        myProductInformation.put("id", String.valueOf(product.getId()));
+        return myProductInformation;
     }
 }

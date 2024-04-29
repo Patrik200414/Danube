@@ -55,7 +55,8 @@ public class ProductValue {
         return value.getValue();
     }
 
-    public String getDetailName(){
-        return value.getDetailName();
+    public String getDetailName(){return value.getDetailName();}
+    public long getDetailId(){
+        return value.getDetail().getId();
     }
 }

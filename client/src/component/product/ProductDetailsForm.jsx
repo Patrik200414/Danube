@@ -10,8 +10,10 @@ function ProductDetailsForm({details, onDetailsChange, subCategoryId, user, onDe
             const detailResponse = await detailsData.json();
             onDetailsSet(detailResponse);
         }
-        getDetails();
-    }, [subCategoryId])
+        if(onDetailsSet){
+            getDetails();
+        }
+    }, [subCategoryId, onDetailsSet])
 
 
     return(
@@ -36,7 +38,7 @@ function ProductDetailsForm({details, onDetailsChange, subCategoryId, user, onDe
 ProductDetailsForm.propTypes = {
     details: Proptypes.array,
     onDetailsChange: Proptypes.func,
-    subCategoryId: Proptypes.string,
+    subCategoryId: Proptypes.number,
     user: Proptypes.object,
     onDetailsSet: Proptypes.func,
     onImageUpload: Proptypes.func

@@ -1,54 +1,72 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import verifySellerRole from '../utility/verifySellerRole';
-import fetchGetAuthorization from "../utility/fetchGetAuthorization";
-import ProductsTable from "../component/product/ProductsTable";
-
-import buttonObjectGenerator from '../utility/buttonObjectGenerator';
-import productUpdateTableItemGenerator from '../utility/productUpdateTableItemGenerator';
+import { useParams } from "react-router-dom";
+import useFetch from "../utility/customHook/useFetch";
+import useVerifySeller from "../utility/customHook/useVerifySeller";
+import ProductInformationForm from "../component/product/ProductInformationForm";
+import ProductDetailsForm from "../component/product/ProductDetailsForm";
+import changeProductDetail from '../utility/changeProductDetail';
+import UploadedImages from '../component/product/UploadedImages';
+import imageUpload from "../utility/imageUpload";
 
 function ProductUpdate(){
-    const [, setUser] = useState();
-    const [error, setError] = useState();
-    const [myProducts, setMyProducts] = useState();
+    const {productId} = useParams();
 
-    const navigate = useNavigate();
+    const [user] = useVerifySeller();
+    const [product, setProduct] = useFetch(`/api/product/item/${productId}`);
 
-    useEffect(() => {
-        const userData = JSON.parse(sessionStorage.getItem('USER_JWT'));
 
-        if(!verifySellerRole(userData)){
-            navigate('/')
+    function handleProductInformationChange(value, key){
+        const updatedProduct = {
+            ...product
+        };
+        updatedProduct.productInformation[key] = value;
+        setProduct(updatedProduct);
+    }
+
+    function handleDetailChange(value, detailId){
+        const copiedProductDetails = [...product.detailValues];
+        const updatedDetails = changeProductDetail(value, detailId, copiedProductDetails);
+        const updatedProduct = {
+            ...product,
+            detailValues: [...updatedDetails]
         }
 
-        setUser(userData);
-        
-        const getUserProducts = async () => {
-            const userProducts = await fetchGetAuthorization(`/api/product/myProducts/${userData.id}`, userData.jwt);
-            const productsResponse = await userProducts.json();
-            if(userProducts.ok){
-                const productUpdateItems = productsResponse.map(product => productUpdateTableItemGenerator(product));
-                setMyProducts(productUpdateItems);
-            } else {
-                setError(productsResponse.errorMessage);
+        setProduct(updatedProduct);
+    }
+
+    function handleImageUpload(e){
+        const uploadedFiles = e.target.files;
+        const file = imageUpload(uploadedFiles, product.images);
+        const modifiedImages = [...product.images, ...file];
+        setProduct(prev => ({
+            ...prev,
+            images: modifiedImages
+        }));
+    }
+
+    function handleImageDeletion(index){
+        const newImageList = product.images.filter((image, i) => {
+            if(i !== index){
+                return image;
             }
-        }
+        })
 
-        getUserProducts();
+        setProduct(prev => ({
+            ...prev,
+            images: newImageList
+        }));
+    }
 
-    }, [navigate])
 
+    
     return(
         <div className="product-update-container">
-            {error && <h1 key={error} className="item-not-found-error">{error}</h1>}
-            {myProducts &&
-                <>
-                    <h2>Product update</h2>
-                    <ProductsTable products={myProducts} buttons={[
-                        buttonObjectGenerator('Update', 'Update', true, '/item'),
-                        buttonObjectGenerator('Delete', 'Delete', true, '', (id) => console.log(`Delete ${id}`))
-                        ]}/>
-                </>
+            {product &&
+                <div className="product-upload">
+                    <ProductInformationForm onDetailsChange={(value, key) => handleProductInformationChange(value, key)} productDetail={product.productInformation}/>
+                    <ProductDetailsForm details={product.detailValues} onDetailsChange={(value, key) => handleDetailChange(value, key)} subCategoryId={product.productInformation.subcategoryId} user={user} onImageUpload={(e) => handleImageUpload(e)}/>
+                    <UploadedImages onImageDeletion={(index) => handleImageDeletion(index)} images={product.images.map(image => image)}/>
+                    <button type="submit">Save</button>
+                </div>
             }
         </div>
     )

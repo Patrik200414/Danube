@@ -172,4 +172,7 @@ public class Product {
     public void setSubcategory(Subcategory subcategory) {
         this.subcategory = subcategory;
     }
+    public Image getFirstProductImage(){
+        return images.get(0);
+    }
 }

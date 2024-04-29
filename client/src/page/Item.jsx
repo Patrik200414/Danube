@@ -13,11 +13,12 @@ function Item(){
     const [simularProducts, setSimularProducts] = useState();
     const [errors, setErrors] = useState([]);
 
+
     const {id} = useParams();
     const navigate = useNavigate();
 
     function renderProductDetails(detailValues){
-        return detailValues.map(detailValue => <ItemTableRow key={detailValue.detail} productPropertyName={detailValue.detail} productPropertyValue={detailValue.value}/>);
+        return detailValues.map(detailValue => <ItemTableRow key={detailValue.id} productPropertyName={detailValue.detailName} productPropertyValue={detailValue.value}/>);
     }
 
     function renderProductInformation(productInformation){

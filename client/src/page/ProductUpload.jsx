@@ -5,6 +5,8 @@ import ProductCategoryForm from "../component/product/ProductCategoryForm";
 import ProductDetailsForm from "../component/product/ProductDetailsForm";
 import UploadedImages from "../component/product/UploadedImages";
 import verifySellerRole from "../utility/verifySellerRole";
+import changeProductDetail from '../utility/changeProductDetail';
+import imageUpload from '../utility/imageUpload';
 
 function ProductUpload(){
     const SUCCESS_MESSAGE_TIME_IN_SECONDS = 2;
@@ -34,13 +36,13 @@ function ProductUpload(){
 
         setUser(userData);
         setProduct({
-            'Product name': '',
-            'Brand': '',
-            'Price': '',
-            'Shipping price': '',
-            'Quantity': '',
-            'Delivery time in day': '',
-            'Description': '',
+            productName: '',
+            brand: '',
+            price: '',
+            shippingPrice: '',
+            quantity: '',
+            deliveryTimeInDay: '',
+            description: '',
         })
     }, [navigate]);
 
@@ -69,27 +71,13 @@ function ProductUpload(){
     }
 
     function handleDetailChange(value, detailId){
-        const changedDetails = details.map(detail => {
-            if(detail.id === detailId){
-                return{
-                    ...detail,
-                    value: value
-                }
-            }
-            return detail;
-        });
+        const changedDetails = changeProductDetail(value, detailId, details);
         setDetails(changedDetails);
     }
 
     function handleImagesChange(e){
         const uploadedFiles = e.target.files;
-        const files = [];
-        for(const fileIndex in uploadedFiles){
-            const isImageAlreadyAdded = images.filter(image => image.name === uploadedFiles[fileIndex].name).length > 0;
-            if(typeof uploadedFiles[fileIndex] === 'object' && !isImageAlreadyAdded){
-                files.push(uploadedFiles[fileIndex]);
-            }
-        }
+        const files = imageUpload(uploadedFiles, images);
 
         setImages(prev => [...prev, ...files]);
     }
@@ -114,11 +102,7 @@ function ProductUpload(){
         ].join(', ');
 
         if(isCorrectForm(errorFields)){
-            const convertedProduct = fieldNameConverter(product);
-            
-            
-            const formData = createFormData(convertedProduct, convertedDetails);
-            console.log(formData);
+            const formData = createFormData({...product, subcategoryId: selectedSubcategoryId}, convertedDetails);
             
 
             const uploadProductResponse = await fetch('/api/product', {
@@ -131,13 +115,13 @@ function ProductUpload(){
     
             if(uploadProductResponse.ok){
                 setProduct({
-                    'Product name': '',
-                    'Brand': '',
-                    'Price': '',
-                    'Shipping price': '',
-                    'Quantity': '',
-                    'Delivery time in day': '',
-                    'Description': '',
+                    productName: '',
+                    brand: '',
+                    price: '',
+                    shippingPrice: '',
+                    quantity: '',
+                    deliveryTimeInDay: '',
+                    description: '',
                 });
                 setSelectedCaegoryId('');
                 setSelectedSubcategoryId('');
@@ -190,23 +174,6 @@ function ProductUpload(){
     }
     
 
-    function fieldNameConverter(information){
-        const convertedInformations = {subcategoryId: Number(selectedSubcategoryId)};
-        for(const key in information){
-            const splitted = key.split(' '); 
-            if(splitted.length > 1){
-                const firstPart = splitted[0].toLowerCase();
-                const restPart = splitted.slice(1).map(propertyName => propertyName[0].toUpperCase() + propertyName.slice(1).toLowerCase()).join('');
-                convertedInformations[firstPart + restPart] = information[key];
-            } else {
-                const firstPart = splitted[0].toLowerCase();
-                convertedInformations[firstPart] = information[key];
-            }
-        }
-
-        return convertedInformations;
-    }
-
     function formDataValidator(information){
         const missingFields = [];
         for(const informationKey in information){
@@ -234,7 +201,7 @@ function ProductUpload(){
                         <ProductDetailsForm 
                             details={details}
                             onDetailsChange={handleDetailChange}
-                            subCategoryId={selectedSubcategoryId} 
+                            subCategoryId={Number(selectedSubcategoryId)} 
                             user={user}
                             onDetailsSet={(details) => setDetails(details)}
                             onImageUpload={handleImagesChange}

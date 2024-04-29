@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface Converter {
@@ -34,4 +35,5 @@ public interface Converter {
     Set<ProductShowSmallDTO> convertProductToProductShowSmallDTORandomOrder(Page<Product> products);
     ProductItemDTO convertProductToProductItemDTO(Product product);
     List<ProductShowSmallDTO> convertProductsToProductShowSmallDTO(Collection<Product> products);
+    Map<String, String> convertProductToMyProductInformation(Product product);
 }
