@@ -34,13 +34,13 @@ function ProductUpload(){
 
         setUser(userData);
         setProduct({
-            'Product name': '',
-            'Brand': '',
-            'Price': '',
-            'Shipping price': '',
-            'Quantity': '',
-            'Delivery time in day': '',
-            'Description': '',
+            productName: '',
+            brand: '',
+            price: '',
+            shippingPrice: '',
+            quantity: '',
+            deliveryTimeInDay: '',
+            description: '',
         })
     }, [navigate]);
 
@@ -114,10 +114,7 @@ function ProductUpload(){
         ].join(', ');
 
         if(isCorrectForm(errorFields)){
-            const convertedProduct = fieldNameConverter(product);
-            
-            
-            const formData = createFormData(convertedProduct, convertedDetails);
+            const formData = createFormData({...product, subcategoryId: selectedSubcategoryId}, convertedDetails);
             console.log(formData);
             
 
@@ -131,13 +128,13 @@ function ProductUpload(){
     
             if(uploadProductResponse.ok){
                 setProduct({
-                    'Product name': '',
-                    'Brand': '',
-                    'Price': '',
-                    'Shipping price': '',
-                    'Quantity': '',
-                    'Delivery time in day': '',
-                    'Description': '',
+                    productName: '',
+                    brand: '',
+                    price: '',
+                    shippingPrice: '',
+                    quantity: '',
+                    deliveryTimeInDay: '',
+                    description: '',
                 });
                 setSelectedCaegoryId('');
                 setSelectedSubcategoryId('');
@@ -189,23 +186,6 @@ function ProductUpload(){
         return convertedProductDetails;
     }
     
-
-    function fieldNameConverter(information){
-        const convertedInformations = {subcategoryId: Number(selectedSubcategoryId)};
-        for(const key in information){
-            const splitted = key.split(' '); 
-            if(splitted.length > 1){
-                const firstPart = splitted[0].toLowerCase();
-                const restPart = splitted.slice(1).map(propertyName => propertyName[0].toUpperCase() + propertyName.slice(1).toLowerCase()).join('');
-                convertedInformations[firstPart + restPart] = information[key];
-            } else {
-                const firstPart = splitted[0].toLowerCase();
-                convertedInformations[firstPart] = information[key];
-            }
-        }
-
-        return convertedInformations;
-    }
 
     function formDataValidator(information){
         const missingFields = [];
