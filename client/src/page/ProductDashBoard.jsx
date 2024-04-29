@@ -5,7 +5,6 @@ import fetchGetAuthorization from "../utility/fetchGetAuthorization";
 import ProductsTable from "../component/product/ProductsTable";
 
 import buttonObjectGenerator from '../utility/buttonObjectGenerator';
-import productUpdateTableItemGenerator from '../utility/productUpdateTableItemGenerator';
 
 function ProductUpdate(){
     const [, setUser] = useState();
@@ -27,8 +26,7 @@ function ProductUpdate(){
             const userProducts = await fetchGetAuthorization(`/api/product/myProducts/${userData.id}`, userData.jwt);
             const productsResponse = await userProducts.json();
             if(userProducts.ok){
-                const productUpdateItems = productsResponse.map(product => productUpdateTableItemGenerator(product));
-                setMyProducts(productUpdateItems);
+                setMyProducts(productsResponse);
             } else {
                 setError(productsResponse.errorMessage);
             }

@@ -14,7 +14,7 @@ import PasswordUpdate from './page/PasswordUpdate';
 import NavBar from './component/NavBar';
 import Item from './page/Item';
 import NotFound from './page/NotFound';
-import ProductUpdate from './page/ProductUpdate';
+import ProductDashBoard from './page/ProductDashBoard';
 
 const verificationToPages = ['upload', 'update'];
 
@@ -53,7 +53,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/product/update',
-        element: <ProductUpdate />
+        element: <ProductDashBoard />
         
       },
       {
