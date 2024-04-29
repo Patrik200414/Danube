@@ -37,13 +37,13 @@ function ProductUpdate(){
     }, [navigate])
 
     return(
-        <div className="product-update-container">
+        <div className="product-dashboard-container">
             {error && <h1 key={error} className="item-not-found-error">{error}</h1>}
             {myProducts &&
                 <>
                     <h2>Product update</h2>
                     <ProductsTable products={myProducts} buttons={[
-                        buttonObjectGenerator('Update', 'Update', true, '/item'),
+                        buttonObjectGenerator('Update', 'Update', true, '/update'),
                         buttonObjectGenerator('Delete', 'Delete', true, '', (id) => console.log(`Delete ${id}`))
                         ]}/>
                 </>
