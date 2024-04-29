@@ -23,6 +23,7 @@ function ProductUpload(){
 
 
     const navigate = useNavigate();
+    console.log(details);
 
 
     useEffect(() => {
