@@ -137,9 +137,10 @@ public class ConverterImpl implements Converter {
 
     @Override
     public ProductItemDTO convertProductToProductItemDTO(Product product) {
-        List<DetailValueDTO> detailValues = product.getProductValues().stream()
-                .map(productValue -> new DetailValueDTO(
+        List<DetailDTO> detailValues = product.getProductValues().stream()
+                .map(productValue -> new DetailDTO(
                         productValue.getDetailName(),
+                        productValue.getDetailId(),
                         productValue.getValueName()
                 )).toList();
 
