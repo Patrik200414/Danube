@@ -10,6 +10,7 @@ public record ProductInformation(
         int sold,
         String brand,
         String description,
-        String seller
+        String seller,
+        long subcategoryId
 ) {
 }

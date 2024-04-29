@@ -156,7 +156,8 @@ public class ConverterImpl implements Converter {
                         product.getSold(),
                         product.getBrand(),
                         product.getDescription(),
-                        product.getSeller().getFullName()
+                        product.getSeller().getFullName(),
+                        product.getSubcategory().getId()
                 ),
                 product.getImages().stream()
                         .map(Image::getFileName)
