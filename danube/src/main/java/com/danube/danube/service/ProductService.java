@@ -146,14 +146,16 @@ public class ProductService {
         saveProductValues(productInformation, product);
     }
 
-    public List<ProductShowSmallDTO> getMyProducts(long userId){
+    public List<Map<String, String>> getMyProducts(long userId){
         UserEntity seller = userRepository.findById(userId).orElseThrow(NonExistingUserException::new);
         if(!seller.getRoles().contains(Role.ROLE_SELLER)){
             throw new UserNotSellerException();
         }
 
         List<Product> products = productRepository.findBySeller(seller);
-        return converter.convertProductsToProductShowSmallDTO(products);
+        return products.stream()
+                .map(converter::convertProductToMyProductInformation)
+                .toList();
     }
 
     private List<CategoryAndSubCategoryDTO> getCategoryAndSubCategories(List<Category> categories) {

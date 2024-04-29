@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
     @RestController
@@ -71,7 +72,7 @@ public class ProductController {
 
 
     @GetMapping("/myProducts/{userId}")
-    public List<ProductShowSmallDTO> getMyProducts(@PathVariable long userId){
+    public List<Map<String, String>> getMyProducts(@PathVariable long userId){
         return productService.getMyProducts(userId);
     }
 
