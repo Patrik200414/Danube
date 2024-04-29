@@ -10,8 +10,10 @@ function ProductDetailsForm({details, onDetailsChange, subCategoryId, user, onDe
             const detailResponse = await detailsData.json();
             onDetailsSet(detailResponse);
         }
-        getDetails();
-    }, [subCategoryId])
+        if(onDetailsSet){
+            getDetails();
+        }
+    }, [subCategoryId, onDetailsSet])
 
 
     return(

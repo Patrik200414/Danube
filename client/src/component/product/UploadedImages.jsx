@@ -1,17 +1,24 @@
 import { useEffect, useState } from "react";
 import Proptypes from "prop-types";
+import calculateImageSourceName from '../../utility/calculateImageSourceName';
 
 function UploadedImages({images, onImageDeletion}){
     const [imagesPreview, setImagesPreview] = useState([]);
-    
     useEffect(() => {
         if(images.length){
             const blobedImages = images.map(image => {
-                const blob = new Blob([image]);
-                return URL.createObjectURL(blob)
+                if(typeof image === 'object'){
+                    const blob = new Blob([image]);
+                    return URL.createObjectURL(blob);
+                } else{
+                    return calculateImageSourceName(image);
+                }
+                
             })
 
             setImagesPreview(blobedImages);
+        } else{
+            setImagesPreview(images);
         }
         
     }, [images])

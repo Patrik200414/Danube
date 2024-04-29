@@ -4,12 +4,15 @@ import useVerifySeller from "../utility/customHook/useVerifySeller";
 import ProductInformationForm from "../component/product/ProductInformationForm";
 import ProductDetailsForm from "../component/product/ProductDetailsForm";
 import changeProductDetail from '../utility/changeProductDetail';
+import UploadedImages from '../component/product/UploadedImages';
+import imageUpload from "../utility/imageUpload";
 
 function ProductUpdate(){
     const {productId} = useParams();
 
     const [user] = useVerifySeller();
     const [product, setProduct] = useFetch(`/api/product/item/${productId}`);
+
 
     function handleProductInformationChange(value, key){
         const updatedProduct = {
@@ -30,6 +33,28 @@ function ProductUpdate(){
         setProduct(updatedProduct);
     }
 
+    function handleImageUpload(e){
+        const uploadedFiles = e.target.files;
+        const file = imageUpload(uploadedFiles, product.images);
+        const modifiedImages = [...product.images, ...file];
+        setProduct(prev => ({
+            ...prev,
+            images: modifiedImages
+        }));
+    }
+
+    function handleImageDeletion(index){
+        const newImageList = product.images.filter((image, i) => {
+            if(i !== index){
+                return image;
+            }
+        })
+
+        setProduct(prev => ({
+            ...prev,
+            images: newImageList
+        }));
+    }
 
 
     
@@ -38,7 +63,8 @@ function ProductUpdate(){
             {product &&
                 <div className="product-upload">
                     <ProductInformationForm onDetailsChange={(value, key) => handleProductInformationChange(value, key)} productDetail={product.productInformation}/>
-                    <ProductDetailsForm details={product.detailValues} onDetailsChange={(value, key) => handleDetailChange(value, key)} subCategoryId={product.productInformation.subcategoryId} user={user} onDetailsSet={() => console.log('asd')} onImageUpload={() => console.log('asd')}/>
+                    <ProductDetailsForm details={product.detailValues} onDetailsChange={(value, key) => handleDetailChange(value, key)} subCategoryId={product.productInformation.subcategoryId} user={user} onImageUpload={(e) => handleImageUpload(e)}/>
+                    <UploadedImages onImageDeletion={(index) => handleImageDeletion(index)} images={product.images.map(image => image)}/>
                     <button type="submit">Save</button>
                 </div>
             }

@@ -6,6 +6,7 @@ import ProductDetailsForm from "../component/product/ProductDetailsForm";
 import UploadedImages from "../component/product/UploadedImages";
 import verifySellerRole from "../utility/verifySellerRole";
 import changeProductDetail from '../utility/changeProductDetail';
+import imageUpload from '../utility/imageUpload';
 
 function ProductUpload(){
     const SUCCESS_MESSAGE_TIME_IN_SECONDS = 2;
@@ -24,7 +25,6 @@ function ProductUpload(){
 
 
     const navigate = useNavigate();
-    console.log(details);
 
 
     useEffect(() => {
@@ -77,13 +77,7 @@ function ProductUpload(){
 
     function handleImagesChange(e){
         const uploadedFiles = e.target.files;
-        const files = [];
-        for(const fileIndex in uploadedFiles){
-            const isImageAlreadyAdded = images.filter(image => image.name === uploadedFiles[fileIndex].name).length > 0;
-            if(typeof uploadedFiles[fileIndex] === 'object' && !isImageAlreadyAdded){
-                files.push(uploadedFiles[fileIndex]);
-            }
-        }
+        const files = imageUpload(uploadedFiles, images);
 
         setImages(prev => [...prev, ...files]);
     }
@@ -109,7 +103,6 @@ function ProductUpload(){
 
         if(isCorrectForm(errorFields)){
             const formData = createFormData({...product, subcategoryId: selectedSubcategoryId}, convertedDetails);
-            console.log(formData);
             
 
             const uploadProductResponse = await fetch('/api/product', {
@@ -208,7 +201,7 @@ function ProductUpload(){
                         <ProductDetailsForm 
                             details={details}
                             onDetailsChange={handleDetailChange}
-                            subCategoryId={selectedSubcategoryId} 
+                            subCategoryId={Number(selectedSubcategoryId)} 
                             user={user}
                             onDetailsSet={(details) => setDetails(details)}
                             onImageUpload={handleImagesChange}
