@@ -5,6 +5,7 @@ import ProductCategoryForm from "../component/product/ProductCategoryForm";
 import ProductDetailsForm from "../component/product/ProductDetailsForm";
 import UploadedImages from "../component/product/UploadedImages";
 import verifySellerRole from "../utility/verifySellerRole";
+import changeProductDetail from '../utility/changeProductDetail';
 
 function ProductUpload(){
     const SUCCESS_MESSAGE_TIME_IN_SECONDS = 2;
@@ -70,15 +71,7 @@ function ProductUpload(){
     }
 
     function handleDetailChange(value, detailId){
-        const changedDetails = details.map(detail => {
-            if(detail.id === detailId){
-                return{
-                    ...detail,
-                    value: value
-                }
-            }
-            return detail;
-        });
+        const changedDetails = changeProductDetail(value, detailId, details);
         setDetails(changedDetails);
     }
 
