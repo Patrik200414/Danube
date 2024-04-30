@@ -59,17 +59,20 @@ function UserUpdateForm(){
         <>
             {successMessage && <h3 className="success-message">{successMessage}</h3>}
             <form className="user-update-form" onSubmit={handleSubmit}>
-                <label htmlFor="email">Email: </label>
-                <input onChange={e => setUser({...user, email: e.target.value})} type="text" id="email" name="email" placeholder="Email..." value={user.email}/>
-                <br />
+                <div>
+                    <label htmlFor="email">Email: </label>
+                    <input onChange={e => setUser({...user, email: e.target.value})} type="text" id="email" name="email" placeholder="Email..." value={user.email}/>
+                </div>
 
-                <label htmlFor="firstName">First name: </label>
-                <input onChange={e => setUser({...user, firstName: e.target.value})} type="text" id="firstName" name="firstName" placeholder="First name..." value={user.firstName}/>
-                <br />
+                <div>
+                    <label htmlFor="firstName">First name: </label>
+                    <input onChange={e => setUser({...user, firstName: e.target.value})} type="text" id="firstName" name="firstName" placeholder="First name..." value={user.firstName}/>
+                </div>
 
-                <label htmlFor="lastName">Last name: </label>
-                <input onChange={e => setUser({...user, lastName: e.target.value})} type="text" id="lastName" name="lastName" placeholder="Last name..." value={user.lastName}/>
-                <br />
+                <div>
+                    <label htmlFor="lastName">Last name: </label>
+                    <input onChange={e => setUser({...user, lastName: e.target.value})} type="text" id="lastName" name="lastName" placeholder="Last name..." value={user.lastName}/>
+                </div>
 
                 <p className="error-message">{error}</p>
                 <button disabled={isUpdateing}>Save</button>

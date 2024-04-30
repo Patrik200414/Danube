@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import PropTypes from "prop-types";
 import UserAccountInformation from "../component/user/UserAccountInformation";
 import fetchPostAuthorizationFetch from "../utility/fetchPostAuthorizationFetch";
@@ -7,18 +7,16 @@ import fetchPostAuthorizationFetch from "../utility/fetchPostAuthorizationFetch"
 
 function Verification({verificationToPages}){
     const [user, setUser] = useState();
-    const [url, setUrl] = useState();
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
-    
-    useEffect(() => {
-        const urlLength = window.location.href.split('/').length;
-        const verificationBy = window.location.href.split('/')[urlLength - 2];
-        const toPage = window.location.href.split('/')[urlLength - 1];
-        
 
-        if(verificationBy && verificationToPages.includes(toPage)){
+    const {verificationBy, to} = useParams()
+    const targetUrl = `/${verificationBy}/${to}`;
+
+
+    useEffect(() => {
+        if(verificationBy && verificationToPages.includes(to)){
             const userData = JSON.parse(sessionStorage.getItem("USER_JWT"));
     
             if(!userData){
@@ -32,13 +30,12 @@ function Verification({verificationToPages}){
             }
 
             
-            setUrl(`/${verificationBy}/${toPage}`);
             setUser(userData);
         } else{
             navigate('/');
         }
 
-    }, [verificationToPages, navigate]);
+    }, [verificationToPages, navigate, to, verificationBy]);
 
     async function handleSubmit(e){
         e.preventDefault();
@@ -52,10 +49,10 @@ function Verification({verificationToPages}){
             password: password
         };
 
-        const verificationResult = await fetchPostAuthorizationFetch('/api/user/verify', user.jwt, userVerification);
+        const verificationResult = await fetchPostAuthorizationFetch('/api/user/verify', user.jwt, JSON.stringify(userVerification), true);
 
         if(verificationResult.ok){
-            navigate(url);
+            navigate(targetUrl);
         } else{
             const verificationResponse = await verificationResult.json();
             setError(verificationResponse.errorMessage);

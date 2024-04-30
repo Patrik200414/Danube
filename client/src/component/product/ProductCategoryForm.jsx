@@ -39,20 +39,22 @@ function ProductCategoryForm({onSelectCategoryIdChange, selectedCategoryId, sele
         <>
         {avaibleCategories && 
                 <div className="product-category-form">
-                    <label htmlFor="category">Category: </label>
-                    <select id="category" name="category" onChange={e => onSelectCategoryIdChange(e.target.value)} value={selectedCategoryId}>
-                        <option name='' value=''>...</option>
-                        {avaibleCategories.map(category => <option key={category.id} name={category.categoryName} value={category.id} id={category.id}>{category.categoryName}</option>)}
-                    </select>
-                    <br />
+                    <div>
+                        <label htmlFor="category">Category: </label>
+                        <select id="category" name="category" onChange={e => onSelectCategoryIdChange(e.target.value)} value={selectedCategoryId}>
+                            <option name='' value=''>...</option>
+                            {avaibleCategories.map(category => <option key={category.id} name={category.categoryName} value={category.id} id={category.id}>{category.categoryName}</option>)}
+                        </select>
+                    </div>
+
                     {avaibleSubCategories && 
-                        <>
+                        <div>
                             <label htmlFor="subCategory">Sub category: </label>
                             <select id="subCategory" name="subCategory" onChange={e => onSelectedSubCategoryIdChange(e.target.value)} value={selectedSubcategoryId}>
                                 <option name='' value=''>...</option>
                                 {avaibleSubCategories.map(subCategory => <option key={subCategory.id} name={subCategory.subcategory} value={subCategory.id} id={subCategory.id}>{subCategory.subcategory}</option>)}
                             </select>
-                        </>
+                        </div>
                     }
                 </div>
         }

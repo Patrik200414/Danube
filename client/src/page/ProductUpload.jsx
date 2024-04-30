@@ -4,14 +4,15 @@ import { useNavigate } from "react-router-dom";
 import ProductCategoryForm from "../component/product/ProductCategoryForm";
 import ProductDetailsForm from "../component/product/ProductDetailsForm";
 import UploadedImages from "../component/product/UploadedImages";
-import verifySellerRole from "../utility/verifySellerRole";
+import fetchPostAuthorizationFetch from '../utility/fetchPostAuthorizationFetch';
 import changeProductDetail from '../utility/changeProductDetail';
 import imageUpload from '../utility/imageUpload';
+import useVerifyUser from "../utility/customHook/useVerifyUser";
 
 function ProductUpload(){
     const SUCCESS_MESSAGE_TIME_IN_SECONDS = 2;
 
-    const [user, setUser] = useState();
+    const [user] = useVerifyUser("ROLE_SELLER");
     const [product, setProduct] = useState();
     const [details, setDetails] = useState();
     const [images, setImages] = useState([]);
@@ -28,13 +29,6 @@ function ProductUpload(){
 
 
     useEffect(() => {
-        const userData = JSON.parse(sessionStorage.getItem('USER_JWT'));
-
-        if(!verifySellerRole(userData)){
-            navigate('/');
-        }
-
-        setUser(userData);
         setProduct({
             productName: '',
             brand: '',
@@ -81,9 +75,9 @@ function ProductUpload(){
 
         setImages(prev => [...prev, ...files]);
     }
-
+    //Image deletion by Id or By name
     function handleImageDeletion(index){
-        const deletedItem = images.filter((image, i) => i !== index);
+        const deletedItem = images.filter((_, i) => i !== index);
         setImages(deletedItem);
     }
 
@@ -103,15 +97,7 @@ function ProductUpload(){
 
         if(isCorrectForm(errorFields)){
             const formData = createFormData({...product, subcategoryId: selectedSubcategoryId}, convertedDetails);
-            
-
-            const uploadProductResponse = await fetch('/api/product', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${user.jwt}`
-                },
-                body: formData
-            });
+            const uploadProductResponse = await fetchPostAuthorizationFetch('/api/product', user.jwt, formData, false);
     
             if(uploadProductResponse.ok){
                 setProduct({

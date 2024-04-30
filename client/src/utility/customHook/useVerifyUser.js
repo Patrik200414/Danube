@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function useVerifySeller(){
+function useVerifyUser(role){
     const [user, setUser] = useState();
     const navigate = useNavigate();
 
@@ -14,16 +14,16 @@ function useVerifySeller(){
         }
 
         const userData = JSON.parse(currUser);
-        if(!userData.roles.includes('ROLE_SELLER')){
+        if(!userData.roles.includes(role)){
             navigate('/');
             return
         }
 
         setUser(userData);
-    }, [navigate]);
+    }, [navigate, role]);
 
     return [user];
 }
 
 
-export default useVerifySeller;
+export default useVerifyUser;
