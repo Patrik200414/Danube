@@ -13,7 +13,7 @@ function ProductDetailsForm({details, onDetailsChange, subCategoryId, user, onDe
         if(onDetailsSet){
             getDetails();
         }
-    }, [subCategoryId, onDetailsSet])
+    }, [subCategoryId, user.jwt])
 
 
     return(

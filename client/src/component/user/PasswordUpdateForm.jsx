@@ -39,17 +39,20 @@ function PasswordUpdateForm({user, navigate}){
 
     return(
         <form className="user-update-form" onSubmit={handleSubmit}>
-            <label htmlFor="currentPassword">Current password: </label>
-            <input onChange={e => setCurrentPassword(e.target.value)} type="password" id="currentPassword" name="currentPassword" value={currentPassword}/>
-            <br />
+            <div>
+                <label htmlFor="currentPassword">Current password: </label>
+                <input onChange={e => setCurrentPassword(e.target.value)} type="password" id="currentPassword" name="currentPassword" value={currentPassword}/>
+            </div>
 
-            <label htmlFor="newPassword">New password: </label>
-            <input onChange={e => setNewPassword(e.target.value)} type="password" id="newPassword" name="newPassword" value={newPassword}/>
-            <br />
+            <div>
+                <label htmlFor="newPassword">New password: </label>
+                <input onChange={e => setNewPassword(e.target.value)} type="password" id="newPassword" name="newPassword" value={newPassword}/>
+            </div>
 
-            <label htmlFor="reenterNewPassword">Reenter new password: </label>
-            <input onChange={e => setReenterPassword(e.target.value)} type="password" id="reenterNewPassword" name="reenterNewPassword" value={reenterPassword}/>
-            <br />
+            <div>
+                <label htmlFor="reenterNewPassword">Reenter new password: </label>
+                <input onChange={e => setReenterPassword(e.target.value)} type="password" id="reenterNewPassword" name="reenterNewPassword" value={reenterPassword}/>
+            </div>
 
             <p className="error-message">{error}</p>
             <button>Save</button>

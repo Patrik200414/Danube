@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import useFetch from "../utility/customHook/useFetch";
-import useVerifySeller from "../utility/customHook/useVerifySeller";
+import useVerifyUser from "../utility/customHook/useVerifyUser";
 import ProductInformationForm from "../component/product/ProductInformationForm";
 import ProductDetailsForm from "../component/product/ProductDetailsForm";
 import changeProductDetail from '../utility/changeProductDetail';
@@ -10,7 +10,7 @@ import imageUpload from "../utility/imageUpload";
 function ProductUpdate(){
     const {productId} = useParams();
 
-    const [user] = useVerifySeller();
+    const [user] = useVerifyUser('ROLE_SELLER');
     const [product, setProduct] = useFetch(`/api/product/item/${productId}`);
 
 

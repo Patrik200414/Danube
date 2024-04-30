@@ -1,11 +1,16 @@
-async function fetchPostAuthorizationFetch(url, token, postedObject){
-    const postData = await fetch('/api/user/verify', {
+async function fetchPostAuthorizationFetch(url, token, postedObject, isJson){
+    const headerParameters = {
+        'Authorization': `Bearer ${token}`
+    }
+
+    if(isJson){
+        headerParameters['Content-type'] = 'application/json';
+    }
+
+    const postData = await fetch(url, {
         method: 'POST',
-        headers: {
-            'Content-type': 'Application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(postedObject)
+        headers: headerParameters,
+        body: postedObject
     });
 
     return postData;

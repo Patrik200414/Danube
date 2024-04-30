@@ -1,4 +1,4 @@
-    package com.danube.danube.controller;
+package com.danube.danube.controller;
 
 import com.danube.danube.model.dto.product.*;
 import com.danube.danube.service.ProductService;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-    @RestController
+@RestController
 @RequestMapping("/api/product")
 public class ProductController {
 
