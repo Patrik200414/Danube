@@ -6,7 +6,7 @@ import ProductDetailsForm from "../component/product/ProductDetailsForm";
 import changeProductDetail from '../utility/changeProductDetail';
 import UploadedImages from '../component/product/UploadedImages';
 import imageUpload from "../utility/imageUpload";
-import fetchPostAuthorizationFetch from "../utility/fetchPostAuthorizationFetch";
+import appendFilesToFormData from "../utility/appendFilesToFormData";
 
 function ProductUpdate(){
     const {productId} = useParams();
@@ -58,7 +58,7 @@ function ProductUpdate(){
     }
 
 
-    function handleSubmit(e){
+    async function handleSubmit(e){
         e.preventDefault();
         const productCopy = {...product};
         const newImages = [];
@@ -70,12 +70,19 @@ function ProductUpdate(){
             }
         }
 
-        const formData = new FormData();
+        const formData = appendFilesToFormData(new FormData(), 'newImages',newImages);
         formData.append('updatedValues', JSON.stringify(productCopy));
-        formData.append('newImages', newImages);
+        formData.append('newImages',  newImages);
 
         console.log(formData);
-        const productUpdateData = fetchPostAuthorizationFetch(`/api/product/update/${productId}`, user.jwt, formData);
+        const productUpdateData = await fetch(`/api/product/update/${productId}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${user.jwt}`
+            },
+            body: formData
+        })
+        /* const productUpdateData = fetchPostAuthorizationFetch(`/api/product/update/${productId}`, user.jwt, formData); */
     }
 
     
