@@ -23,8 +23,6 @@ function UploadedImages({images, onImageDeletion}){
         
     }, [images])
 
-    console.log(imagesPreview);
-
     return(
         <div className="uploaded-images-container remove-preview-image-icon">
             {imagesPreview.map((imageURL, i) => (

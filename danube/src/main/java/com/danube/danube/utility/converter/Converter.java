@@ -34,6 +34,8 @@ public interface Converter {
     List<Image> convertMultiPartFilesToListOfImages(MultipartFile[] images, Product product);
     Set<ProductShowSmallDTO> convertProductToProductShowSmallDTORandomOrder(Page<Product> products);
     ProductItemDTO convertProductToProductItemDTO(Product product);
+    ProductUpdateDTO convertProductToProductUpdateDTO(Product product);
     List<ProductShowSmallDTO> convertProductsToProductShowSmallDTO(Collection<Product> products);
     Map<String, String> convertProductToMyProductInformation(Product product);
+    ProductUpdateDTO convertUpdateDataToProductUpdateDTO(String updatedValue) throws JsonProcessingException;
 }

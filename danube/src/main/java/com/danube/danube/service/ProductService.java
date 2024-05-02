@@ -1,10 +1,7 @@
 package com.danube.danube.service;
 
 import com.danube.danube.custom_exception.login_registration.NonExistingUserException;
-import com.danube.danube.custom_exception.product.NonExistingDetailException;
-import com.danube.danube.custom_exception.product.NonExistingProductCategoryException;
-import com.danube.danube.custom_exception.product.NonExistingProductException;
-import com.danube.danube.custom_exception.product.NonExistingSubcategoryException;
+import com.danube.danube.custom_exception.product.*;
 import com.danube.danube.custom_exception.user.InvalidUserCredentialsException;
 import com.danube.danube.custom_exception.user.UserNotSellerException;
 import com.danube.danube.model.dto.product.*;
@@ -24,14 +21,17 @@ import com.danube.danube.repository.product.connection.SubcategoryDetailReposito
 import com.danube.danube.repository.user.UserRepository;
 import com.danube.danube.utility.converter.Converter;
 import com.danube.danube.utility.filellogger.FileLogger;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -124,8 +124,9 @@ public class ProductService {
         return converter.convertProductsToProductShowSmallDTO(similarProducts);
     }
 
+    @Transactional
     public void saveProduct(ProductUploadDTO productUploadDTO) throws IOException {
-        UserEntity seller = userValidator(productUploadDTO.userId());
+        UserEntity seller = sellerValidator(productUploadDTO.userId());
         Subcategory subcategory = subcategoryRepository.findById(productUploadDTO.productDetail().subcategoryId())
                         .orElseThrow(NonExistingSubcategoryException::new);
 
@@ -179,6 +180,92 @@ public class ProductService {
         return converter.convertProductToProductItemDTO(product);
     }
 
+    public ProductUpdateDTO getUpdatableProductItem(long id){
+        Product product = productRepository.findById(id).orElseThrow(NonExistingProductException::new);
+        return converter.convertProductToProductUpdateDTO(product);
+    }
+
+    @Transactional
+    public void updateProduct(ProductUpdateDTO updatedProductDetails, MultipartFile[] newImages, long sellerId, long updatedProductId) throws IOException {
+        sellerValidator(sellerId);
+        Product updatedProduct = productRepository.findById(updatedProductId)
+                .orElseThrow(NonExistingProductException::new);
+
+        handleImageUpdate(updatedProductDetails, newImages, updatedProduct);
+        List<Image> productImages = imageRepository.findAll();
+
+        ProductInformation updatedProductInformation = updatedProductDetails.productInformation();
+        updateProductInformation(updatedProduct, updatedProductInformation, productImages);
+
+        List<Value> updatedValues = updateProductDetailValues(updatedProductDetails);
+        valueRepository.saveAll(updatedValues);
+    }
+
+    private List<Value> updateProductDetailValues(ProductUpdateDTO updatedProductDetails) {
+        Map<Long, DetailValueDTO> detailsByValueIds = updatedProductDetails.detailValues().stream()
+                .collect(Collectors.toMap(DetailValueDTO::valueId,
+                        value -> value,
+                        (existing, replacement) -> existing));
+
+        List<Long> valueIds = updatedProductDetails.detailValues().stream()
+                .map(DetailValueDTO::valueId)
+                .toList();
+
+        List<Value> valuesById = valueRepository.findAllById(valueIds);
+
+        return getUpdatedValues(valuesById, detailsByValueIds);
+    }
+
+    private static List<Value> getUpdatedValues(List<Value> valuesById, Map<Long, DetailValueDTO> detailsByValueIds) {
+        List<Value> updatedValues = new ArrayList<>();
+        for(Value oldValue : valuesById){
+            DetailValueDTO newValue = detailsByValueIds.get(oldValue.getId());
+            oldValue.setValue(newValue.value());
+
+            updatedValues.add(oldValue);
+        }
+        return updatedValues;
+    }
+
+    private void updateProductInformation(Product updatedProduct, ProductInformation updatedProductInformation, List<Image> productImages) {
+        updatedProduct.setProductName(updatedProductInformation.productName());
+        updatedProduct.setPrice(updatedProductInformation.price());
+        updatedProduct.setDeliveryTimeInDay(updatedProductInformation.deliveryTimeInDay());
+        updatedProduct.setQuantity(updatedProductInformation.quantity());
+        updatedProduct.setShippingPrice(updatedProductInformation.shippingPrice());
+        updatedProduct.setBrand(updatedProductInformation.brand());
+        updatedProduct.setDescription(updatedProductInformation.description());
+        updatedProduct.setImages(productImages);
+    }
+
+    private void handleImageUpdate(ProductUpdateDTO updatedProductDetails, MultipartFile[] newImages, Product updatedProduct) throws IOException {
+        if(newImages != null || !updatedProductDetails.images().isEmpty()){
+            removeImage(updatedProductDetails, updatedProduct);
+            addNewImage(newImages, updatedProduct);
+        } else {
+            throw new MissingImageException();
+        }
+    }
+
+    private void addNewImage(MultipartFile[] newImages, Product updatedProduct) throws IOException {
+        if(newImages != null){
+            fileLogger.saveFile(newImages, BASE_IMAGE_PATH);
+            List<Image> newUploadedImages = converter.convertMultiPartFilesToListOfImages(newImages, updatedProduct);
+            imageRepository.saveAll(newUploadedImages);
+        }
+    }
+
+    private void removeImage(ProductUpdateDTO updatedProductDetails, Product updatedProduct) {
+        List<String> deletedImagesName = updatedProduct.getImages().stream()
+                .map(Image::getFileName)
+                .filter(fileName -> !updatedProductDetails.images().contains(fileName))
+                .toList();
+
+        if(!deletedImagesName.isEmpty()){
+            imageRepository.deleteImagesByProductAndFileNameIn(updatedProduct, deletedImagesName);
+        }
+    }
+
 
     private void saveProductValues(Map<String, String> productInformation, Product product){
         for(Map.Entry<String, String> entry : productInformation.entrySet()){
@@ -198,14 +285,10 @@ public class ProductService {
         }
     }
 
-    private UserEntity userValidator(long userId){
-        Optional<UserEntity> searchedSeller = userRepository.findById(userId);
+    private UserEntity sellerValidator(long userId){
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(NonExistingUserException::new);
 
-        if(searchedSeller.isEmpty()){
-            throw new NonExistingUserException();
-        }
-
-        UserEntity user = searchedSeller.get();
         if(!user.getRoles().contains(Role.ROLE_SELLER)){
             throw new InvalidUserCredentialsException();
         }

@@ -27,7 +27,7 @@ function ProductInformationForm({onDetailsChange, productDetail}){
 
                     <div>
                         <label htmlFor="quantity">Quantity: </label>
-                        <input onChange={e => (!isNaN(e.target.value) && Number(e.target.value) >= 0 && Number.isInteger(Number(e.target.value)) && !e.target.value.includes('.')) && onDetailsChange(Number(e.target.value), 'quantity')} type="text" id="quantity" name="quantity" value={productDetail.Quantity} placeholder="Quantity..."/>
+                        <input onChange={e => (!isNaN(e.target.value) && Number(e.target.value) >= 0 && Number.isInteger(Number(e.target.value)) && !e.target.value.includes('.')) && onDetailsChange(Number(e.target.value), 'quantity')} type="text" id="quantity" name="quantity" value={productDetail.quantity} placeholder="Quantity..."/>
                     </div>
 
                     <div>

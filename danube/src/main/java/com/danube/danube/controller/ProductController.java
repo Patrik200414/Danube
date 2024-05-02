@@ -3,6 +3,7 @@ package com.danube.danube.controller;
 import com.danube.danube.model.dto.product.*;
 import com.danube.danube.service.ProductService;
 import com.danube.danube.utility.converter.Converter;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -70,6 +72,11 @@ public class ProductController {
         return productService.getProductItem(id);
     }
 
+    @GetMapping("/update/item/{id}")
+    public ProductUpdateDTO getUpdatableProduct(@PathVariable long id){
+        return productService.getUpdatableProductItem(id);
+    }
+
 
     @GetMapping("/myProducts/{userId}")
     public List<Map<String, String>> getMyProducts(@PathVariable long userId){
@@ -77,7 +84,6 @@ public class ProductController {
     }
 
     @Async
-    @Transactional
     @PostMapping()
     public HttpStatus saveProduct(
             @RequestParam("productDetail") String productDetail,
@@ -93,6 +99,19 @@ public class ProductController {
         );
 
         productService.saveProduct(productUploadDTO);
+        return HttpStatus.CREATED;
+    }
+
+    @Async
+    @PutMapping("/update/{productId}")
+    public HttpStatus updateProduct(
+            @PathVariable long productId,
+            @RequestParam("updatedValues") String updatedValue,
+            @RequestParam(value = "newImages", required = false) MultipartFile[] newImages,
+            @RequestParam("seller") long sellerId
+    ) throws IOException {
+        ProductUpdateDTO productUpdateDTO = converter.convertUpdateDataToProductUpdateDTO(updatedValue);
+        productService.updateProduct(productUpdateDTO, newImages, sellerId, productId);
         return HttpStatus.CREATED;
     }
 

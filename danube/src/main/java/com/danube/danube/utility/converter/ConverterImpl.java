@@ -130,9 +130,7 @@ public class ConverterImpl implements Converter {
     }
 
     private List<String> getProductImageName(Product product){
-        return product.getImages().stream()
-                .map(Image::getFileName)
-                .toList();
+        return getProductImages(product);
     }
 
     @Override
@@ -146,22 +144,27 @@ public class ConverterImpl implements Converter {
 
 
         return new ProductItemDTO(
-                new ProductInformation(
-                        product.getProductName(),
-                        product.getPrice(),
-                        product.getDeliveryTimeInDay(),
-                        product.getQuantity(),
-                        product.getRating(),
-                        product.getShippingPrice(),
-                        product.getSold(),
-                        product.getBrand(),
-                        product.getDescription(),
-                        product.getSeller().getFullName(),
-                        product.getSubcategory().getId()
-                ),
-                product.getImages().stream()
-                        .map(Image::getFileName)
-                        .toList(),
+                createProductInformation(product),
+                getProductImages(product),
+                detailValues
+        );
+    }
+
+
+
+    @Override
+    public ProductUpdateDTO convertProductToProductUpdateDTO(Product product) {
+        List<DetailValueDTO> detailValues = product.getProductValues().stream()
+                .map(productValue -> new DetailValueDTO(
+                        productValue.getDetailName(),
+                        productValue.getValueName(),
+                        productValue.getDetailId(),
+                        productValue.getValueId()
+                )).toList();
+
+        return new ProductUpdateDTO(
+                createProductInformation(product),
+                getProductImages(product),
                 detailValues
         );
     }
@@ -178,7 +181,7 @@ public class ConverterImpl implements Converter {
                         product.getRating(),
                         product.getSold(),
                         product.getId(),
-                        product.getImages().stream().map(Image::getFileName).toList(),
+                        getProductImages(product),
                         product.getSellerFullName()
                 )).toList();
     }
@@ -191,5 +194,33 @@ public class ConverterImpl implements Converter {
         myProductInformation.put("Owner", product.getSellerFullName());
         myProductInformation.put("id", String.valueOf(product.getId()));
         return myProductInformation;
+    }
+
+
+    @Override
+    public ProductUpdateDTO convertUpdateDataToProductUpdateDTO(String updatedValue) throws JsonProcessingException {
+        return objectMapper.readValue(updatedValue, ProductUpdateDTO.class);
+    }
+
+
+    private List<String> getProductImages(Product product) {
+        return product.getImages().stream()
+                .map(Image::getFileName)
+                .toList();
+    }
+    private ProductInformation createProductInformation(Product product) {
+        return new ProductInformation(
+                product.getProductName(),
+                product.getPrice(),
+                product.getDeliveryTimeInDay(),
+                product.getQuantity(),
+                product.getRating(),
+                product.getShippingPrice(),
+                product.getSold(),
+                product.getBrand(),
+                product.getDescription(),
+                product.getSeller().getFullName(),
+                product.getSubcategory().getId()
+        );
     }
 }

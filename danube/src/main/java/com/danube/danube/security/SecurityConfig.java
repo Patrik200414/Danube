@@ -51,6 +51,7 @@ public class SecurityConfig {
                                 .requestMatchers("/images/**").permitAll()
                                 .requestMatchers("/api/user/registration").permitAll()
                                 .requestMatchers("/api/product/item/**").permitAll()
+                                .requestMatchers("/api/product/update/item/**").hasRole("SELLER")
                                 .requestMatchers("/api/product/similar/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/product").hasRole("SELLER")
                                 .requestMatchers("/api/product/myProducts/**").hasRole("SELLER")

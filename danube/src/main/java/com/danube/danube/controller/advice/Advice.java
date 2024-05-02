@@ -4,9 +4,7 @@ import com.danube.danube.custom_exception.login_registration.InputTooShortExcept
 import com.danube.danube.custom_exception.login_registration.InvalidEmailFormatException;
 import com.danube.danube.custom_exception.login_registration.NonExistingUserException;
 import com.danube.danube.custom_exception.login_registration.RegistrationFieldNullException;
-import com.danube.danube.custom_exception.product.IncorrectProductObjectFormException;
-import com.danube.danube.custom_exception.product.NonExistingProductException;
-import com.danube.danube.custom_exception.product.NonExistingSubcategoryException;
+import com.danube.danube.custom_exception.product.*;
 import com.danube.danube.custom_exception.user.*;
 import com.danube.danube.model.error.UserErrorMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -134,6 +132,20 @@ public class Advice {
     public ResponseEntity<UserErrorMessage> handleUserNotSellerException(){
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                 new UserErrorMessage("The current user don't have seller permission!")
+        );
+    }
+
+    @ExceptionHandler(MissingImageException.class)
+    public ResponseEntity<UserErrorMessage> handleMissingImageException(){
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(
+                new UserErrorMessage("Missing image parameter! At least one image required!")
+        );
+    }
+
+    @ExceptionHandler(NonExistingValueException.class)
+    public ResponseEntity<UserErrorMessage> handleNonExistingValueException(){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new UserErrorMessage("Unable to detect the mentioned value of the product!")
         );
     }
 

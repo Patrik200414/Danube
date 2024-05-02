@@ -8,6 +8,7 @@ import fetchPostAuthorizationFetch from '../utility/fetchPostAuthorizationFetch'
 import changeProductDetail from '../utility/changeProductDetail';
 import imageUpload from '../utility/imageUpload';
 import useVerifyUser from "../utility/customHook/useVerifyUser";
+import appendFilesToFormData from '../utility/appendFilesToFormData';
 
 function ProductUpload(){
     const SUCCESS_MESSAGE_TIME_IN_SECONDS = 2;
@@ -123,23 +124,14 @@ function ProductUpload(){
     }
 
     function createFormData(product, details){
-            const formData = new FormData();
+            const formData = appendFilesToFormData(new FormData(), 'images', images);
             formData.append('productDetail', JSON.stringify(product));
             formData.append('productInformation', JSON.stringify(details));
             formData.append('userId', user.id);
-            
-            appendFilesToFormData(formData, images);
 
             return(formData)
     }
 
-    function appendFilesToFormData(formData, files){
-        for(let i = 0; i < files.length; i++){
-            formData.append(`image`, files[i]);
-        }
-
-        return formData;
-    }
 
     function isCorrectForm(errorFields){
         if(errorFields.length > 0){
