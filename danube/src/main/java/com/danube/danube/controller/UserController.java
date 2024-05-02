@@ -33,7 +33,7 @@ public class UserController {
 
     }
 
-    @PutMapping("/{id}/role")
+    @PatchMapping("/{id}/role")
     public JwtResponse updateUserRole(@PathVariable long id){
         return userService.addSellerRoleToUser(id);
     }

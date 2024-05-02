@@ -89,7 +89,7 @@ public class ProductController {
             @RequestParam("productDetail") String productDetail,
             @RequestParam("productInformation") String productInformation,
             @RequestParam("userId") long userId,
-            @RequestParam("image") MultipartFile[] images
+            @RequestParam("images") MultipartFile[] images
     ) throws IOException {
         ProductUploadDTO productUploadDTO = converter.convertRequestParamToProductUploadDTO(
                 productDetail,

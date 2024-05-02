@@ -1,32 +1,21 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 import seller from "../static/seller.svg";
 import settings from "../static/settings.svg"
 import sellProduct from "../static/sellProduct.svg";
 import updateProduct from "../static/updateProduct.svg";
+import useVerifyUser from "../utility/customHook/useVerifyUser";
 
 function Profile(){
-    const [userRoles, setUserRoles] = useState(null);
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        const user = JSON.parse(sessionStorage.getItem('USER_JWT'));
-        if(user){
-            setUserRoles(user.roles);
-        } else{
-            navigate('/')
-        }
-
-    }, [navigate])
+    const [user, ] = useVerifyUser('ROLE_CUSTOMER');
 
 
     return(
         <div className="profile">
-            {userRoles && 
+            {user && 
             <>
                 <div className="profile-services">
-                    {!userRoles.includes("ROLE_SELLER") && 
+                    {!user.roles.includes("ROLE_SELLER") && 
                         <div className="service">
                             <Link to='/seller/agreement'>
                                 <img src={seller} />
@@ -35,7 +24,7 @@ function Profile(){
                             </Link>
                         </div>
                     }
-                    {userRoles.includes("ROLE_SELLER") &&
+                    {user.roles.includes("ROLE_SELLER") &&
                         <>
                             <div className="service">
                                 <Link to='/verification/product/upload'>

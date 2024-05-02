@@ -1,22 +1,11 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PasswordUpdateForm from "../component/user/PasswordUpdateForm";
+import useVerifyUser from "../utility/customHook/useVerifyUser";
 
 function PasswordUpdate(){
-    const [user, setUser] = useState();
+    const [user, ] = useVerifyUser('ROLE_CUSTOMER');
 
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const userData = JSON.parse(sessionStorage.getItem('USER_JWT'));
-
-        if(!userData){
-            navigate('/');
-            return;
-        }
-
-        setUser(userData);
-    }, [navigate]);
 
     return(
         <div className="password-update">
