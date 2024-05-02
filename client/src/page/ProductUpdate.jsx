@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useFetchGetAuthorization from "../utility/customHook/useFetchGetAuthorization";
 import useVerifyUser from "../utility/customHook/useVerifyUser";
 import ProductInformationForm from "../component/product/ProductInformationForm";
@@ -7,6 +7,7 @@ import changeProductDetail from '../utility/changeProductDetail';
 import UploadedImages from '../component/product/UploadedImages';
 import imageUpload from "../utility/imageUpload";
 import appendFilesToFormData from "../utility/appendFilesToFormData";
+import { useState } from "react";
 
 function ProductUpdate(){
     const {productId} = useParams();
@@ -14,6 +15,8 @@ function ProductUpdate(){
     const [user] = useVerifyUser('ROLE_SELLER');
     
     const [product, setProduct] = useFetchGetAuthorization(`/api/product/update/item/${productId}`, user);
+    const [error, setError] = useState();
+    const navigate = useNavigate();
 
 
     function handleProductInformationChange(value, key){
@@ -26,6 +29,7 @@ function ProductUpdate(){
 
     function handleDetailChange(value, detailId){
         const copiedProductDetails = [...product.detailValues];
+        console.log(detailId);
         const updatedDetails = changeProductDetail(value, detailId, copiedProductDetails);
         const updatedProduct = {
             ...product,
@@ -70,12 +74,13 @@ function ProductUpdate(){
                 newImages.push(newImage);
             }
         }
-
+        
+        console.log(productCopy);
         const formData = appendFilesToFormData(new FormData(), 'newImages', newImages);
         formData.append('updatedValues', JSON.stringify(productCopy));
         formData.append('seller', user.id);
         
-        console.log(newImages);
+        
         const productUpdateData = await fetch(`/api/product/update/${productId}`, {
             method: 'PUT',
             headers: {
@@ -83,7 +88,13 @@ function ProductUpdate(){
             },
             body: formData
         })
-        /* const productUpdateData = fetchPostAuthorizationFetch(`/api/product/update/${productId}`, user.jwt, formData); */
+
+        if(productUpdateData.ok){
+            navigate('/product/update');
+        } else{
+            const errorResponse = await productUpdateData.json();
+            setError(errorResponse.errorMessage);
+        }
     }
 
     
@@ -94,6 +105,7 @@ function ProductUpdate(){
                     <ProductInformationForm onDetailsChange={(value, key) => handleProductInformationChange(value, key)} productDetail={product.productInformation}/>
                     <ProductDetailsForm details={product.detailValues} onDetailsChange={(value, key) => handleDetailChange(value, key)} subCategoryId={product.productInformation.subcategoryId} user={user} onImageUpload={(e) => handleImageUpload(e)}/>
                     <UploadedImages onImageDeletion={(index) => handleImageDeletion(index)} images={product.images.map(image => image)}/>
+                    <p className="error-message">{error}</p>
                     <button onClick={handleSubmit} className="submit-button">Save</button>
                 </div>
             }
