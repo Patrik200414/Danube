@@ -104,15 +104,15 @@ public class ProductController {
 
     @Async
     @PutMapping("/update/{productId}")
-    public void updateProduct(
+    public HttpStatus updateProduct(
             @PathVariable long productId,
             @RequestParam("updatedValues") String updatedValue,
             @RequestParam(value = "newImages", required = false) MultipartFile[] newImages,
             @RequestParam("seller") long sellerId
-    ) throws JsonProcessingException {
+    ) throws IOException {
         ProductUpdateDTO productUpdateDTO = converter.convertUpdateDataToProductUpdateDTO(updatedValue);
-        System.out.println(updatedValue);
         productService.updateProduct(productUpdateDTO, newImages, sellerId, productId);
+        return HttpStatus.CREATED;
     }
 
 }

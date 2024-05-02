@@ -1,10 +1,7 @@
 package com.danube.danube.service;
 
 import com.danube.danube.custom_exception.login_registration.NonExistingUserException;
-import com.danube.danube.custom_exception.product.NonExistingDetailException;
-import com.danube.danube.custom_exception.product.NonExistingProductCategoryException;
-import com.danube.danube.custom_exception.product.NonExistingProductException;
-import com.danube.danube.custom_exception.product.NonExistingSubcategoryException;
+import com.danube.danube.custom_exception.product.*;
 import com.danube.danube.custom_exception.user.InvalidUserCredentialsException;
 import com.danube.danube.custom_exception.user.UserNotSellerException;
 import com.danube.danube.model.dto.product.*;
@@ -34,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -188,36 +186,48 @@ public class ProductService {
     }
 
     @Transactional
-    public void updateProduct(ProductUpdateDTO updatedProductDetails, MultipartFile[] newImages, long sellerId, long updatedProductId){
-        UserEntity seller = sellerValidator(sellerId);
+    public void updateProduct(ProductUpdateDTO updatedProductDetails, MultipartFile[] newImages, long sellerId, long updatedProductId) throws IOException {
+        sellerValidator(sellerId);
         Product updatedProduct = productRepository.findById(updatedProductId)
                 .orElseThrow(NonExistingProductException::new);
+
+        handleImageUpdate(updatedProductDetails, newImages, updatedProduct);
+        List<Image> productImages = imageRepository.findAll();
+
         ProductInformation updatedProductInformation = updatedProductDetails.productInformation();
+        updateProductInformation(updatedProduct, updatedProductInformation, productImages);
 
-        /*{
-            "productInformation":{
-                "productName":"T-shirt",
-                "price":5,
-                "deliveryTimeInDay":7,
-                "quantity":10,
-                "rating":0,
-                "shippingPrice":1.55,
-                "sold":0,
-                "brand":"Nike",
-                "description":"asdasd",
-                "seller":"Some Name",
-                "subcategoryId":1
-            },
-            "images":["M8804_a-large.jpg"],
-            "detailValues":[
-                {"detailName":"Size","id":1,"value":"asd"},
-                {"detailName":"Color","id":2,"value":"asd"},
-                {"detailName":"Material","id":3,"value":"asd"},
-                {"detailName":"Style","id":4,"value":"asd"}
-            ]
-         }*/
+        List<Value> updatedValues = updateProductDetailValues(updatedProductDetails);
+        valueRepository.saveAll(updatedValues);
+    }
 
+    private List<Value> updateProductDetailValues(ProductUpdateDTO updatedProductDetails) {
+        Map<Long, DetailValueDTO> detailsByValueIds = updatedProductDetails.detailValues().stream()
+                .collect(Collectors.toMap(DetailValueDTO::valueId,
+                        value -> value,
+                        (existing, replacement) -> existing));
 
+        List<Long> valueIds = updatedProductDetails.detailValues().stream()
+                .map(DetailValueDTO::valueId)
+                .toList();
+
+        List<Value> valuesById = valueRepository.findAllById(valueIds);
+
+        return getUpdatedValues(valuesById, detailsByValueIds);
+    }
+
+    private static List<Value> getUpdatedValues(List<Value> valuesById, Map<Long, DetailValueDTO> detailsByValueIds) {
+        List<Value> updatedValues = new ArrayList<>();
+        for(Value oldValue : valuesById){
+            DetailValueDTO newValue = detailsByValueIds.get(oldValue.getId());
+            oldValue.setValue(newValue.value());
+
+            updatedValues.add(oldValue);
+        }
+        return updatedValues;
+    }
+
+    private void updateProductInformation(Product updatedProduct, ProductInformation updatedProductInformation, List<Image> productImages) {
         updatedProduct.setProductName(updatedProductInformation.productName());
         updatedProduct.setPrice(updatedProductInformation.price());
         updatedProduct.setDeliveryTimeInDay(updatedProductInformation.deliveryTimeInDay());
@@ -225,8 +235,35 @@ public class ProductService {
         updatedProduct.setShippingPrice(updatedProductInformation.shippingPrice());
         updatedProduct.setBrand(updatedProductInformation.brand());
         updatedProduct.setDescription(updatedProductInformation.description());
+        updatedProduct.setImages(productImages);
+    }
 
+    private void handleImageUpdate(ProductUpdateDTO updatedProductDetails, MultipartFile[] newImages, Product updatedProduct) throws IOException {
+        if(newImages != null || !updatedProductDetails.images().isEmpty()){
+            removeImage(updatedProductDetails, updatedProduct);
+            addNewImage(newImages, updatedProduct);
+        } else {
+            throw new MissingImageException();
+        }
+    }
 
+    private void addNewImage(MultipartFile[] newImages, Product updatedProduct) throws IOException {
+        if(newImages != null){
+            fileLogger.saveFile(newImages, BASE_IMAGE_PATH);
+            List<Image> newUploadedImages = converter.convertMultiPartFilesToListOfImages(newImages, updatedProduct);
+            imageRepository.saveAll(newUploadedImages);
+        }
+    }
+
+    private void removeImage(ProductUpdateDTO updatedProductDetails, Product updatedProduct) {
+        List<String> deletedImagesName = updatedProduct.getImages().stream()
+                .map(Image::getFileName)
+                .filter(fileName -> !updatedProductDetails.images().contains(fileName))
+                .toList();
+
+        if(!deletedImagesName.isEmpty()){
+            imageRepository.deleteImagesByProductAndFileNameIn(updatedProduct, deletedImagesName);
+        }
     }
 
 
