@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import fetchPutAuthorizationFetch from "../utility/fetchPutAuthorizationFetch";
+import fetchPatchAuthorizationFetch from "../utility/fetchPatchAuthorizationFetch";
 
 function SellerAgreement(){
     const [user, ] = useState(JSON.parse(sessionStorage.getItem("USER_JWT")));
@@ -17,7 +17,7 @@ function SellerAgreement(){
 
         setError('');
 
-        const updateRole = await fetchPutAuthorizationFetch(`/api/user/${user.id}/role`, user.jwt);
+        const updateRole = await fetchPatchAuthorizationFetch(`/api/user/${user.id}/role`, user.jwt);
 
         if(!updateRole.ok){
             setError(updateRole.statusText);

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 function useFetchGetAuthorization(url, user){
     const [data, setData] = useState();
+    const [error, setError] = useState();
 
     useEffect(() => {
         const getData = async() => {
@@ -13,7 +14,11 @@ function useFetchGetAuthorization(url, user){
             });
             const response = await responseData.json();
 
-            setData(response);
+            if(responseData.ok){
+                setData(response);
+            } else{
+                setError(response.errorMessage);
+            }
         }
 
         if(user){
@@ -22,7 +27,7 @@ function useFetchGetAuthorization(url, user){
     }, [url, user]);
 
 
-    return [data, setData];
+    return [data, setData, error];
 }
 
 export default useFetchGetAuthorization;

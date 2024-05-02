@@ -1,6 +1,6 @@
-async function fetchPutAuthorizationFetch(url, token){
+async function fetchPatchAuthorizationFetch(url, token){
     const putData = await fetch(url, {
-        method: "PUT",
+        method: "PATCH",
         headers: {
             'Authorization': `Bearer ${token}`
         }
@@ -9,4 +9,4 @@ async function fetchPutAuthorizationFetch(url, token){
     return putData;
 }
 
-export default fetchPutAuthorizationFetch;
+export default fetchPatchAuthorizationFetch;

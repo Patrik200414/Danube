@@ -14,7 +14,7 @@ function ProductUpdate(){
 
     const [user] = useVerifyUser('ROLE_SELLER');
     
-    const [product, setProduct] = useFetchGetAuthorization(`/api/product/update/item/${productId}`, user);
+    const [product, setProduct, productError] = useFetchGetAuthorization(`/api/product/update/item/${productId}`, user);
     const [error, setError] = useState();
     const navigate = useNavigate();
 
@@ -29,7 +29,6 @@ function ProductUpdate(){
 
     function handleDetailChange(value, detailId){
         const copiedProductDetails = [...product.detailValues];
-        console.log(detailId);
         const updatedDetails = changeProductDetail(value, detailId, copiedProductDetails);
         const updatedProduct = {
             ...product,
@@ -95,7 +94,7 @@ function ProductUpdate(){
     
     return(
         <div className="product-update-container">
-            {product &&
+            {product ?
                 <div className="product-upload">
                     <ProductInformationForm onDetailsChange={(value, key) => handleProductInformationChange(value, key)} productDetail={product.productInformation}/>
                     <ProductDetailsForm details={product.detailValues} onDetailsChange={(value, key) => handleDetailChange(value, key)} subCategoryId={product.productInformation.subcategoryId} user={user} onImageUpload={(e) => handleImageUpload(e)}/>
@@ -103,6 +102,8 @@ function ProductUpdate(){
                     <p className="error-message">{error}</p>
                     <button onClick={handleSubmit} className="submit-button">Save</button>
                 </div>
+                :
+                <h1 className="item-not-found-error">{productError}</h1>
             }
         </div>
     )
