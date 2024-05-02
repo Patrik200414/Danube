@@ -16,7 +16,6 @@ function ProductUpdate(){
     useEffect(() => {
         
         const getUserProducts = async () => {
-            console.log(user);
             const userProducts = await fetchGetAuthorization(`/api/product/myProducts/${user.id}`, user.jwt);
             const productsResponse = await userProducts.json();
             if(userProducts.ok){

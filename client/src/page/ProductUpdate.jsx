@@ -66,16 +66,11 @@ function ProductUpdate(){
     async function handleSubmit(e){
         e.preventDefault();
         const productCopy = {...product};
-        const newImages = [];
-        
-        for(let i = 0; i < productCopy.images.length; i++){
-            if(typeof productCopy.images[i] === 'object'){
-                const newImage = productCopy.images.splice(i, 1)[0];
-                newImages.push(newImage);
-            }
-        }
-        
-        console.log(productCopy);
+
+        const newImages = productCopy.images.filter(image => typeof image === 'object') ;
+        productCopy.images = productCopy.images.filter(image => typeof image === 'string');
+
+
         const formData = appendFilesToFormData(new FormData(), 'newImages', newImages);
         formData.append('updatedValues', JSON.stringify(productCopy));
         formData.append('seller', user.id);
