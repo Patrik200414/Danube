@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import useFetch from "../utility/customHook/useFetch";
+import useFetchGetAuthorization from "../utility/customHook/useFetchGetAuthorization";
 import useVerifyUser from "../utility/customHook/useVerifyUser";
 import ProductInformationForm from "../component/product/ProductInformationForm";
 import ProductDetailsForm from "../component/product/ProductDetailsForm";
@@ -12,7 +12,8 @@ function ProductUpdate(){
     const {productId} = useParams();
 
     const [user] = useVerifyUser('ROLE_SELLER');
-    const [product, setProduct] = useFetch(`/api/product/item/${productId}`);
+    
+    const [product, setProduct] = useFetchGetAuthorization(`/api/product/update/item/${productId}`, user);
 
 
     function handleProductInformationChange(value, key){
@@ -70,11 +71,11 @@ function ProductUpdate(){
             }
         }
 
-        const formData = appendFilesToFormData(new FormData(), 'newImages',newImages);
+        const formData = appendFilesToFormData(new FormData(), 'newImages', newImages);
         formData.append('updatedValues', JSON.stringify(productCopy));
-        formData.append('newImages',  newImages);
-
-        console.log(formData);
+        formData.append('seller', user.id);
+        
+        console.log(newImages);
         const productUpdateData = await fetch(`/api/product/update/${productId}`, {
             method: 'PUT',
             headers: {

@@ -24,11 +24,13 @@ import com.danube.danube.repository.product.connection.SubcategoryDetailReposito
 import com.danube.danube.repository.user.UserRepository;
 import com.danube.danube.utility.converter.Converter;
 import com.danube.danube.utility.filellogger.FileLogger;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
@@ -124,8 +126,9 @@ public class ProductService {
         return converter.convertProductsToProductShowSmallDTO(similarProducts);
     }
 
+    @Transactional
     public void saveProduct(ProductUploadDTO productUploadDTO) throws IOException {
-        UserEntity seller = userValidator(productUploadDTO.userId());
+        UserEntity seller = sellerValidator(productUploadDTO.userId());
         Subcategory subcategory = subcategoryRepository.findById(productUploadDTO.productDetail().subcategoryId())
                         .orElseThrow(NonExistingSubcategoryException::new);
 
@@ -179,6 +182,53 @@ public class ProductService {
         return converter.convertProductToProductItemDTO(product);
     }
 
+    public ProductUpdateDTO getUpdatableProductItem(long id){
+        Product product = productRepository.findById(id).orElseThrow(NonExistingProductException::new);
+        return converter.convertProductToProductUpdateDTO(product);
+    }
+
+    @Transactional
+    public void updateProduct(ProductUpdateDTO updatedProductDetails, MultipartFile[] newImages, long sellerId, long updatedProductId){
+        UserEntity seller = sellerValidator(sellerId);
+        Product updatedProduct = productRepository.findById(updatedProductId)
+                .orElseThrow(NonExistingProductException::new);
+        ProductInformation updatedProductInformation = updatedProductDetails.productInformation();
+
+        /*{
+            "productInformation":{
+                "productName":"T-shirt",
+                "price":5,
+                "deliveryTimeInDay":7,
+                "quantity":10,
+                "rating":0,
+                "shippingPrice":1.55,
+                "sold":0,
+                "brand":"Nike",
+                "description":"asdasd",
+                "seller":"Some Name",
+                "subcategoryId":1
+            },
+            "images":["M8804_a-large.jpg"],
+            "detailValues":[
+                {"detailName":"Size","id":1,"value":"asd"},
+                {"detailName":"Color","id":2,"value":"asd"},
+                {"detailName":"Material","id":3,"value":"asd"},
+                {"detailName":"Style","id":4,"value":"asd"}
+            ]
+         }*/
+
+
+        updatedProduct.setProductName(updatedProductInformation.productName());
+        updatedProduct.setPrice(updatedProductInformation.price());
+        updatedProduct.setDeliveryTimeInDay(updatedProductInformation.deliveryTimeInDay());
+        updatedProduct.setQuantity(updatedProductInformation.quantity());
+        updatedProduct.setShippingPrice(updatedProductInformation.shippingPrice());
+        updatedProduct.setBrand(updatedProductInformation.brand());
+        updatedProduct.setDescription(updatedProductInformation.description());
+
+
+    }
+
 
     private void saveProductValues(Map<String, String> productInformation, Product product){
         for(Map.Entry<String, String> entry : productInformation.entrySet()){
@@ -198,14 +248,10 @@ public class ProductService {
         }
     }
 
-    private UserEntity userValidator(long userId){
-        Optional<UserEntity> searchedSeller = userRepository.findById(userId);
+    private UserEntity sellerValidator(long userId){
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(NonExistingUserException::new);
 
-        if(searchedSeller.isEmpty()){
-            throw new NonExistingUserException();
-        }
-
-        UserEntity user = searchedSeller.get();
         if(!user.getRoles().contains(Role.ROLE_SELLER)){
             throw new InvalidUserCredentialsException();
         }

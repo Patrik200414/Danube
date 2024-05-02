@@ -59,4 +59,8 @@ public class ProductValue {
     public long getDetailId(){
         return value.getDetail().getId();
     }
+
+    public long getValueId(){
+        return value.getId();
+    }
 }
