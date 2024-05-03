@@ -1,5 +1,6 @@
 package com.danube.danube.security.jwt;
 
+import com.danube.danube.model.dto.user.UserVerificationDTO;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -41,6 +42,17 @@ public class JwtUtils {
                 .setExpiration(new Date((new Date().getTime() + jwtExpirationMs)))
                 .signWith(key(), SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public long getIssuedAtMilliseconds (String userVerification){
+        Date issuedAt = Jwts.parserBuilder()
+                .setSigningKey(key())
+                .build()
+                .parseClaimsJws(userVerification)
+                .getBody()
+                .getIssuedAt();
+
+        return issuedAt.getTime();
     }
 
     private Key key(){

@@ -156,6 +156,11 @@ public class Advice {
         );
     }
 
+    @ExceptionHandler(ExpiredVerificationTokenException.class)
+    public ResponseEntity<?> handleExpiredVerificationTokenException(){
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
 
     private UserErrorMessage handleInputTooShortError(InputTooShortException e){
         String fieldName = e.getMessage().split("-")[0];
