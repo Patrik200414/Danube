@@ -7,7 +7,6 @@ function useVerifyUserAccess(navigateUrl){
 
     useEffect(() => {
         const verifyUser = async () => {
-            console.log('Verify');
             const userJwt = JSON.parse(sessionStorage.getItem('USER_JWT'))
             const verifyData = await fetch('/api/user/verify', {
                 method: 'POST',

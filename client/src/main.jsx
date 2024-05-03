@@ -17,7 +17,7 @@ import NotFound from './page/NotFound';
 import ProductDashBoard from './page/ProductDashBoard';
 import ProductUpdate from './page/ProductUpdate';
 
-const verificationToPages = ['upload', 'update'];
+const verificationToPages = ['upload', 'update', 'password'];
 
 const router = createBrowserRouter([
   {
@@ -45,7 +45,7 @@ const router = createBrowserRouter([
         element: <UserUpdate />
       },
       {
-        path: '/user/update/password',
+        path: '/user/password',
         element: <PasswordUpdate />
       },
       {
