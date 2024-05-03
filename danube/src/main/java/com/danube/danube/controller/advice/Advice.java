@@ -149,6 +149,13 @@ public class Advice {
         );
     }
 
+    @ExceptionHandler(IncorrectSellerException.class)
+    public ResponseEntity<UserErrorMessage> handleIncorrectSellerException(){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new UserErrorMessage("You are not the seller of the updatable product! You can only update your products!")
+        );
+    }
+
 
     private UserErrorMessage handleInputTooShortError(InputTooShortException e){
         String fieldName = e.getMessage().split("-")[0];

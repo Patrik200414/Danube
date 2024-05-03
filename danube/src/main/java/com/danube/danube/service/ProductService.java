@@ -187,9 +187,11 @@ public class ProductService {
 
     @Transactional
     public void updateProduct(ProductUpdateDTO updatedProductDetails, MultipartFile[] newImages, long sellerId, long updatedProductId) throws IOException {
-        sellerValidator(sellerId);
+        UserEntity seller = sellerValidator(sellerId);
         Product updatedProduct = productRepository.findById(updatedProductId)
                 .orElseThrow(NonExistingProductException::new);
+
+        productSellerValidation(updatedProduct, seller);
 
         handleImageUpdate(updatedProductDetails, newImages, updatedProduct);
         List<Image> productImages = imageRepository.findAll();
@@ -199,6 +201,12 @@ public class ProductService {
 
         List<Value> updatedValues = updateProductDetailValues(updatedProductDetails);
         valueRepository.saveAll(updatedValues);
+    }
+
+    private void productSellerValidation(Product product, UserEntity seller) {
+        if(product.getSeller().getId() != seller.getId()){
+            throw new IncorrectSellerException();
+        }
     }
 
     private List<Value> updateProductDetailValues(ProductUpdateDTO updatedProductDetails) {
