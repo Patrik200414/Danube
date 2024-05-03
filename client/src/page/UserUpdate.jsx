@@ -1,14 +1,21 @@
 import { Link } from "react-router-dom";
 import UserUpdateForm from "../component/user/UserUpdateForm";
+import useVerifyUserAccess from "../utility/customHook/useVerifyUserAccess";
 
 function UserUpdate(){
+    const isAccessible = useVerifyUserAccess('/verification/user/update');
 
     return(
         <div className="user-update-container">
-            <UserUpdateForm />
-            <Link className="change-password" to={'/user/update/password'}>
-                <button>Change password</button>
-            </Link>
+            {isAccessible && 
+                <>
+                    <UserUpdateForm />
+                    <Link className="change-password" to={'/user/update/password'}>
+                        <button>Change password</button>
+                    </Link>
+                </>
+            }
+            
         </div>
     )
 }

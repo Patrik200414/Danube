@@ -1,6 +1,7 @@
 package com.danube.danube.service;
 
 import com.danube.danube.custom_exception.login_registration.*;
+import com.danube.danube.custom_exception.user.InvalidUserCredentialsException;
 import com.danube.danube.custom_exception.user.NotMatchingCurrentPasswordException;
 import com.danube.danube.custom_exception.user.NotMatchingNewPasswordAndReenterPasswordException;
 import com.danube.danube.custom_exception.user.NotMatchingUserAndUpdateUserIdException;
@@ -13,6 +14,7 @@ import com.danube.danube.security.jwt.JwtUtils;
 import com.danube.danube.utility.converter.Converter;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,14 +24,20 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Timestamp;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 @Service
 public class UserService {
-    public static final int MIN_LENGTH_NAME = 2;
-    public static final int MIN_LENGTH_PASSWORD = 6;
+    private static final int MIN_LENGTH_NAME = 2;
+    private static final int MIN_LENGTH_PASSWORD = 6;
+    public static final int MINUTE_TO_MILLISECONDS = 60000;
+    @Value("${danube.app.jwtVerificationTimeInMinutes}")
+    private int JWT_VERIFICATION_TIME_IN_MINUTES;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -53,19 +61,9 @@ public class UserService {
 
     public JwtResponse loginUser(UserLoginDTO userLoginDTO){
         validateEmail(userLoginDTO.email());
-
-        Authentication authentication = verifyUser(userLoginDTO.email(), userLoginDTO.password());
-
+        verifyUserCredentials(userLoginDTO.email(), userLoginDTO.password());
         UserEntity user = userRepository.findByEmail(userLoginDTO.email()).orElseThrow(() -> new EmailNotFoundException(userLoginDTO.email()));
-        String jwt = jwtUtils.generateJwtToken(authentication);
-
-        User userDetails = (User) authentication.getPrincipal();
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .toList();
-
-
-        return new JwtResponse(jwt, user.getFirstName(), user.getLastName(), user.getEmail(), user.getId(), roles);
+        return generateJwtResponse(user);
     }
 
     public JwtResponse addSellerRoleToUser(long id){
@@ -110,9 +108,28 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public boolean verifyUser(UserVerificationDTO userVerification){
+        long tokenIssuedAt = jwtUtils.getIssuedAtMilliseconds(userVerification.token());
+        long currDate = new Date().getTime();
+        long difference = currDate - tokenIssuedAt;
+        int differenceInMinutes = Math.round((float) difference / MINUTE_TO_MILLISECONDS);
+
+        return JWT_VERIFICATION_TIME_IN_MINUTES > differenceInMinutes;
+    }
+
+    public JwtResponse authenticateUser(String email, String password){
+        Authentication authentication = verifyUserCredentials(email, password);
+
+        if(!authentication.isAuthenticated()){
+            throw new InvalidUserCredentialsException();
+        }
+
+        UserEntity user = userRepository.findByEmail(email).orElseThrow(() -> new EmailNotFoundException(email));
+        return generateJwtResponse(user);
+    }
 
 
-    public Authentication verifyUser(String email, String password){
+    private Authentication verifyUserCredentials(String email, String password){
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(email, password)
         );

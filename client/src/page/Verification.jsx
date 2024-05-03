@@ -49,12 +49,14 @@ function Verification({verificationToPages}){
             password: password
         };
 
-        const verificationResult = await fetchPostAuthorizationFetch('/api/user/verify', user.jwt, JSON.stringify(userVerification), true);
+        const verificationResult = await fetchPostAuthorizationFetch('/api/user/authenticate', user.jwt, JSON.stringify(userVerification), true);
+        const verificationResponse = await verificationResult.json();
+
 
         if(verificationResult.ok){
+            sessionStorage.setItem('USER_JWT', JSON.stringify(verificationResponse));
             navigate(targetUrl);
         } else{
-            const verificationResponse = await verificationResult.json();
             setError(verificationResponse.errorMessage);
         }
 

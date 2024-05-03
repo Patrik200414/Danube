@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function useVerifyUser(role){
+function useVerifyUserRole(role){
     const [user, setUser] = useState();
     const navigate = useNavigate();
 
@@ -26,4 +26,4 @@ function useVerifyUser(role){
 }
 
 
-export default useVerifyUser;
+export default useVerifyUserRole;

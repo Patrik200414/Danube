@@ -58,7 +58,7 @@ public class Advice {
         );
     }
 
-    @ExceptionHandler(BadCredentialsException.class)
+    @ExceptionHandler({BadCredentialsException.class, InvalidUserCredentialsException.class})
     public ResponseEntity<UserErrorMessage> handleBadCredentialsException(){
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                 new UserErrorMessage("Invalid password! This account has different password!")
@@ -154,6 +154,11 @@ public class Advice {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 new UserErrorMessage("You are not the seller of the updatable product! You can only update your products!")
         );
+    }
+
+    @ExceptionHandler(ExpiredVerificationTokenException.class)
+    public ResponseEntity<?> handleExpiredVerificationTokenException(){
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
 
