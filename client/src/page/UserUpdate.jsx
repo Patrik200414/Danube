@@ -10,7 +10,7 @@ function UserUpdate(){
             {isAccessible && 
                 <>
                     <UserUpdateForm />
-                    <Link className="change-password" to={'/user/update/password'}>
+                    <Link className="change-password" to={'/user/password'}>
                         <button>Change password</button>
                     </Link>
                 </>
