@@ -1,18 +1,20 @@
 import ProductsTable from "../component/product/ProductsTable";
 
 import buttonObjectGenerator from '../utility/buttonObjectGenerator';
-import useVerifyUser from "../utility/customHook/useVerifyUser";
+import useVerifyUserRole from "../utility/customHook/useVerifyUserRole";
 import useFetchGetAuthorization from "../utility/customHook/useFetchGetAuthorization";
+import useVerifyUserAccess from '../utility/customHook/useVerifyUserAccess';
 
 function ProductUpdate(){
-    const [user] = useVerifyUser("ROLE_SELLER");
+    const isAccessible = useVerifyUserAccess('/verification/product/update');
+    const [user] = useVerifyUserRole("ROLE_SELLER");
     const [myProducts, , error] = useFetchGetAuthorization(`/api/product/myProducts/${user ? user.id : ''}`, user);
 
 
     return(
         <div className="product-dashboard-container">
             {error && <h1 key={error} className="item-not-found-error">{error}</h1>}
-            {myProducts &&
+            {(myProducts && isAccessible) &&
                 <>
                     <h2>Product update</h2>
                     <ProductsTable products={myProducts} buttons={[

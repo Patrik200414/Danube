@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import PasswordUpdateForm from "../component/user/PasswordUpdateForm";
-import useVerifyUser from "../utility/customHook/useVerifyUser";
+import useVerifyUserRole from "../utility/customHook/useVerifyUserRole";
 
 function PasswordUpdate(){
-    const [user, ] = useVerifyUser('ROLE_CUSTOMER');
+    const [user, ] = useVerifyUserRole('ROLE_CUSTOMER');
 
     const navigate = useNavigate();
 

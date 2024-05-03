@@ -7,13 +7,16 @@ import UploadedImages from "../component/product/UploadedImages";
 import fetchPostAuthorizationFetch from '../utility/fetchPostAuthorizationFetch';
 import changeProductDetail from '../utility/changeProductDetail';
 import imageUpload from '../utility/imageUpload';
-import useVerifyUser from "../utility/customHook/useVerifyUser";
+import useVerifyUserRole from "../utility/customHook/useVerifyUserRole";
 import appendFilesToFormData from '../utility/appendFilesToFormData';
+import useVerifyUserAccess from "../utility/customHook/useVerifyUserAccess";
 
 function ProductUpload(){
     const SUCCESS_MESSAGE_TIME_IN_SECONDS = 2;
 
-    const [user] = useVerifyUser("ROLE_SELLER");
+
+    const isAccessible = useVerifyUserAccess('/verification/product/upload')
+    const [user] = useVerifyUserRole("ROLE_SELLER");
     const [product, setProduct] = useState();
     const [details, setDetails] = useState();
     const [images, setImages] = useState([]);
@@ -165,7 +168,7 @@ function ProductUpload(){
 
     return(
         <div className="product-upload">
-            {user && 
+            {(isAccessible && user) && 
                 <>
                     {successMessage && <h3 className="success-message">{successMessage}</h3>}
                     <ProductInformationForm onDetailsChange={handleProductChange} productDetail={product}/>

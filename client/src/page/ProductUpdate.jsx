@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import useFetchGetAuthorization from "../utility/customHook/useFetchGetAuthorization";
-import useVerifyUser from "../utility/customHook/useVerifyUser";
+import useVerifyUserRole from "../utility/customHook/useVerifyUserRole";
 import ProductInformationForm from "../component/product/ProductInformationForm";
 import ProductDetailsForm from "../component/product/ProductDetailsForm";
 import changeProductDetail from '../utility/changeProductDetail';
@@ -8,11 +8,13 @@ import UploadedImages from '../component/product/UploadedImages';
 import imageUpload from "../utility/imageUpload";
 import appendFilesToFormData from "../utility/appendFilesToFormData";
 import { useState } from "react";
+import useVerifyUserAccess from "../utility/customHook/useVerifyUserAccess";
 
 function ProductUpdate(){
     const {productId} = useParams();
 
-    const [user] = useVerifyUser('ROLE_SELLER');
+    const isAccessible = useVerifyUserAccess('/verification/product/update');
+    const [user] = useVerifyUserRole('ROLE_SELLER');
     
     const [product, setProduct, productError] = useFetchGetAuthorization(`/api/product/update/item/${productId}`, user);
     const [error, setError] = useState();
@@ -94,7 +96,7 @@ function ProductUpdate(){
     
     return(
         <div className="product-update-container">
-            {product ?
+            {(isAccessible && product) ?
                 <div className="product-upload">
                     <ProductInformationForm onDetailsChange={(value, key) => handleProductInformationChange(value, key)} productDetail={product.productInformation}/>
                     <ProductDetailsForm details={product.detailValues} onDetailsChange={(value, key) => handleDetailChange(value, key)} subCategoryId={product.productInformation.subcategoryId} user={user} onImageUpload={(e) => handleImageUpload(e)}/>
