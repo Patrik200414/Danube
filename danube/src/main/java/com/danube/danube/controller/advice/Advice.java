@@ -58,7 +58,7 @@ public class Advice {
         );
     }
 
-    @ExceptionHandler(BadCredentialsException.class)
+    @ExceptionHandler({BadCredentialsException.class, InvalidUserCredentialsException.class})
     public ResponseEntity<UserErrorMessage> handleBadCredentialsException(){
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                 new UserErrorMessage("Invalid password! This account has different password!")

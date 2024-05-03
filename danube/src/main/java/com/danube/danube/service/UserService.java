@@ -1,6 +1,7 @@
 package com.danube.danube.service;
 
 import com.danube.danube.custom_exception.login_registration.*;
+import com.danube.danube.custom_exception.user.InvalidUserCredentialsException;
 import com.danube.danube.custom_exception.user.NotMatchingCurrentPasswordException;
 import com.danube.danube.custom_exception.user.NotMatchingNewPasswordAndReenterPasswordException;
 import com.danube.danube.custom_exception.user.NotMatchingUserAndUpdateUserIdException;
@@ -60,19 +61,9 @@ public class UserService {
 
     public JwtResponse loginUser(UserLoginDTO userLoginDTO){
         validateEmail(userLoginDTO.email());
-
-        Authentication authentication = verifyUserCredentials(userLoginDTO.email(), userLoginDTO.password());
-
+        verifyUserCredentials(userLoginDTO.email(), userLoginDTO.password());
         UserEntity user = userRepository.findByEmail(userLoginDTO.email()).orElseThrow(() -> new EmailNotFoundException(userLoginDTO.email()));
-        String jwt = jwtUtils.generateJwtToken(authentication);
-
-        User userDetails = (User) authentication.getPrincipal();
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .toList();
-
-
-        return new JwtResponse(jwt, user.getFirstName(), user.getLastName(), user.getEmail(), user.getId(), roles);
+        return generateJwtResponse(user);
     }
 
     public JwtResponse addSellerRoleToUser(long id){
@@ -124,6 +115,17 @@ public class UserService {
         int differenceInMinutes = Math.round((float) difference / MINUTE_TO_MILLISECONDS);
 
         return JWT_VERIFICATION_TIME_IN_MINUTES > differenceInMinutes;
+    }
+
+    public JwtResponse authenticateUser(String email, String password){
+        Authentication authentication = verifyUserCredentials(email, password);
+
+        if(!authentication.isAuthenticated()){
+            throw new InvalidUserCredentialsException();
+        }
+
+        UserEntity user = userRepository.findByEmail(email).orElseThrow(() -> new EmailNotFoundException(email));
+        return generateJwtResponse(user);
     }
 
 

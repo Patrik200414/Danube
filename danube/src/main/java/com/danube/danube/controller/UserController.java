@@ -1,12 +1,14 @@
 package com.danube.danube.controller;
 
 import com.danube.danube.custom_exception.user.ExpiredVerificationTokenException;
+import com.danube.danube.custom_exception.user.InvalidUserCredentialsException;
 import com.danube.danube.model.dto.jwt.JwtResponse;
 import com.danube.danube.model.dto.user.*;
 import com.danube.danube.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -57,11 +59,10 @@ public class UserController {
         return HttpStatus.ACCEPTED;
     }
 
-    /*@PostMapping("/verify")
-    public HttpStatus verifyProfile(@RequestBody UserVerificationDTO userVerificationDTO){
-        userService.verifyUser(userVerificationDTO.email(), userVerificationDTO.password());
-        return HttpStatus.ACCEPTED;
-    }*/
+    @PostMapping("/authenticate")
+    public JwtResponse verifyProfile(@RequestBody UserLoginDTO userAuthentication){
+        return userService.authenticateUser(userAuthentication.email(), userAuthentication.password());
+    }
 
 
 }
