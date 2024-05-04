@@ -1,5 +1,6 @@
 package com.danube.danube.model.product;
 
+import com.danube.danube.model.order.Order;
 import com.danube.danube.model.product.connection.ProductValue;
 import com.danube.danube.model.product.image.Image;
 import com.danube.danube.model.product.subcategory.Subcategory;
@@ -37,11 +38,13 @@ public class Product {
 
     @ManyToOne
     public Subcategory subcategory;
+    @OneToMany(mappedBy = "product")
+    private List<Order> orders;
 
     public Product() {
     }
 
-    public Product(long id, List<ProductValue> productValues, String productName, double price, String brand, int quantity, String description, double shippingPrice, int deliveryTimeInDay, int rating, int sold, UserEntity seller, List<Image> images, Subcategory subcategory) {
+    public Product(long id, List<ProductValue> productValues, String productName, double price, String brand, int quantity, String description, double shippingPrice, int deliveryTimeInDay, int rating, int sold, UserEntity seller, List<Image> images, Subcategory subcategory, List<Order> orders) {
         this.id = id;
         this.productValues = productValues;
         this.productName = productName;
@@ -56,6 +59,7 @@ public class Product {
         this.seller = seller;
         this.images = images;
         this.subcategory = subcategory;
+        this.orders = orders;
     }
 
     public long getId() {
@@ -174,5 +178,13 @@ public class Product {
     }
     public Image getFirstProductImage(){
         return images.get(0);
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
     }
 }

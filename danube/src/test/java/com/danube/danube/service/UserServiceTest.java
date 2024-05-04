@@ -171,8 +171,8 @@ class UserServiceTest {
                 "test@gmail.com",
                 "Password",
                 Set.of(Role.ROLE_CUSTOMER),
-                List.of()
-        );
+                List.of(),
+                orders);
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("CUSTOMER");
         User principal = new User(
                 userLoginDTO.email(),
@@ -334,8 +334,8 @@ class UserServiceTest {
                 "oldTest@gmail.com",
                 "OldPassword",
                 Set.of(Role.ROLE_CUSTOMER),
-                List.of()
-        );
+                List.of(),
+                orders);
 
         when(userRepositoryMock.findById(1L)).thenReturn(
                 Optional.of(oldUser)
@@ -349,8 +349,8 @@ class UserServiceTest {
                         userUpdateDTO.email(),
                         "OldPassword",
                         Set.of(Role.ROLE_CUSTOMER),
-                        List.of()
-                )
+                        List.of(),
+                        orders)
         );
 
         when(jwtUtilsMock.generateJwtToken(userUpdateDTO.email())).thenReturn(expectedJwtToken);
@@ -398,8 +398,8 @@ class UserServiceTest {
                 "test@gmail.com",
                 "PasswordCurrent",
                 Set.of(Role.ROLE_CUSTOMER),
-                List.of()
-        );
+                List.of(),
+                orders);
 
 
         when(userRepositoryMock.findById(1L)).thenReturn(
@@ -426,8 +426,8 @@ class UserServiceTest {
                 "test@gmail.com",
                 "Password",
                 Set.of(Role.ROLE_CUSTOMER),
-                List.of()
-        );
+                List.of(),
+                orders);
 
 
         when(userRepositoryMock.findById(1L)).thenReturn(
