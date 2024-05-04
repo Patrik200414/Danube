@@ -1,4 +1,4 @@
 package com.danube.danube.model.dto.order;
 
-public record AddToCartDTO(long customerId, long productId) {
+public record AddToCartDTO(long customerId, long productId, int quantity) {
 }

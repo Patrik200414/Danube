@@ -16,16 +16,18 @@ public class Order {
     private Product product;
     private boolean isOrdered;
     private boolean isSent;
+    private int quantity;
 
     public Order() {
     }
 
-    public Order(long id, UserEntity customer, Product product, boolean isOrdered, boolean isSent) {
+    public Order(long id, UserEntity customer, Product product, boolean isOrdered, boolean isSent, int quantity) {
         this.id = id;
         this.customer = customer;
         this.product = product;
         this.isOrdered = isOrdered;
         this.isSent = isSent;
+        this.quantity = quantity;
     }
 
     public long getId() {
@@ -62,5 +64,13 @@ public class Order {
 
     public void setSent(boolean sent) {
         isSent = sent;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 }
