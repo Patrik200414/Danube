@@ -1,7 +1,9 @@
 package com.danube.danube.utility.converter;
 
+import com.danube.danube.model.dto.order.CartItemShowDTO;
 import com.danube.danube.model.dto.product.*;
 import com.danube.danube.model.dto.user.UserRegistrationDTO;
+import com.danube.danube.model.order.Order;
 import com.danube.danube.model.product.Product;
 import com.danube.danube.model.product.category.Category;
 import com.danube.danube.model.product.detail.Detail;
@@ -222,5 +224,17 @@ public class ConverterImpl implements Converter {
                 product.getSeller().getFullName(),
                 product.getSubcategory().getId()
         );
+    }
+
+    @Override
+    public List<CartItemShowDTO> convertOrdersToCarItemShowDTOs(List<Order> orders) {
+        return orders.stream()
+                .map(order -> new CartItemShowDTO(
+                        order.getProduct().getProductName(),
+                        order.getProduct().getPrice(),
+                        order.getProduct().getImages().get(0).toString(),
+                        order.getQuantity(),
+                        order.getProduct().getRating()
+                )).toList();
     }
 }
