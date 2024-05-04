@@ -10,6 +10,5 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findAllByCustomer(UserEntity customer);
     List<Order> findAllByProduct(Product product);
-    List<Order> findAllBySent(boolean isSent);
-    List<Order> findAllByOrdered(boolean isOrdered);
+
 }
