@@ -1,9 +1,9 @@
 import fetchGetAuthorization from "./fetchGetAuthorization";
 
-function getNavbarInformation(){
+function getNavbarInformation(currUser){
     const navbarResponse = {userFirstName: null, cartItems: []};
 
-    const currUser = JSON.parse(sessionStorage.getItem('USER_JWT'));
+    
     const storedCartItems = JSON.parse(localStorage.getItem('CART_ITEMS'));
     if(currUser){
         navbarResponse.userFirstName = currUser.firstName;
