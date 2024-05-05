@@ -16,8 +16,10 @@ import Item from './page/Item';
 import NotFound from './page/NotFound';
 import ProductDashBoard from './page/ProductDashBoard';
 import ProductUpdate from './page/ProductUpdate';
+import { NavbarProvider } from './NavbarContext';
 
 const verificationToPages = ['upload', 'update', 'password'];
+
 
 const router = createBrowserRouter([
   {
@@ -84,6 +86,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
-  </React.StrictMode>,
+    <NavbarProvider>
+      <RouterProvider router={router} />
+    </NavbarProvider>
+  </React.StrictMode>
 )
