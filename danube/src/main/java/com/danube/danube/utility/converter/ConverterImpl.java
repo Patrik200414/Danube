@@ -227,14 +227,13 @@ public class ConverterImpl implements Converter {
     }
 
     @Override
-    public List<CartItemShowDTO> convertOrdersToCarItemShowDTOs(List<Order> orders) {
-        return orders.stream()
-                .map(order -> new CartItemShowDTO(
-                        order.getProduct().getProductName(),
-                        order.getProduct().getPrice(),
-                        order.getProduct().getImages().get(0).toString(),
-                        order.getQuantity(),
-                        order.getProduct().getRating()
-                )).toList();
+    public CartItemShowDTO convertOrderToCarItemShowDTO(Order order) {
+        return new CartItemShowDTO(
+                order.getProduct().getProductName(),
+                order.getProduct().getPrice(),
+                order.getProduct().getImages().get(0).getFileName(),
+                order.getQuantity(),
+                order.getProduct().getRating()
+        );
     }
 }

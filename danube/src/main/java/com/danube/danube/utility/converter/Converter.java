@@ -40,5 +40,5 @@ public interface Converter {
     List<ProductShowSmallDTO> convertProductsToProductShowSmallDTO(Collection<Product> products);
     Map<String, String> convertProductToMyProductInformation(Product product);
     ProductUpdateDTO convertUpdateDataToProductUpdateDTO(String updatedValue) throws JsonProcessingException;
-    List<CartItemShowDTO> convertOrdersToCarItemShowDTOs(List<Order> orders);
+    CartItemShowDTO convertOrderToCarItemShowDTO(Order order);
 }

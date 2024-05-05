@@ -4,6 +4,7 @@ import com.danube.danube.custom_exception.login_registration.NonExistingUserExce
 import com.danube.danube.custom_exception.order.NotEnoughQuantityToOrderException;
 import com.danube.danube.custom_exception.product.NonExistingProductException;
 import com.danube.danube.model.dto.order.AddToCartDTO;
+import com.danube.danube.model.dto.order.CartItemResponseDTO;
 import com.danube.danube.model.dto.order.CartItemShowDTO;
 import com.danube.danube.model.order.Order;
 import com.danube.danube.model.product.Product;
@@ -33,7 +34,7 @@ public class OrderService {
         this.converter = converter;
     }
 
-    public void addToCart(AddToCartDTO cartElement){
+    public CartItemShowDTO addToCart(AddToCartDTO cartElement){
         UserEntity customer = userRepository.findById(cartElement.customerId())
                 .orElseThrow(NonExistingUserException::new);
 
@@ -47,7 +48,7 @@ public class OrderService {
         product.setQuantity(remainedQuantity);
         productRepository.save(product);
         Order orderItem = createNewOrder(customer, product, cartElement.quantity());
-        orderRepository.save(orderItem);
+        return converter.convertOrderToCarItemShowDTO(orderRepository.save(orderItem));
     }
 
     public List<CartItemShowDTO> getCartItems(long customerId){
@@ -56,7 +57,9 @@ public class OrderService {
 
         List<Order> cartItems = orderRepository.findAllByCustomer(customer);
 
-        return converter.convertOrdersToCarItemShowDTOs(cartItems);
+        return cartItems.stream()
+                .map(cartItem -> converter.convertOrderToCarItemShowDTO(cartItem))
+                .toList();
     }
 
     private Order createNewOrder(UserEntity customer, Product product, int quantity) {

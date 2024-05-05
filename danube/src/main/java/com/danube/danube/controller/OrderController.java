@@ -21,9 +21,8 @@ public class OrderController {
     }
 
     @PostMapping("/cart")
-    public HttpStatus addToCart(@RequestBody AddToCartDTO cartItem){
-        orderService.addToCart(cartItem);
-        return HttpStatus.CREATED;
+    public CartItemShowDTO addToCart(@RequestBody AddToCartDTO cartItem){
+        return orderService.addToCart(cartItem);
     }
 
     @GetMapping("/cart/{customerId}")
