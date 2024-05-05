@@ -1,6 +1,7 @@
 package com.danube.danube.controller;
 
 import com.danube.danube.model.dto.order.AddToCartDTO;
+import com.danube.danube.model.dto.order.CartItemResponseDTO;
 import com.danube.danube.model.dto.order.CartItemShowDTO;
 import com.danube.danube.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class OrderController {
     }
 
     @GetMapping("/cart/{customerId}")
-    public List<CartItemShowDTO> getMyCart(@RequestParam long customerId){
-        return orderService.getCartItems(customerId);
+    public CartItemResponseDTO getMyCart(@PathVariable long customerId){
+        return new CartItemResponseDTO(orderService.getCartItems(customerId));
     }
 }
