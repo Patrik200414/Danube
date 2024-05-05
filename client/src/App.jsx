@@ -49,7 +49,7 @@ const router = createBrowserRouter([
         },
         {
           path: '/user/update',
-          element: <UserUpdate />
+          element: <UserUpdate onNavbarInformationChange={(information) => setNavbarInformation(information)}/>
         },
         {
           path: '/user/password',

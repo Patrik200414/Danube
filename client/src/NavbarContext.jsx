@@ -16,4 +16,8 @@ NavbarProvider.propTypes = {
     children: PropTypes.element
 }
 
+NavbarProvider.propTypes = {
+    navbarInformation: PropTypes.object
+}
+
 export {NavbarProvider, NavbarContext};

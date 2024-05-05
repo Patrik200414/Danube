@@ -1,6 +1,8 @@
+import PropTypes from 'prop-types';
 import { useState, useEffect } from "react";
+import getNavbarInformation from "../../utility/getNavbarInformation";
 
-function UserUpdateForm(){
+function UserUpdateForm({onNavbarInformationChange}){
     const [user, setUser] = useState(JSON.parse(sessionStorage.getItem('USER_JWT')));
     const [isUpdateing, setIsUpdateing] = useState(false);
     const [error, setError] = useState();
@@ -48,6 +50,7 @@ function UserUpdateForm(){
         if(updateUserData.ok){
             sessionStorage.setItem('USER_JWT', JSON.stringify(updateUserResponse));
             setUser(updateUserResponse);
+            onNavbarInformationChange(getNavbarInformation(updateUserResponse));
             setSuccessfullUpload(true);
         } else{
             setError(updateUserResponse.errorMessage);
@@ -79,6 +82,10 @@ function UserUpdateForm(){
             </form>
         </>
     )
+}
+
+UserUpdateForm.propTypes = {
+    onNavbarInformationChange: PropTypes.func
 }
 
 export default UserUpdateForm;

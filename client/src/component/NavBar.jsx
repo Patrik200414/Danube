@@ -10,9 +10,7 @@ import {NavbarContext} from "../NavbarContext";
 function NavBar(){
     const [search, setSearch] = useState('');
     const [categories, setCategories] = useState([]);
-    /* const [user, ] = useState(JSON.parse(sessionStorage.getItem('USER_JWT'))); */
     const navbarInfo = useContext(NavbarContext);
-    console.log(navbarInfo);
 
     useEffect(() => {
         const getCategories = async () => {
