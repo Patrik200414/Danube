@@ -1,14 +1,12 @@
 import { createContext } from "react";
-import getNavbarInformation from "./utility/getNavbarInformation";
 import PropTypes from 'prop-types';
 
 const NavbarContext = createContext();
 
 
-function NavbarProvider({children}){
-    const navbarInfo = getNavbarInformation();
+function NavbarProvider({children, navbarInformation}){
     return(
-        <NavbarContext.Provider value={navbarInfo}>
+        <NavbarContext.Provider value={navbarInformation}>
             {children}
         </NavbarContext.Provider>
     )
