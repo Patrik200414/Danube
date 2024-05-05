@@ -57,7 +57,7 @@ const router = createBrowserRouter([
         },
         {
           path: '/item/:id',
-          element: <Item />
+          element: <Item onNavbarInformationChange={(information) => setNavbarInformation(information)}/>
         },
         {
           path: '/product/update',

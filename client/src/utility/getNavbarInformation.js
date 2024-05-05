@@ -10,7 +10,6 @@ function getNavbarInformation(currUser){
     }
 
     const getCartItems = async (currUser) => {
-        
         const cartItemData = await fetchGetAuthorization(`/api/cart/${Number(currUser.id)}`, currUser.jwt);
         const cartItemResponse = await cartItemData.json();
         navbarResponse.cartItems = cartItemResponse.cartItems;

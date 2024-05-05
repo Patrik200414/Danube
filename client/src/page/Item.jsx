@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import fetchGet from "../utility/fetchGet";
@@ -6,9 +7,10 @@ import ItemTableRow from '../component/item/ItemTableRow';
 import ItemTableContainer from '../component/item/ItemTableContainer';
 import ItemSimilarContainer from "../component/item/ItemSimilarContainer";
 import handlePromiseAllError from "../utility/handlePromiseAllError";
+import AddToCart from "../component/order/AddToCart";
 
 
-function Item(){
+function Item({onNavbarInformationChange}){
     const [product, setProduct] = useState();
     const [simularProducts, setSimularProducts] = useState();
     const [errors, setErrors] = useState([]);
@@ -48,6 +50,7 @@ function Item(){
         
     }, [id, navigate])
 
+
     return(
         <div className="product-info-container">
             {errors.length ? 
@@ -63,11 +66,16 @@ function Item(){
                         <ItemTableContainer tableName="Product Details" renderElement={() => renderProductDetails(product.detailValues)}/>
                     </div>
                 </div>
+                <AddToCart maxQuantity={product.productInformation.quantity} productId={Number(id)} onNavbarInformationChange={(information) => onNavbarInformationChange(information)}/>
                 <ItemSimilarContainer similarProducts={simularProducts}/>
             </div>
             }
         </div>
     )
+}
+
+Item.propTypes = {
+    onNavbarInformationChange: PropTypes.func
 }
 
 export default Item;
