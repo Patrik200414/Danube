@@ -1,9 +1,11 @@
+import PropTypes from "prop-types";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import fetchPostJSON from "../utility/fetchPostJSON";
+import getNavbarInformation from "../utility/getNavbarInformation";
 
-function Login(){
+function Login({onNavbarInformationChange}){
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -25,6 +27,7 @@ function Login(){
 
         if(loginResponseData.ok){
             sessionStorage.setItem('USER_JWT', JSON.stringify(loginResponse));
+            onNavbarInformationChange(getNavbarInformation(loginResponse));
             navigate('/');
         } else {
             setError(loginResponse.errorMessage);
@@ -57,6 +60,10 @@ function Login(){
             </form>
         </div>
     )
+}
+
+Login.propTypes = {
+    onNavbarInformationChange: PropTypes.func
 }
 
 export default Login;
