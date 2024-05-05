@@ -4,7 +4,6 @@ function getNavbarInformation(){
     const navbarResponse = {userFirstName: null, cartItems: []};
 
     const currUser = JSON.parse(sessionStorage.getItem('USER_JWT'));
-    console.log(currUser);
     const storedCartItems = JSON.parse(localStorage.getItem('CART_ITEMS'));
     if(currUser){
         navbarResponse.userFirstName = currUser.firstName;
@@ -12,7 +11,8 @@ function getNavbarInformation(){
 
     const getCartItems = async (currUser) => {
         
-        const cartItemResponse = await fetchGetAuthorization(`/api/cart/${Number(currUser.id)}`, currUser.jwt);
+        const cartItemData = await fetchGetAuthorization(`/api/cart/${Number(currUser.id)}`, currUser.jwt);
+        const cartItemResponse = await cartItemData.json();
         navbarResponse.cartItems = cartItemResponse.cartItems;
     }
 
@@ -21,7 +21,6 @@ function getNavbarInformation(){
     } else if(storedCartItems){
         navbarResponse.cartItems = storedCartItems;
     }
-
     return navbarResponse;
 }
 

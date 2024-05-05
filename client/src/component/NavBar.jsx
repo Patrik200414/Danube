@@ -1,14 +1,18 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 import UserProfileImage from "./user/UserProfileImage";
 import ShoppingCart from "./ShoppingCart";
+import {NavbarContext} from "../NavbarContext";
+
 
 
 
 function NavBar(){
     const [search, setSearch] = useState('');
     const [categories, setCategories] = useState([]);
-    const [user, ] = useState(JSON.parse(sessionStorage.getItem('USER_JWT')));
+    /* const [user, ] = useState(JSON.parse(sessionStorage.getItem('USER_JWT'))); */
+    const navbarInfo = useContext(NavbarContext);
+    
 
     useEffect(() => {
         const getCategories = async () => {
@@ -34,12 +38,12 @@ function NavBar(){
                     <button>Search</button>
                 </div>
                 <div className="additional-information">
-                    {user ? 
-                        <UserProfileImage user={user} />
+                    {navbarInfo.userFirstName ? 
+                        <UserProfileImage userFirstName={navbarInfo.userFirstName} />
                         :
                         <Link to='/login'><button>Login</button></Link>
                     }
-                    <ShoppingCart />
+                    <ShoppingCart itemCount={navbarInfo.cartItems.length}/>
                 </div>
                 
             </div>
