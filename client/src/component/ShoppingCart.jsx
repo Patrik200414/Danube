@@ -1,8 +1,7 @@
-import { useState } from "react";
+import PropTypes from 'prop-types'
 import { Link } from "react-router-dom";
 
-function ShoppingCart(){
-    const [itemCount, ] = useState(JSON.parse(sessionStorage.getItem('ITEMS_IN_CART')) === null ? 0 : JSON.parse(sessionStorage.getItem('ITEMS_IN_CART')).length);
+function ShoppingCart({itemCount}){
 
     return(
         <Link to='/cart'>
@@ -14,5 +13,8 @@ function ShoppingCart(){
     )
 }
 
+ShoppingCart.propTypes = {
+    itemCount: PropTypes.number
+}
 
 export default ShoppingCart;

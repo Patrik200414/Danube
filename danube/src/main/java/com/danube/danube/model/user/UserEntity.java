@@ -1,5 +1,6 @@
 package com.danube.danube.model.user;
 
+import com.danube.danube.model.order.Order;
 import com.danube.danube.model.product.Product;
 import jakarta.persistence.*;
 
@@ -29,11 +30,13 @@ public class UserEntity {
     private Set<Role> roles;
     @OneToMany(mappedBy = "seller")
     private List<Product> products;
+    @OneToMany(mappedBy = "customer")
+    private List<Order> orders;
 
     public UserEntity() {
     }
 
-    public UserEntity(long id, String firstName, String lastName, String email, String password, Set<Role> roles, List<Product> products) {
+    public UserEntity(long id, String firstName, String lastName, String email, String password, Set<Role> roles, List<Product> products, List<Order> orders) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -41,6 +44,7 @@ public class UserEntity {
         this.password = password;
         this.roles = roles;
         this.products = products;
+        this.orders = orders;
     }
 
     public long getId() {
@@ -100,5 +104,13 @@ public class UserEntity {
     }
     public String getFullName(){
         return String.format("%s %s", firstName, lastName);
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
     }
 }

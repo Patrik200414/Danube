@@ -2,14 +2,14 @@ import { Link } from "react-router-dom"
 import userImage from "../../static/userImage.svg";
 import PropTypes from "prop-types";
 
-function UserProfileImage({user}){
+function UserProfileImage({userFirstName}){
     return(
         <Link to='/profile'>
             <div className="greeting">
                 <img className="user-image" src={userImage} />
                 <div>
                     <h5>Welcome</h5>
-                    <p>{user.firstName}</p>
+                    <p>{userFirstName}</p>
                 </div>
             </div>
         </Link>
@@ -17,7 +17,7 @@ function UserProfileImage({user}){
 }
 
 UserProfileImage.propTypes = {
-    user: PropTypes.object
+    userFirstName: PropTypes.string
 }
 
 
