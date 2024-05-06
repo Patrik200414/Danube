@@ -75,7 +75,8 @@ function AddToCart({maxQuantity, productId, onNavbarInformationChange, onError})
 AddToCart.propTypes = {
     maxQuantity: PropTypes.number,
     productId: PropTypes.number,
-    onNavbarInformationChange: PropTypes.func
+    onNavbarInformationChange: PropTypes.func,
+    onError: PropTypes.func
 }
 
 export default AddToCart;

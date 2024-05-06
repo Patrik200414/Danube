@@ -22,7 +22,6 @@ function NavBar(){
 
         getCategories();
     }, []);
-    /* console.log(navbarInfo); */
 
     return(
         <>

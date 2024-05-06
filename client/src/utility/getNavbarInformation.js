@@ -18,7 +18,6 @@ function getNavbarInformation(currUser){
     if(currUser){
         getCartItemNumber(currUser);
     } else if(storedCartItems){
-
         navbarResponse.cartItemNumber = storedCartItems.length;
     }
     return navbarResponse;
