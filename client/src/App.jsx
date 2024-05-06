@@ -19,6 +19,7 @@ import NotFound from './page/NotFound';
 import ProductDashBoard from './page/ProductDashBoard';
 import ProductUpdate from './page/ProductUpdate';
 import getNavbarInformation from './utility/getNavbarInformation';
+import MyCart from "./page/MyCart";
 
 function App() {
   const [navbarInformation, setNavbarInformation] = useState(getNavbarInformation(JSON.parse(sessionStorage.getItem('USER_JWT'))));
@@ -67,6 +68,10 @@ const router = createBrowserRouter([
         {
           path: '/update/:productId',
           element: <ProductUpdate />
+        },
+        {
+          path: '/cart',
+          element: <MyCart />
         },
         {
           path: '*',
