@@ -66,7 +66,7 @@ function Item({onNavbarInformationChange}){
                         <ItemTableContainer tableName="Product Details" renderElement={() => renderProductDetails(product.detailValues)}/>
                     </div>
                 </div>
-                <AddToCart maxQuantity={product.productInformation.quantity} productId={Number(id)} onNavbarInformationChange={(information) => onNavbarInformationChange(information)}/>
+                <AddToCart onError={(errorMessage) => setErrors(errorMessage)} maxQuantity={product.productInformation.quantity} productId={Number(id)} onNavbarInformationChange={(information) => onNavbarInformationChange(information)}/>
                 <ItemSimilarContainer similarProducts={simularProducts}/>
             </div>
             }

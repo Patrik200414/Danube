@@ -13,6 +13,7 @@ import com.danube.danube.repository.order.OrderRepository;
 import com.danube.danube.repository.product.ProductRepository;
 import com.danube.danube.repository.user.UserRepository;
 import com.danube.danube.utility.converter.Converter;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +35,7 @@ public class OrderService {
         this.converter = converter;
     }
 
+    @Transactional
     public CartItemShowDTO addToCart(AddToCartDTO cartElement){
         UserEntity customer = userRepository.findById(cartElement.customerId())
                 .orElseThrow(NonExistingUserException::new);

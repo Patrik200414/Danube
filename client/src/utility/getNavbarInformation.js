@@ -1,7 +1,7 @@
 import fetchGetAuthorization from "./fetchGetAuthorization";
 
 function getNavbarInformation(currUser){
-    const navbarResponse = {userFirstName: null, cartItems: []};
+    const navbarResponse = {userFirstName: null, cartItemNumber: 0};
 
     
     const storedCartItems = JSON.parse(localStorage.getItem('CART_ITEMS'));
@@ -9,16 +9,16 @@ function getNavbarInformation(currUser){
         navbarResponse.userFirstName = currUser.firstName;
     }
 
-    const getCartItems = async (currUser) => {
+    const getCartItemNumber = async (currUser) => {
         const cartItemData = await fetchGetAuthorization(`/api/cart/${Number(currUser.id)}`, currUser.jwt);
         const cartItemResponse = await cartItemData.json();
-        navbarResponse.cartItems = cartItemResponse.cartItems;
+        navbarResponse.cartItemNumber = cartItemResponse.cartItems.length;
     }
 
     if(currUser){
-        getCartItems(currUser);
+        getCartItemNumber(currUser);
     } else if(storedCartItems){
-        navbarResponse.cartItems = storedCartItems;
+        navbarResponse.cartItemNumber = storedCartItems.length;
     }
     return navbarResponse;
 }
