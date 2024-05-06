@@ -43,7 +43,7 @@ function NavBar(){
                             :
                             <Link to='/login'><button>Login</button></Link>
                         }
-                        <ShoppingCart itemCount={navbarInfo.cartItems.length}/>
+                        <ShoppingCart itemCount={navbarInfo.cartItemNumber}/>
                     </div>
                     
                 </div>

@@ -3,28 +3,53 @@ import { useContext, useState } from "react";
 import fetchPostAuthorizationFetch from '../../utility/fetchPostAuthorizationFetch';
 import { NavbarContext } from "../../NavbarContext";
 
-function AddToCart({maxQuantity, productId, onNavbarInformationChange}){
+function AddToCart({maxQuantity, productId, onNavbarInformationChange, onError}){
     const [selectedQuantity, setSelectedQuantity] = useState(1);
     const [user, ] = useState(JSON.parse(sessionStorage.getItem('USER_JWT')));
     const navbarInformation = useContext(NavbarContext)
 
+    function incrementCartNumber(navbarInformation, quantity){
+        const incrementedItemCount = navbarInformation.cartItemNumber + Number(quantity);
+        navbarInformation.cartItemNumber = incrementedItemCount;
+        onNavbarInformationChange(navbarInformation);
+    }
+
+    async function addItemToOrdersInRegisteredUser(order){
+        order.customerId = user.id;
+
+        const cartData = await fetchPostAuthorizationFetch('/api/cart', user.jwt, JSON.stringify(order), true);
+        if(cartData.ok){
+            const navbarInfoCopy = {...navbarInformation};
+            incrementCartNumber(navbarInfoCopy, order.quantity);
+        } else{
+            const errorMessage = await cartData.json();
+            onError(errorMessage.errorMessage);
+        }
+    }
+
+    async function addItemToOrdersInUnregisteredUser(order){
+        const locallyStoredItems = JSON.parse(localStorage.getItem('CART_ITEMS'));
+            if(locallyStoredItems){
+                locallyStoredItems.push(order);
+                localStorage.setItem('CART_ITEMS', JSON.stringify(locallyStoredItems));
+            } else{
+                localStorage.setItem('CART_ITEMS', JSON.stringify([order]));
+            }
+
+            incrementCartNumber({...navbarInformation}, order.quantity);
+    }
+
     async function handleAddToCart(e){
         e.preventDefault();
+        const order = {
+            productId: productId,
+            quantity: selectedQuantity,
+            customerId: undefined
+        }
         if(user){
-            const order = {
-                customerId: user.id,
-                productId: productId,
-                quantity: selectedQuantity
-            }
-
-            const cartData = await fetchPostAuthorizationFetch('/api/cart', user.jwt, JSON.stringify(order), true);
-            if(cartData.ok){
-                const newItem = await cartData.json();
-                const navbarInfoCopy = {...navbarInformation};
-                navbarInfoCopy.cartItems.push(newItem);
-
-                onNavbarInformationChange(navbarInfoCopy);
-            }
+            addItemToOrdersInRegisteredUser(order)
+        } else{
+            addItemToOrdersInUnregisteredUser(order);
         }
     }
 
