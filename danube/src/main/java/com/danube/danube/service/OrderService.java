@@ -2,6 +2,7 @@ package com.danube.danube.service;
 
 import com.danube.danube.custom_exception.login_registration.NonExistingUserException;
 import com.danube.danube.custom_exception.order.NotEnoughQuantityToOrderException;
+import com.danube.danube.custom_exception.order.OrderNotFoundException;
 import com.danube.danube.custom_exception.product.NonExistingProductException;
 import com.danube.danube.model.dto.order.AddToCartDTO;
 import com.danube.danube.model.dto.order.CartItemResponseDTO;
@@ -57,17 +58,6 @@ public class OrderService {
         return converter.convertOrderToCarItemShowDTO(orderRepository.save(orderItem));
     }
 
-    private Order validateIfOrderAlreadyExists(AddToCartDTO cartElement, Optional<Order> searchedOrderByCustomer, UserEntity customer, Product product) {
-        Order orderItem;
-        if(searchedOrderByCustomer.isEmpty()){
-            orderItem = createNewOrder(customer, product, cartElement.quantity());
-        } else {
-            orderItem = searchedOrderByCustomer.get();
-            orderItem.setQuantity(orderItem.getQuantity() + cartElement.quantity());
-        }
-        return orderItem;
-    }
-
     public List<CartItemShowDTO> getCartItems(long customerId){
         UserEntity customer = userRepository.findById(customerId)
                 .orElseThrow(NonExistingUserException::new);
@@ -77,6 +67,24 @@ public class OrderService {
         return cartItems.stream()
                 .map(cartItem -> converter.convertOrderToCarItemShowDTO(cartItem))
                 .toList();
+    }
+
+    public void deleteOrder(long orderId){
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(OrderNotFoundException::new);
+
+        orderRepository.delete(order);
+    }
+
+    private Order validateIfOrderAlreadyExists(AddToCartDTO cartElement, Optional<Order> searchedOrderByCustomer, UserEntity customer, Product product) {
+        Order orderItem;
+        if(searchedOrderByCustomer.isEmpty()){
+            orderItem = createNewOrder(customer, product, cartElement.quantity());
+        } else {
+            orderItem = searchedOrderByCustomer.get();
+            orderItem.setQuantity(orderItem.getQuantity() + cartElement.quantity());
+        }
+        return orderItem;
     }
 
     private Order createNewOrder(UserEntity customer, Product product, int quantity) {

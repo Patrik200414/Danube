@@ -5,6 +5,7 @@ import com.danube.danube.model.dto.order.CartItemResponseDTO;
 import com.danube.danube.model.dto.order.CartItemShowDTO;
 import com.danube.danube.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,5 +28,11 @@ public class OrderController {
     @GetMapping("/cart/{customerId}")
     public CartItemResponseDTO getMyCart(@PathVariable long customerId){
         return new CartItemResponseDTO(orderService.getCartItems(customerId));
+    }
+
+    @DeleteMapping("/cart/{orderId}")
+    public HttpStatus deleteOrder(@PathVariable long orderId){
+        orderService.deleteOrder(orderId);
+        return HttpStatus.NO_CONTENT;
     }
 }
