@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderService {
@@ -47,10 +48,24 @@ public class OrderService {
             throw new NotEnoughQuantityToOrderException(cartElement.quantity(), product.getQuantity());
         }
 
+        Optional<Order> searchedOrderByCustomer = orderRepository.findByCustomerAndProduct(customer, product);
+
         product.setQuantity(remainedQuantity);
         productRepository.save(product);
-        Order orderItem = createNewOrder(customer, product, cartElement.quantity());
+
+        Order orderItem = validateIfOrderAlreadyExists(cartElement, searchedOrderByCustomer, customer, product);
         return converter.convertOrderToCarItemShowDTO(orderRepository.save(orderItem));
+    }
+
+    private Order validateIfOrderAlreadyExists(AddToCartDTO cartElement, Optional<Order> searchedOrderByCustomer, UserEntity customer, Product product) {
+        Order orderItem;
+        if(searchedOrderByCustomer.isEmpty()){
+            orderItem = createNewOrder(customer, product, cartElement.quantity());
+        } else {
+            orderItem = searchedOrderByCustomer.get();
+            orderItem.setQuantity(orderItem.getQuantity() + cartElement.quantity());
+        }
+        return orderItem;
     }
 
     public List<CartItemShowDTO> getCartItems(long customerId){
