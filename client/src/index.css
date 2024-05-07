@@ -806,3 +806,13 @@ input[type="text"] {
   .product-dashboard-container h2{
     align-self: flex-start;
   }
+
+
+  /*Product table button*/
+  .product-table-button{
+    background-color: var(--button-color);
+    color: var(--deep-blue);
+    border: none; 
+    border-radius: 15px;
+    cursor: pointer;
+  }

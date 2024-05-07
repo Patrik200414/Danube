@@ -22,7 +22,7 @@ function ProductsTable({products, buttons, keyName}){
                             {buttons.map(button => (
                                 <td key={`${button.actionName}-${product.id}`}>
                                     <Link to={button.isDynamic && button.linkTo ? `${button.linkTo}/${product.id}` : button.linkTo}>
-                                        <button onClick={button.onClick ? button.isDynamic ? () => button.onClick(product.id) : () => button.onClick() : () => ''}>{button.buttonText}</button>
+                                        <button className="product-table-button" onClick={button.onClick ? button.isDynamic ? () => button.onClick(product.id) : () => button.onClick() : () => ''}>{button.buttonText}</button>
                                     </Link>
                                 </td>
                             ))}
