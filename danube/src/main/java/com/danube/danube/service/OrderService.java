@@ -73,6 +73,10 @@ public class OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
 
+        Product product = order.getProduct();
+        product.setQuantity(product.getQuantity() + order.getQuantity());
+
+        productRepository.save(product);
         orderRepository.delete(order);
     }
 
