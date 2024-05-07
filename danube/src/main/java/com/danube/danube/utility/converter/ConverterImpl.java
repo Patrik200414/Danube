@@ -229,6 +229,7 @@ public class ConverterImpl implements Converter {
     @Override
     public CartItemShowDTO convertOrderToCarItemShowDTO(Order order) {
         return new CartItemShowDTO(
+                order.getId(),
                 order.getProduct().getProductName(),
                 order.getProduct().getPrice(),
                 order.getProduct().getImages().get(0).getFileName(),

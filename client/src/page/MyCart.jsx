@@ -6,6 +6,8 @@ function MyCart(){
 
     const [cartItems, setCartItems, error] = useGetCartItems();
 
+    console.log(cartItems);
+
     return (
         <div className="my-cart-dashboard">
             {cartItems && <ProductsTable products={cartItems} buttons={[
