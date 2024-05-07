@@ -3,7 +3,7 @@ import Proptypes from 'prop-types';
 
 import calculateImageSourceName from "../../utility/calculateImageSourceName";
 
-function ProductsTable({products, buttons}){
+function ProductsTable({products, buttons, keyName}){
 
 
     return(
@@ -17,7 +17,7 @@ function ProductsTable({products, buttons}){
             <tbody>
                 {products.map(product => {
                     return (
-                        <tr key={product.id}>
+                        <tr key={product.id ? product.id : product[keyName]}>
                             {Object.keys(product).map(fieldName => fieldName !== 'id' ? <td key={`${fieldName}-${product.id}`}> {fieldName.toLocaleLowerCase().includes('image') ? <img className="my-product-image" src={calculateImageSourceName(product[fieldName])}/> : product[fieldName]}</td> : '')}
                             {buttons.map(button => (
                                 <td key={`${button.actionName}-${product.id}`}>
@@ -36,7 +36,8 @@ function ProductsTable({products, buttons}){
 
 ProductsTable.propTypes = {
     products: Proptypes.array,
-    buttons: Proptypes.array
+    buttons: Proptypes.array,
+    keyName: Proptypes.string
 }
 
 export default ProductsTable;

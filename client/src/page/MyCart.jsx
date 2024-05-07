@@ -10,7 +10,7 @@ function MyCart(){
         <div className="my-cart-dashboard">
             {cartItems && <ProductsTable products={cartItems} buttons={[
                 buttonObjectGenerator('removeItem', 'Remove item', true, '', () => console.log('Remove item'))
-            ]}/>}
+            ]} keyName={'productName'}/>}
             
         </div>
     )
