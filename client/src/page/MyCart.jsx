@@ -1,13 +1,12 @@
+import PropTypes from 'prop-types';
 import ProductsTable from "../component/product/ProductsTable";
 import buttonObjectGenerator from "../utility/buttonObjectGenerator";
 import useGetCartItems from "../utility/customHook/useGetCartItems";
-import useVerifyUserRole from "../utility/customHook/useVerifyUserRole";
 import fetchDeleteAuthorization from "../utility/fetchDeleteAuthorization";
 import getNavbarInformation from "../utility/getNavbarInformation";
 
 function MyCart({onNavbarInformationChange}){
     const [cartItems, setCartItems, error] = useGetCartItems();
-    console.log(cartItems);
 
     async function handleDeleteion(orderId){
         const currUser = JSON.parse(sessionStorage.getItem('USER_JWT'));
@@ -22,6 +21,7 @@ function MyCart({onNavbarInformationChange}){
 
     return (
         <div className="my-cart-dashboard">
+            {error && <h1 className="error-message">{error}</h1>}
             {cartItems?.length ? <ProductsTable products={cartItems} buttons={[
                 buttonObjectGenerator('removeItem', 'Remove item', true, '', (id) => handleDeleteion(id))
             ]} keyName={'orderId'}/> 
@@ -30,6 +30,10 @@ function MyCart({onNavbarInformationChange}){
             
         </div>
     )
+}
+
+MyCart.propTypes = {
+    onNavbarInformationChange: PropTypes.func
 }
 
 export default MyCart;
