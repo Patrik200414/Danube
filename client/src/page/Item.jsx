@@ -19,14 +19,8 @@ function Item({onNavbarInformationChange}){
     const {id} = useParams();
     const navigate = useNavigate();
 
-    function renderProductDetails(detailValues){
-        return detailValues.map(detailValue => <ItemTableRow key={detailValue.id} productPropertyName={detailValue.detailName} productPropertyValue={detailValue.value}/>);
-    }
-
-    function renderProductInformation(productInformation){
-        return Object.keys(productInformation).map(productInformationKey => <ItemTableRow key={productInformationKey} productPropertyName={productInformationKey} productPropertyValue={productInformation[productInformationKey]}/>);
-    }
-
+    
+    
     useEffect(() => {
         if(isNaN(id)){
             navigate('/');
@@ -45,11 +39,18 @@ function Item({onNavbarInformationChange}){
                 setSimularProducts(await itemsAndSimilarItems[1].json());
             }
         }
-
+        
         getProduct();
         
     }, [id, navigate])
+    
+    function renderProductDetails(detailValues){
+        return detailValues.map(detailValue => <ItemTableRow key={detailValue.id} productPropertyName={detailValue.detailName} productPropertyValue={detailValue.value}/>);
+    }
 
+    function renderProductInformation(productInformation){
+        return Object.keys(productInformation).map(productInformationKey => <ItemTableRow key={productInformationKey} productPropertyName={productInformationKey} productPropertyValue={productInformation[productInformationKey]}/>);
+    }
 
     return(
         <div className="product-info-container">
@@ -66,7 +67,13 @@ function Item({onNavbarInformationChange}){
                         <ItemTableContainer tableName="Product Details" renderElement={() => renderProductDetails(product.detailValues)}/>
                     </div>
                 </div>
-                <AddToCart onError={(errorMessage) => setErrors(errorMessage)} maxQuantity={product.productInformation.quantity} productId={Number(id)} onNavbarInformationChange={(information) => onNavbarInformationChange(information)}/>
+                <AddToCart
+                    onError={(errorMessage) => setErrors(errorMessage)}
+                    maxQuantity={product.productInformation.quantity} 
+                    productId={Number(id)} 
+                    onNavbarInformationChange={(information) => onNavbarInformationChange(information)}
+                    product={product}
+                />
                 <ItemSimilarContainer similarProducts={simularProducts}/>
             </div>
             }

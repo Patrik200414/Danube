@@ -3,7 +3,7 @@ import { useContext, useState } from "react";
 import fetchPostAuthorizationFetch from '../../utility/fetchPostAuthorizationFetch';
 import { NavbarContext } from "../../NavbarContext";
 
-function AddToCart({maxQuantity, productId, onNavbarInformationChange, onError}){
+function AddToCart({maxQuantity, productId, onNavbarInformationChange, onError, product}){
     const [selectedQuantity, setSelectedQuantity] = useState(1);
     const [user, ] = useState(JSON.parse(sessionStorage.getItem('USER_JWT')));
     const navbarInformation = useContext(NavbarContext)
@@ -27,13 +27,25 @@ function AddToCart({maxQuantity, productId, onNavbarInformationChange, onError})
         }
     }
 
-    async function addItemToOrdersInUnregisteredUser(order){
+    function createCartItemFromProduct(product, order){
+        return {
+            id: productId,
+            image: product.images[0],
+            orderedQuantity: order.quantity,
+            price: product.productInformation.price,
+            productName: product.productInformation.productName,
+            rating: product.productInformation.rating
+        }
+    }
+
+    async function addItemToOrdersInUnregisteredUser(product, order){
         const locallyStoredItems = JSON.parse(localStorage.getItem('CART_ITEMS'));
+        const productCartItem = createCartItemFromProduct(product, order);
             if(locallyStoredItems){
-                locallyStoredItems.push(order);
+                locallyStoredItems.push(productCartItem);
                 localStorage.setItem('CART_ITEMS', JSON.stringify(locallyStoredItems));
             } else{
-                localStorage.setItem('CART_ITEMS', JSON.stringify([order]));
+                localStorage.setItem('CART_ITEMS', JSON.stringify([productCartItem]));
             }
 
             incrementCartNumber({...navbarInformation}, order.quantity);
@@ -43,13 +55,13 @@ function AddToCart({maxQuantity, productId, onNavbarInformationChange, onError})
         e.preventDefault();
         const order = {
             productId: productId,
-            quantity: selectedQuantity,
+            quantity: Number(selectedQuantity),
             customerId: undefined
         }
         if(user){
             addItemToOrdersInRegisteredUser(order)
         } else{
-            addItemToOrdersInUnregisteredUser(order);
+            addItemToOrdersInUnregisteredUser(product, order);
         }
     }
 
@@ -76,7 +88,8 @@ AddToCart.propTypes = {
     maxQuantity: PropTypes.number,
     productId: PropTypes.number,
     onNavbarInformationChange: PropTypes.func,
-    onError: PropTypes.func
+    onError: PropTypes.func,
+    product: PropTypes.object
 }
 
 export default AddToCart;
