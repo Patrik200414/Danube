@@ -71,7 +71,7 @@ const router = createBrowserRouter([
         },
         {
           path: '/cart',
-          element: <MyCart />
+          element: <MyCart onNavbarInformationChange={(information) => setNavbarInformation(information)}/>
         },
         {
           path: '*',
