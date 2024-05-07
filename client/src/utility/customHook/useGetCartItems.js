@@ -20,19 +20,14 @@ function useGetCartItems(){
             }
         }
 
+        const locallyStoredItems = JSON.parse(localStorage.getItem('CART_ITEMS'));
+
         if(currUser){
             getCartElementForRegisteredUser(currUser);
             return;
-        } 
-
-        /* 
-        Implement get local item
-
-        const locallyStoredItems = JSON.parse(localStorage.getItem('CART_ITEMS'));
-        if(locallyStoredItems){
-            return
+        } else if(locallyStoredItems){
+            setCartItems(locallyStoredItems);
         }
-         */
 
         return () => controller.abort();
     }, [])

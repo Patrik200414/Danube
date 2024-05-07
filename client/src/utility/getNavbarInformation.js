@@ -18,7 +18,7 @@ function getNavbarInformation(currUser){
     if(currUser){
         getCartItemNumber(currUser);
     } else if(storedCartItems){
-        navbarResponse.cartItemNumber = storedCartItems.length;
+        navbarResponse.cartItemNumber = storedCartItems.reduce((acc, curr) => acc + curr.orderedQuantity, 0);
     }
     return navbarResponse;
 }
