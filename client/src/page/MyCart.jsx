@@ -3,10 +3,15 @@ import ProductsTable from "../component/product/ProductsTable";
 import buttonObjectGenerator from "../utility/buttonObjectGenerator";
 import useGetCartItems from "../utility/customHook/useGetCartItems";
 import fetchDeleteAuthorization from "../utility/fetchDeleteAuthorization";
-import getNavbarInformation from "../utility/getNavbarInformation";
+import getNavbarInformation from "../utility/customHook/useGetNavbarInformation";
+import { useContext } from 'react';
+import { NavbarContext } from '../NavbarContext';
+
 
 function MyCart({onNavbarInformationChange}){
     const [cartItems, setCartItems, error] = useGetCartItems();
+    const navbarInfo = useContext(NavbarContext);
+
 
     function handleDeleteion(orderId){
         const currUser = JSON.parse(sessionStorage.getItem('USER_JWT'));
@@ -21,8 +26,21 @@ function MyCart({onNavbarInformationChange}){
         const removeItemResponse = await fetchDeleteAuthorization(`/api/cart/${orderId}`, currUser.jwt);
 
         if(removeItemResponse.ok){
-            setCartItems(prev => prev.filter(order => order.id !== orderId));
-            onNavbarInformationChange(getNavbarInformation(currUser));
+            let deletedItemQuantity = 0;
+            const keptItems = [];
+            cartItems.forEach(item => {
+                if(item.id !== orderId){
+                    keptItems.push(item);
+                } else{
+                    deletedItemQuantity = item.orderedQuantity;
+                }
+            });
+
+            setCartItems(keptItems);
+            onNavbarInformationChange({
+                userFirstName: currUser.firstName,
+                cartItemNumber: navbarInfo.cartItemNumber - deletedItemQuantity
+            });
         }
     }
 

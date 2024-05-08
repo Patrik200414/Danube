@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import fetchGetAuthorization from "../fetchGetAuthorization";
+import fetchPostAuthorizationFetch from "../fetchPostAuthorizationFetch";
 
 function useGetCartItems(){
     const [cartItems, setCartItems] = useState();
@@ -20,13 +21,16 @@ function useGetCartItems(){
             }
         }
 
-        const locallyStoredItems = JSON.parse(localStorage.getItem('CART_ITEMS'));
+        
 
+        const locallyStoredItems = JSON.parse(localStorage.getItem('CART_ITEMS'));
         if(currUser){
             getCartElementForRegisteredUser(currUser);
-            return;
+            /* addLocallyStoredItemsToUser(currUser, locallyStoredItems); */
         } else if(locallyStoredItems){
             setCartItems(locallyStoredItems);
+        } else {
+            setCartItems([]);
         }
 
         return () => controller.abort();

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import fetchPostJSON from "../utility/fetchPostJSON";
-import getNavbarInformation from "../utility/getNavbarInformation";
+import fetchGetAuthorization from "../utility/fetchGetAuthorization";
 
 function Login({onNavbarInformationChange}){
     const [email, setEmail] = useState('');
@@ -27,7 +27,12 @@ function Login({onNavbarInformationChange}){
 
         if(loginResponseData.ok){
             sessionStorage.setItem('USER_JWT', JSON.stringify(loginResponse));
-            onNavbarInformationChange(getNavbarInformation(loginResponse));
+            const cartItemsData = await fetchGetAuthorization(`/api/cart/${loginResponse.id}`, loginResponse.jwt);
+            const cartItemsResponse = await cartItemsData.json();
+            onNavbarInformationChange({
+                userFirstName: loginResponse.firstName,
+                cartItemNumber: cartItemsResponse ? cartItemsResponse.cartItems.length : -1
+            });
             navigate('/');
         } else {
             setError(loginResponse.errorMessage);
