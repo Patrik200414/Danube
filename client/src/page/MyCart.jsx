@@ -8,15 +8,29 @@ import getNavbarInformation from "../utility/getNavbarInformation";
 function MyCart({onNavbarInformationChange}){
     const [cartItems, setCartItems, error] = useGetCartItems();
 
-    async function handleDeleteion(orderId){
+    function handleDeleteion(orderId){
         const currUser = JSON.parse(sessionStorage.getItem('USER_JWT'));
+        if(currUser){
+            handleRegisteredDeletion(orderId, currUser);
+        } else{
+            handleUnregisteredDeletion(orderId);
+        } 
+    }
 
+    async function handleRegisteredDeletion(orderId, currUser){
         const removeItemResponse = await fetchDeleteAuthorization(`/api/cart/${orderId}`, currUser.jwt);
 
         if(removeItemResponse.ok){
             setCartItems(prev => prev.filter(order => order.id !== orderId));
             onNavbarInformationChange(getNavbarInformation(currUser));
         }
+    }
+
+    function handleUnregisteredDeletion(orderId){
+        const updatedCartItems = cartItems.filter(item => item.id !== orderId);
+        setCartItems(updatedCartItems);
+        localStorage.setItem('CART_ITEMS', JSON.stringify(updatedCartItems));
+        onNavbarInformationChange(getNavbarInformation());
     }
 
     return (
