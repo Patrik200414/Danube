@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
-import { useState, useEffect } from "react";
-import getNavbarInformation from "../../utility/getNavbarInformation";
+import { useState, useEffect, useContext } from "react";
+import { NavbarContext } from '../../NavbarContext';
 
 function UserUpdateForm({onNavbarInformationChange}){
     const [user, setUser] = useState(JSON.parse(sessionStorage.getItem('USER_JWT')));
@@ -8,6 +8,8 @@ function UserUpdateForm({onNavbarInformationChange}){
     const [error, setError] = useState();
     const [successFullUpload, setSuccessfullUpload] = useState(false);
     const [successMessage, setSuccessMessage] = useState();
+    const navbarInfo = useContext(NavbarContext);
+    
 
     const SUCCESS_MESSAGE_TIME_IN_SECONDS = 2;
 
@@ -50,7 +52,10 @@ function UserUpdateForm({onNavbarInformationChange}){
         if(updateUserData.ok){
             sessionStorage.setItem('USER_JWT', JSON.stringify(updateUserResponse));
             setUser(updateUserResponse);
-            onNavbarInformationChange(getNavbarInformation(updateUserResponse));
+            onNavbarInformationChange({
+                userFirstName: updateUserResponse.firstName,
+                cartItemNumber: navbarInfo.cartItemNumber
+            });
             setSuccessfullUpload(true);
         } else{
             setError(updateUserResponse.errorMessage);

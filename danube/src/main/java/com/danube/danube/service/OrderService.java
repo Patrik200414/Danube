@@ -2,10 +2,9 @@ package com.danube.danube.service;
 
 import com.danube.danube.custom_exception.login_registration.NonExistingUserException;
 import com.danube.danube.custom_exception.order.NotEnoughQuantityToOrderException;
+import com.danube.danube.custom_exception.order.OrderNotFoundException;
 import com.danube.danube.custom_exception.product.NonExistingProductException;
-import com.danube.danube.model.dto.order.AddToCartDTO;
-import com.danube.danube.model.dto.order.CartItemResponseDTO;
-import com.danube.danube.model.dto.order.CartItemShowDTO;
+import com.danube.danube.model.dto.order.*;
 import com.danube.danube.model.order.Order;
 import com.danube.danube.model.product.Product;
 import com.danube.danube.model.user.UserEntity;
@@ -17,7 +16,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 public class OrderService {
@@ -47,10 +46,67 @@ public class OrderService {
             throw new NotEnoughQuantityToOrderException(cartElement.quantity(), product.getQuantity());
         }
 
-        product.setQuantity(remainedQuantity);
-        productRepository.save(product);
-        Order orderItem = createNewOrder(customer, product, cartElement.quantity());
+        Order orderItem = modifyProductAndOrderQuantity(cartElement, customer, product, remainedQuantity);
         return converter.convertOrderToCarItemShowDTO(orderRepository.save(orderItem));
+    }
+
+    @Transactional
+    public List<CartItemShowDTO> integrateCartItemsToUser(ItemIntegrationDTO cartItems){
+
+        UserEntity customer = userRepository.findById(cartItems.customerId())
+                .orElseThrow(NonExistingUserException::new);
+
+        List<Order> customerOrders = orderRepository.findAllByCustomer(customer);
+        Map<Long, Order> ordersByCustomer = new HashMap<>();
+        for(Order customerOrder : customerOrders){
+            if(!ordersByCustomer.containsKey(customerOrder.getProduct().getId())){
+                ordersByCustomer.put(customerOrder.getProduct().getId(), customerOrder);
+            }
+        }
+
+        List<Order> updatedOrdersThatIsInUserCart = new ArrayList<>();
+        List<Product> updatedProductsThatIsInUserCart = new ArrayList<>();
+        Map<Long, Integer> notUsedProducts = new HashMap<>();
+
+        for(CartItemShowDTO cartItem : cartItems.products()){
+            if(ordersByCustomer.containsKey(cartItem.id())){
+                Order alreadyStoredOrder = ordersByCustomer.get(cartItem.id());
+                Product alreadyOrderedProduct = alreadyStoredOrder.getProduct();
+
+                int remainder = alreadyOrderedProduct.getQuantity() - cartItem.orderedQuantity();
+                if(remainder > 0){
+                    alreadyStoredOrder.setQuantity(alreadyStoredOrder.getQuantity() + cartItem.orderedQuantity());
+                    alreadyOrderedProduct.setQuantity(alreadyOrderedProduct.getQuantity() - cartItem.orderedQuantity());
+
+                    updatedOrdersThatIsInUserCart.add(alreadyStoredOrder);
+                    updatedProductsThatIsInUserCart.add(alreadyOrderedProduct);
+                }
+            } else {
+                notUsedProducts.put(cartItem.id(), cartItem.orderedQuantity());
+            }
+        }
+
+
+        List<Long> newProductsIds = notUsedProducts.keySet().stream()
+                .toList();
+
+        List<Product> newProducts = productRepository.findAllById(newProductsIds);
+        for(Product product : newProducts){
+            int remainder = product.getQuantity() - notUsedProducts.get(product.getId());
+            if(remainder > 0){
+                product.setQuantity(remainder);
+                Order newOrder = createNewOrder(customer, product, notUsedProducts.get(product.getId()));
+
+                updatedOrdersThatIsInUserCart.add(newOrder);
+                updatedProductsThatIsInUserCart.add(product);
+            }
+        }
+
+        productRepository.saveAll(updatedProductsThatIsInUserCart);
+        orderRepository.saveAll(updatedOrdersThatIsInUserCart);
+        return customer.getOrders().stream()
+                .map(cartItem -> converter.convertOrderToCarItemShowDTO(cartItem))
+                .toList();
     }
 
     public List<CartItemShowDTO> getCartItems(long customerId){
@@ -62,6 +118,37 @@ public class OrderService {
         return cartItems.stream()
                 .map(cartItem -> converter.convertOrderToCarItemShowDTO(cartItem))
                 .toList();
+    }
+
+    public void deleteOrder(long orderId){
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(OrderNotFoundException::new);
+
+        Product product = order.getProduct();
+        product.setQuantity(product.getQuantity() + order.getQuantity());
+
+        productRepository.save(product);
+        orderRepository.delete(order);
+    }
+
+    private Order modifyProductAndOrderQuantity(AddToCartDTO cartElement, UserEntity customer, Product product, int remainedQuantity) {
+        Optional<Order> searchedOrderByCustomer = orderRepository.findByCustomerAndProduct(customer, product);
+
+        product.setQuantity(remainedQuantity);
+        productRepository.save(product);
+
+        return validateIfOrderAlreadyExists(cartElement, searchedOrderByCustomer, customer, product);
+    }
+
+    private Order validateIfOrderAlreadyExists(AddToCartDTO cartElement, Optional<Order> searchedOrderByCustomer, UserEntity customer, Product product) {
+        Order orderItem;
+        if(searchedOrderByCustomer.isEmpty()){
+            orderItem = createNewOrder(customer, product, cartElement.quantity());
+        } else {
+            orderItem = searchedOrderByCustomer.get();
+            orderItem.setQuantity(orderItem.getQuantity() + cartElement.quantity());
+        }
+        return orderItem;
     }
 
     private Order createNewOrder(UserEntity customer, Product product, int quantity) {

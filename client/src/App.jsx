@@ -1,7 +1,6 @@
 
 import { RouterProvider } from "react-router-dom"
 import { NavbarProvider } from "./NavbarContext"
-import  { useState } from 'react'
 import './index.css'
 import { createBrowserRouter } from 'react-router-dom';
 import Login from './page/Login';
@@ -18,10 +17,11 @@ import Item from './page/Item';
 import NotFound from './page/NotFound';
 import ProductDashBoard from './page/ProductDashBoard';
 import ProductUpdate from './page/ProductUpdate';
-import getNavbarInformation from './utility/getNavbarInformation';
+import useGetNavbarInformation from './utility/customHook/useGetNavbarInformation';
+import MyCart from "./page/MyCart";
 
 function App() {
-  const [navbarInformation, setNavbarInformation] = useState(getNavbarInformation(JSON.parse(sessionStorage.getItem('USER_JWT'))));
+  const [navbarInformation, setNavbarInformation] = useGetNavbarInformation(JSON.parse(sessionStorage.getItem('USER_JWT')));
 
   const verificationToPages = ['upload', 'update', 'password'];
 
@@ -67,6 +67,10 @@ const router = createBrowserRouter([
         {
           path: '/update/:productId',
           element: <ProductUpdate />
+        },
+        {
+          path: '/cart',
+          element: <MyCart onNavbarInformationChange={(information) => setNavbarInformation(information)}/>
         },
         {
           path: '*',
