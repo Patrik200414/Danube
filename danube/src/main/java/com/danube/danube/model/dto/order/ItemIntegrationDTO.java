@@ -1,4 +1,9 @@
 package com.danube.danube.model.dto.order;
 
-public record ItemIntegrationDTO() {
+import java.util.List;
+
+public record ItemIntegrationDTO(
+        long customerId,
+        List<CartItemShowDTO> products
+) {
 }
