@@ -4,6 +4,8 @@ import com.danube.danube.model.product.Product;
 import com.danube.danube.model.user.UserEntity;
 import jakarta.persistence.*;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "orders")
 public class Order {
@@ -72,5 +74,17 @@ public class Order {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof Order order)) return false;
+        return getId() == order.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 }
