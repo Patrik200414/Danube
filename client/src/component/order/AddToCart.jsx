@@ -44,13 +44,8 @@ function AddToCart({maxQuantity, productId, onNavbarInformationChange, onError, 
             if(!locallyStoredItems){
                 localStorage.setItem('CART_ITEMS', JSON.stringify([productCartItem]));
             } else{
-                const updatedCart = locallyStoredItems.map(item => {
-                    if(item.id === productCartItem.id){
-                        item.orderedQuantity += productCartItem.orderedQuantity;
-                    }
-                    return item;
-                })
-
+                const updatedCart = locallyStoredItems.filter(item => item.id !== productCartItem.id);
+                updatedCart.push(productCartItem);
                 localStorage.setItem('CART_ITEMS', JSON.stringify(updatedCart));
             }
 

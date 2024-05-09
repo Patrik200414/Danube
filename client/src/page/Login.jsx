@@ -4,6 +4,7 @@ import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import fetchPostJSON from "../utility/fetchPostJSON";
 import fetchGetAuthorization from "../utility/fetchGetAuthorization";
+import fetchPostAuthorizationFetch from "../utility/fetchPostAuthorizationFetch";
 
 function Login({onNavbarInformationChange}){
     const [email, setEmail] = useState('');
@@ -27,11 +28,33 @@ function Login({onNavbarInformationChange}){
 
         if(loginResponseData.ok){
             sessionStorage.setItem('USER_JWT', JSON.stringify(loginResponse));
-            const cartItemsData = await fetchGetAuthorization(`/api/cart/${loginResponse.id}`, loginResponse.jwt);
-            const cartItemsResponse = await cartItemsData.json();
+            const locallyStoredCartItems = JSON.parse(localStorage.getItem('CART_ITEMS'));
+            let cartItemsResponse;
+            if(locallyStoredCartItems){
+                const integrateCartItemsToUser = await fetchPostAuthorizationFetch(
+                    '/api/cart/integrate',
+                    loginResponse.jwt,
+                    JSON.stringify({
+                        customerId: loginResponse.id,
+                        products: locallyStoredCartItems
+                    }),
+                    true
+                );
+
+                if(integrateCartItemsToUser.ok){
+                    cartItemsResponse = await integrateCartItemsToUser.json();
+                    console.log(cartItemsResponse);
+                }
+            } else{
+                const cartItemsData = await fetchGetAuthorization(`/api/cart/${loginResponse.id}`, loginResponse.jwt);
+                cartItemsResponse = await cartItemsData.json();
+            }
+            console.log(cartItemsResponse.cartItems);
+            const itemNumberInCart = cartItemsResponse.cartItems.reduce((acc, curr) => acc + curr.orderedQuantity, 0);
+
             onNavbarInformationChange({
                 userFirstName: loginResponse.firstName,
-                cartItemNumber: cartItemsResponse ? cartItemsResponse.cartItems.length : -1
+                cartItemNumber: itemNumberInCart
             });
             navigate('/');
         } else {

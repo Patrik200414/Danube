@@ -1,5 +1,4 @@
 import fetchGetAuthorization from "../fetchGetAuthorization";
-import addLocallyStoredItemsToUser from "../addLocallyStoredItemsToUser";
 import { useEffect, useState } from "react";
 
 function useGetNavbarInformation(currUser){
@@ -17,11 +16,9 @@ function useGetNavbarInformation(currUser){
             setNavbarResponse(prev => ({...prev, cartItemNumber: cartItemResponse.cartItems.length}))
         }
 
+
         if(currUser){
             getCartItemNumber(currUser);
-            if(storedCartItems){
-                /* const itemResponse = addLocallyStoredItemsToUser(currUser, storedCartItems); */
-            }
         } else if(storedCartItems){
             navbarResponse.cartItemNumber = storedCartItems.reduce((acc, curr) => acc + curr.orderedQuantity, 0);
         }

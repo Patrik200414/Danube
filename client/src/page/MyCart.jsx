@@ -3,7 +3,6 @@ import ProductsTable from "../component/product/ProductsTable";
 import buttonObjectGenerator from "../utility/buttonObjectGenerator";
 import useGetCartItems from "../utility/customHook/useGetCartItems";
 import fetchDeleteAuthorization from "../utility/fetchDeleteAuthorization";
-import getNavbarInformation from "../utility/customHook/useGetNavbarInformation";
 import { useContext } from 'react';
 import { NavbarContext } from '../NavbarContext';
 
@@ -45,10 +44,18 @@ function MyCart({onNavbarInformationChange}){
     }
 
     function handleUnregisteredDeletion(orderId){
-        const updatedCartItems = cartItems.filter(item => item.id !== orderId);
+        let deletedItem;
+        const updatedCartItems = cartItems.filter(item => {
+            if(item.id !== orderId){
+                return true
+            } else{
+                deletedItem = item;
+                return false;
+            }
+        });
         setCartItems(updatedCartItems);
         localStorage.setItem('CART_ITEMS', JSON.stringify(updatedCartItems));
-        onNavbarInformationChange(getNavbarInformation());
+        onNavbarInformationChange({...navbarInfo, cartItemNumber: navbarInfo.cartItemNumber - deletedItem.orderedQuantity});
     }
 
     return (
