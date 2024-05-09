@@ -13,10 +13,7 @@ function NavbarProvider({children, navbarInformation}){
 }
 
 NavbarProvider.propTypes = {
-    children: PropTypes.element
-}
-
-NavbarProvider.propTypes = {
+    children: PropTypes.element,
     navbarInformation: PropTypes.object
 }
 
