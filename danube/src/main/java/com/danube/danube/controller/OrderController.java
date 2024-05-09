@@ -1,8 +1,7 @@
 package com.danube.danube.controller;
 
-import com.danube.danube.model.dto.order.AddToCartDTO;
-import com.danube.danube.model.dto.order.CartItemResponseDTO;
-import com.danube.danube.model.dto.order.CartItemShowDTO;
+import com.danube.danube.model.dto.order.*;
+import com.danube.danube.model.order.Order;
 import com.danube.danube.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +22,12 @@ public class OrderController {
     @PostMapping("/cart")
     public CartItemShowDTO addToCart(@RequestBody AddToCartDTO cartItem){
         return orderService.addToCart(cartItem);
+    }
+
+    @PostMapping("/cart/integrate")
+    public CartItemResponseDTO integrateItemsToUser(@RequestBody ItemIntegrationDTO cartItems){
+        List<CartItemShowDTO> cartItemShowDTOS = orderService.integrateCartItemsToUser(cartItems);
+        return new CartItemResponseDTO(cartItemShowDTOS);
     }
 
     @GetMapping("/cart/{customerId}")
