@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -52,59 +53,24 @@ public class OrderService {
 
     @Transactional
     public List<CartItemShowDTO> integrateCartItemsToUser(ItemIntegrationDTO cartItems){
-
         UserEntity customer = userRepository.findById(cartItems.customerId())
                 .orElseThrow(NonExistingUserException::new);
 
-        List<Order> customerOrders = orderRepository.findAllByCustomer(customer);
-        Map<Long, Order> ordersByCustomer = new HashMap<>();
-        for(Order customerOrder : customerOrders){
-            if(!ordersByCustomer.containsKey(customerOrder.getProduct().getId())){
-                ordersByCustomer.put(customerOrder.getProduct().getId(), customerOrder);
-            }
-        }
+        Map<Long, Order> ordersByCustomer = getExistingOrdersByCustomer(cartItems, customer);
+
 
         List<Order> updatedOrdersThatIsInUserCart = new ArrayList<>();
         List<Product> updatedProductsThatIsInUserCart = new ArrayList<>();
-        Map<Long, Integer> notUsedProducts = new HashMap<>();
-
-        for(CartItemShowDTO cartItem : cartItems.products()){
-            if(ordersByCustomer.containsKey(cartItem.id())){
-                Order alreadyStoredOrder = ordersByCustomer.get(cartItem.id());
-                Product alreadyOrderedProduct = alreadyStoredOrder.getProduct();
-
-                int remainder = alreadyOrderedProduct.getQuantity() - cartItem.orderedQuantity();
-                if(remainder > 0){
-                    alreadyStoredOrder.setQuantity(alreadyStoredOrder.getQuantity() + cartItem.orderedQuantity());
-                    alreadyOrderedProduct.setQuantity(alreadyOrderedProduct.getQuantity() - cartItem.orderedQuantity());
-
-                    updatedOrdersThatIsInUserCart.add(alreadyStoredOrder);
-                    updatedProductsThatIsInUserCart.add(alreadyOrderedProduct);
-                }
-            } else {
-                notUsedProducts.put(cartItem.id(), cartItem.orderedQuantity());
-            }
-        }
 
 
-        List<Long> newProductsIds = notUsedProducts.keySet().stream()
-                .toList();
-
-        List<Product> newProducts = productRepository.findAllById(newProductsIds);
-        for(Product product : newProducts){
-            int remainder = product.getQuantity() - notUsedProducts.get(product.getId());
-            if(remainder > 0){
-                product.setQuantity(remainder);
-                Order newOrder = createNewOrder(customer, product, notUsedProducts.get(product.getId()));
-
-                updatedOrdersThatIsInUserCart.add(newOrder);
-                updatedProductsThatIsInUserCart.add(product);
-            }
-        }
+        handleOrderCreation(cartItems, ordersByCustomer, updatedOrdersThatIsInUserCart, updatedProductsThatIsInUserCart, customer);
 
         productRepository.saveAll(updatedProductsThatIsInUserCart);
         orderRepository.saveAll(updatedOrdersThatIsInUserCart);
-        return customer.getOrders().stream()
+
+        List<Order> allByCustomer = orderRepository.findAllByCustomer(customer);
+
+        return allByCustomer.stream()
                 .map(cartItem -> converter.convertOrderToCarItemShowDTO(cartItem))
                 .toList();
     }
@@ -129,6 +95,67 @@ public class OrderService {
 
         productRepository.save(product);
         orderRepository.delete(order);
+    }
+
+    private void handleOrderCreation(ItemIntegrationDTO cartItems, Map<Long, Order> ordersByCustomer, List<Order> updatedOrdersThatIsInUserCart, List<Product> updatedProductsThatIsInUserCart, UserEntity customer) {
+        Map<Long, Integer> newlyOrderedProductIdsAndOrderedQuantities = new HashMap<>();
+        handleAlreadyExistingOrderCreation(cartItems, ordersByCustomer, updatedOrdersThatIsInUserCart, updatedProductsThatIsInUserCart, newlyOrderedProductIdsAndOrderedQuantities);
+
+
+        List<Long> newProductsIds = newlyOrderedProductIdsAndOrderedQuantities.keySet().stream()
+                .toList();
+
+        List<Product> newProducts = productRepository.findAllById(newProductsIds);
+        handleNewOrderCreation(updatedOrdersThatIsInUserCart, updatedProductsThatIsInUserCart, customer, newProducts, newlyOrderedProductIdsAndOrderedQuantities);
+    }
+
+    private void handleNewOrderCreation(List<Order> updatedOrdersThatIsInUserCart, List<Product> updatedProductsThatIsInUserCart, UserEntity customer, List<Product> newProducts, Map<Long, Integer> newlyOrderedProductIdsAndOrderedQuantities) {
+        for(Product product : newProducts){
+            int remainder = product.getQuantity() - newlyOrderedProductIdsAndOrderedQuantities.get(product.getId());
+            if(remainder > 0){
+                product.setQuantity(remainder);
+                Order newOrder = createNewOrder(customer, product, newlyOrderedProductIdsAndOrderedQuantities.get(product.getId()));
+
+                updatedOrdersThatIsInUserCart.add(newOrder);
+                updatedProductsThatIsInUserCart.add(product);
+            }
+        }
+    }
+
+    private void handleAlreadyExistingOrderCreation(ItemIntegrationDTO cartItems, Map<Long, Order> ordersByCustomer, List<Order> updatedOrdersThatIsInUserCart, List<Product> updatedProductsThatIsInUserCart, Map<Long, Integer> newlyOrderedProductIdsAndOrderedQuantities) {
+        for(CartItemShowDTO cartItem : cartItems.products()){
+            if(ordersByCustomer.containsKey(cartItem.id())){
+                Order alreadyStoredOrder = ordersByCustomer.get(cartItem.id());
+                Product alreadyOrderedProduct = alreadyStoredOrder.getProduct();
+
+                int remainder = alreadyOrderedProduct.getQuantity() - cartItem.orderedQuantity();
+                if(remainder > 0){
+                    handleQuantityChange(updatedOrdersThatIsInUserCart, updatedProductsThatIsInUserCart, cartItem, alreadyStoredOrder, alreadyOrderedProduct);
+                }
+            } else {
+                newlyOrderedProductIdsAndOrderedQuantities.put(cartItem.id(), cartItem.orderedQuantity());
+            }
+        }
+    }
+
+    private void handleQuantityChange(List<Order> updatedOrdersThatIsInUserCart, List<Product> updatedProductsThatIsInUserCart, CartItemShowDTO cartItem, Order alreadyStoredOrder, Product alreadyOrderedProduct) {
+        alreadyStoredOrder.setQuantity(alreadyStoredOrder.getQuantity() + cartItem.orderedQuantity());
+        alreadyOrderedProduct.setQuantity(alreadyOrderedProduct.getQuantity() - cartItem.orderedQuantity());
+
+        updatedOrdersThatIsInUserCart.add(alreadyStoredOrder);
+        updatedProductsThatIsInUserCart.add(alreadyOrderedProduct);
+    }
+
+    private Map<Long, Order> getExistingOrdersByCustomer(ItemIntegrationDTO cartItems, UserEntity customer) {
+        //Create map of orders by customer
+        List<Long> productIds = cartItems.products().stream()
+                .map(CartItemShowDTO::id)
+                .toList();
+        List<Product> productsById = productRepository.findAllById(productIds);
+
+        List<Order> customerOrders = orderRepository.findAllByProductIsInAndCustomer(productsById, customer);
+        return customerOrders.stream()
+                .collect(Collectors.toMap(Order::getId, order -> order));
     }
 
     private Order modifyProductAndOrderQuantity(AddToCartDTO cartElement, UserEntity customer, Product product, int remainedQuantity) {

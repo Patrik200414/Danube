@@ -40,16 +40,15 @@ function Login({onNavbarInformationChange}){
                     }),
                     true
                 );
-
                 if(integrateCartItemsToUser.ok){
-                    cartItemsResponse = await integrateCartItemsToUser.json();
-                    console.log(cartItemsResponse);
+                    const integrationResponse = await integrateCartItemsToUser.json();
+                    cartItemsResponse = integrationResponse;
+                    localStorage.removeItem('CART_ITEMS');
                 }
             } else{
                 const cartItemsData = await fetchGetAuthorization(`/api/cart/${loginResponse.id}`, loginResponse.jwt);
                 cartItemsResponse = await cartItemsData.json();
             }
-            console.log(cartItemsResponse.cartItems);
             const itemNumberInCart = cartItemsResponse.cartItems.reduce((acc, curr) => acc + curr.orderedQuantity, 0);
 
             onNavbarInformationChange({
