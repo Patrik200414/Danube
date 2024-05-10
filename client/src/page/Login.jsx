@@ -40,9 +40,9 @@ function Login({onNavbarInformationChange}){
                     }),
                     true
                 );
-
                 if(integrateCartItemsToUser.ok){
-                    cartItemsResponse = await integrateCartItemsToUser.json();
+                    const integrationResponse = await integrateCartItemsToUser.json();
+                    cartItemsResponse = integrationResponse;
                     localStorage.removeItem('CART_ITEMS');
                 }
             } else{

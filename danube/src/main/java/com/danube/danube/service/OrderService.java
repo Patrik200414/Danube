@@ -104,6 +104,9 @@ public class OrderService {
 
         productRepository.saveAll(updatedProductsThatIsInUserCart);
         orderRepository.saveAll(updatedOrdersThatIsInUserCart);
+        customer = userRepository.findById(cartItems.customerId())
+                .orElseThrow(NonExistingUserException::new);
+
         return customer.getOrders().stream()
                 .map(cartItem -> converter.convertOrderToCarItemShowDTO(cartItem))
                 .toList();
