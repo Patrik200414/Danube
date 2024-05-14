@@ -10,17 +10,22 @@ function useGetNavbarInformation(currUser){
             setNavbarResponse(prev => ({...prev, userFirstName: currUser.firstName}))
         }
 
+        const calculateItemNumbers = (storedCartItems) => {
+            return storedCartItems.reduce((acc, curr) => acc + curr.orderedQuantity, 0)
+        }
+
         const getCartItemNumber = async (currUser) => {
             const cartItemData = await fetchGetAuthorization(`/api/cart/${Number(currUser.id)}`, currUser.jwt);
             const cartItemResponse = await cartItemData.json();
-            setNavbarResponse(prev => ({...prev, cartItemNumber: cartItemResponse.cartItems.length}))
+            const itemsCount = calculateItemNumbers(cartItemResponse.cartItems);
+            setNavbarResponse(prev => ({...prev, cartItemNumber: itemsCount}))
         }
 
 
         if(currUser){
             getCartItemNumber(currUser);
         } else if(storedCartItems){
-            navbarResponse.cartItemNumber = storedCartItems.reduce((acc, curr) => acc + curr.orderedQuantity, 0);
+            setNavbarResponse(prev => ({...prev, cartItemNumber: calculateItemNumbers(storedCartItems)}))
         }
     }, []);
     

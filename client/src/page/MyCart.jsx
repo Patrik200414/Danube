@@ -34,7 +34,6 @@ function MyCart({onNavbarInformationChange}){
                     deletedItemQuantity = item.orderedQuantity;
                 }
             });
-
             setCartItems(keptItems);
             onNavbarInformationChange({
                 userFirstName: currUser.firstName,

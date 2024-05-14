@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import fetchGetAuthorization from "../fetchGetAuthorization";
-import fetchPostAuthorizationFetch from "../fetchPostAuthorizationFetch";
 
 function useGetCartItems(){
     const [cartItems, setCartItems] = useState();
