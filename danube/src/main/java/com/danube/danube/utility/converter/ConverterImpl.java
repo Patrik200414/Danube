@@ -191,7 +191,7 @@ public class ConverterImpl implements Converter {
     @Override
     public Map<String, String> convertProductToMyProductInformation(Product product) {
         Map<String, String> myProductInformation = new LinkedIdentityHashMap<>();
-        myProductInformation.put("Product image", product.getFirstProductImage().getFileName());
+        myProductInformation.put("Product image", !product.getImages().isEmpty() ? product.getFirstProductImage().getFileName() : "defaultProduct.jpg");
         myProductInformation.put("Product name", product.getProductName());
         myProductInformation.put("Owner", product.getSellerFullName());
         myProductInformation.put("id", String.valueOf(product.getId()));

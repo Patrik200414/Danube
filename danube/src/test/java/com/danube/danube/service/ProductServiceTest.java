@@ -4,7 +4,9 @@ import com.danube.danube.custom_exception.login_registration.NonExistingUserExce
 import com.danube.danube.custom_exception.product.NonExistingProductCategoryException;
 import com.danube.danube.custom_exception.product.NonExistingSubcategoryException;
 import com.danube.danube.custom_exception.user.InvalidUserCredentialsException;
+import com.danube.danube.custom_exception.user.UserNotSellerException;
 import com.danube.danube.model.dto.product.*;
+import com.danube.danube.model.product.Product;
 import com.danube.danube.model.product.category.Category;
 import com.danube.danube.model.product.connection.SubcategoryDetail;
 import com.danube.danube.model.product.detail.Detail;
@@ -22,10 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
@@ -500,4 +499,80 @@ class ProductServiceTest {
 
         assertThrowsExactly(InvalidUserCredentialsException.class, () -> productService.saveProduct(productUploadDTO));
     }
+
+    @Test
+    void getMyProducts_ShouldReturnMapWithWithTheExpectedProductInformation(){
+        UserEntity expectedSeller = new UserEntity();
+        expectedSeller.setId(1);
+        expectedSeller.setPassword("thispassword");
+        expectedSeller.setEmail("seller@gmail.com");
+        expectedSeller.setFirstName("Seller");
+        expectedSeller.setLastName("Seller");
+        expectedSeller.setRoles(Set.of(Role.ROLE_CUSTOMER, Role.ROLE_SELLER));
+
+
+        Product expectedProduct = new Product();
+        expectedProduct.setQuantity(10);
+        expectedProduct.setProductName("Test");
+        expectedProduct.setImages(List.of());
+        expectedProduct.setBrand("Test");
+        expectedProduct.setDescription("This is a test");
+        expectedProduct.setPrice(5);
+        expectedProduct.setShippingPrice(5);
+        expectedProduct.setSeller(expectedSeller);
+
+        expectedSeller.setProducts(
+                List.of(expectedProduct)
+        );
+
+        when(userRepositoryMock.findById(1L))
+                .thenReturn(
+                        Optional.of(expectedSeller)
+                );
+
+        when(productRepositoryMock.findBySeller(expectedSeller))
+                .thenReturn(
+                        List.of(expectedProduct)
+                );
+
+
+        Map<String, String> expected = converter.convertProductToMyProductInformation(expectedProduct);
+        List<Map<String, String>> result = productService.getMyProducts(1L);
+
+        assertEquals(1, result.size());
+        assertEquals(expected.get("Product image"), result.getFirst().get("Product image"));
+        assertEquals(expected.get("Product name"), result.getFirst().get("Product name"));
+        assertEquals(expected.get("Owner"), result.getFirst().get("Owner"));
+        assertEquals(expected.get("id"), result.getFirst().get("id"));
+    }
+
+
+    @Test
+    void getMyProducts_WithUserRepositoryReturnsUserWithOnlyCustomerRole_ShouldThrowUserNotSellerException(){
+        UserEntity expectedSeller = new UserEntity();
+        expectedSeller.setId(1);
+        expectedSeller.setPassword("thispassword");
+        expectedSeller.setEmail("seller@gmail.com");
+        expectedSeller.setFirstName("Seller");
+        expectedSeller.setLastName("Seller");
+        expectedSeller.setRoles(Set.of(Role.ROLE_CUSTOMER));
+
+        when(userRepositoryMock.findById(1L))
+                .thenReturn(
+                        Optional.of(expectedSeller)
+                );
+
+        assertThrowsExactly(UserNotSellerException.class, () -> productService.getMyProducts(1));
+    }
+
+    @Test
+    void getMyProducts_WithUserRepositoryReturnsEmptyOptional_ShouldThrowNonExistingUserException(){
+        when(userRepositoryMock.findById(1L))
+                .thenReturn(
+                        Optional.empty()
+                );
+
+        assertThrowsExactly(NonExistingUserException.class, () -> productService.getMyProducts(1));
+    }
+
 }
