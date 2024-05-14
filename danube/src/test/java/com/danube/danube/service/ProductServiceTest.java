@@ -84,9 +84,9 @@ class ProductServiceTest {
                 1,
                 "Clothing",
                 List.of(
-                        new Subcategory(1, "Shirt", null, List.of()),
-                        new Subcategory(2, "Jeans", null, List.of()),
-                        new Subcategory(3, "Jacket", null, List.of())
+                        new Subcategory(1, "Shirt", null, List.of(), List.of()),
+                        new Subcategory(2, "Jeans", null, List.of(), List.of()),
+                        new Subcategory(3, "Jacket", null, List.of(), List.of())
                 )
         );
 
@@ -116,9 +116,9 @@ class ProductServiceTest {
                 1,
                 "Clothing",
                 List.of(
-                        new Subcategory(1, "Shirt", null, List.of()),
-                        new Subcategory(2, "Jeans", null, List.of()),
-                        new Subcategory(3, "Jacket", null, List.of())
+                        new Subcategory(1, "Shirt", null, List.of(), List.of()),
+                        new Subcategory(2, "Jeans", null, List.of(), List.of()),
+                        new Subcategory(3, "Jacket", null, List.of(), List.of())
                 )
         );
 
@@ -148,9 +148,9 @@ class ProductServiceTest {
                 1,
                 "Clothing",
                 List.of(
-                        new Subcategory(1, "Shirt", null, List.of()),
-                        new Subcategory(2, "Jeans", null, List.of()),
-                        new Subcategory(3, "Jacket", null, List.of())
+                        new Subcategory(1, "Shirt", null, List.of(), List.of()),
+                        new Subcategory(2, "Jeans", null, List.of(), List.of()),
+                        new Subcategory(3, "Jacket", null, List.of(), List.of())
                 )
         );
 
@@ -159,9 +159,9 @@ class ProductServiceTest {
                 2,
                 "Electronic",
                 List.of(
-                        new Subcategory(4, "TV", null, List.of()),
-                        new Subcategory(5, "Laptop", null, List.of()),
-                        new Subcategory(6, "PC", null, List.of())
+                        new Subcategory(4, "TV", null, List.of(), List.of()),
+                        new Subcategory(5, "Laptop", null, List.of(), List.of()),
+                        new Subcategory(6, "PC", null, List.of(), List.of())
                 )
         );
 
@@ -205,11 +205,11 @@ class ProductServiceTest {
         clothing.setId(1);
         clothing.setName("Clothing");
 
-
         Subcategory shirt = new Subcategory(
                 1,
                 "Shirt",
                 clothing,
+                List.of(),
                 List.of()
         );
 
@@ -244,6 +244,7 @@ class ProductServiceTest {
                 1,
                 "Shirt",
                 clothing,
+                List.of(),
                 List.of()
         );
 
@@ -251,6 +252,7 @@ class ProductServiceTest {
                 2,
                 "Jeans",
                 clothing,
+                List.of(),
                 List.of()
         );
 
@@ -300,7 +302,8 @@ class ProductServiceTest {
                 1,
                 "Shirt",
                 new Category(),
-                List.of(shirtSubcategoryDetail)
+                List.of(shirtSubcategoryDetail),
+                List.of()
         );
 
         shirtSubcategoryDetail.setId(1);
@@ -352,14 +355,16 @@ class ProductServiceTest {
                 1,
                 "Shirt",
                 new Category(),
-                List.of(shirtSubcategoryDetail)
+                List.of(shirtSubcategoryDetail),
+                List.of()
         );
 
         Subcategory jumper = new Subcategory(
                 2,
                 "Jumper",
                 new Category(),
-                List.of(jumperSubcategoryDetail, shirtSubcategoryDetail)
+                List.of(jumperSubcategoryDetail, shirtSubcategoryDetail),
+                List.of()
         );
 
         shirtSubcategoryDetail.setId(1);
@@ -420,7 +425,8 @@ class ProductServiceTest {
                 1,
                 "Shirt",
                 new Category(),
-                List.of(shirtSubcategoryDetail)
+                List.of(shirtSubcategoryDetail),
+                List.of()
         );
 
         shirtSubcategoryDetail.setId(1);
@@ -451,7 +457,8 @@ class ProductServiceTest {
                 10,
                 "Brand",
                 "This is a product",
-                "Product"
+                "Product",
+                1
         );
 
         ProductUploadDTO productUploadDTO = new ProductUploadDTO(
@@ -480,7 +487,8 @@ class ProductServiceTest {
                 10,
                 "Brand",
                 "This is a product",
-                "Product"
+                "Product",
+                1
         );
 
         ProductUploadDTO productUploadDTO = new ProductUploadDTO(
