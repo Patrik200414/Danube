@@ -1,8 +1,7 @@
 package com.danube.danube.service;
 
 import com.danube.danube.custom_exception.login_registration.NonExistingUserException;
-import com.danube.danube.custom_exception.product.NonExistingProductCategoryException;
-import com.danube.danube.custom_exception.product.NonExistingSubcategoryException;
+import com.danube.danube.custom_exception.product.*;
 import com.danube.danube.custom_exception.user.InvalidUserCredentialsException;
 import com.danube.danube.custom_exception.user.UserNotSellerException;
 import com.danube.danube.model.dto.product.*;
@@ -682,5 +681,223 @@ class ProductServiceTest {
 
 
         assertArrayEquals(expected.toArray(), result.toArray());
+    }
+
+    @Test
+    void updateProduct_withUserRepositoryReturnsEmptyOptionalShouldThrowNonExistingUserException(){
+        when(userRepositoryMock.findById(1L))
+                .thenReturn(Optional.empty());
+
+        UserEntity seller = new UserEntity();
+        seller.setRoles(Set.of(Role.ROLE_CUSTOMER, Role.ROLE_SELLER));
+        seller.setEmail("seller@gmail.com");
+        seller.setId(1);
+        seller.setLastName("Seller");
+        seller.setFirstName("Seller");
+
+
+
+        ProductInformation productInformation = new ProductInformation(
+                "Shirt",
+                10,
+                10,
+                10,
+                3,
+                5,
+                100,
+                "Test",
+                "This is a test shirt",
+                seller.getFullName(),
+                1
+        );
+        ProductUpdateDTO productUpdateDTO = new ProductUpdateDTO(
+                productInformation,
+                List.of("Image"),
+                List.of()
+        );
+
+        MultipartFile[] multipartFiles = new MultipartFile[1];
+
+        assertThrowsExactly(NonExistingUserException.class, () -> productService.updateProduct(productUpdateDTO, multipartFiles, seller.getId(), 1));
+    }
+
+    @Test
+    void updateProduct_withUserRepositoryReturnsUserWithOnlyCustomerRoleShoulThrowInvalidUserCredentialsException(){
+        UserEntity seller = new UserEntity();
+        seller.setRoles(Set.of(Role.ROLE_CUSTOMER));
+        seller.setEmail("seller@gmail.com");
+        seller.setId(1);
+        seller.setLastName("Seller");
+        seller.setFirstName("Seller");
+
+        when(userRepositoryMock.findById(1L))
+                .thenReturn(Optional.of(
+                        seller
+                ));
+
+        ProductInformation productInformation = new ProductInformation(
+                "Shirt",
+                10,
+                10,
+                10,
+                3,
+                5,
+                100,
+                "Test",
+                "This is a test shirt",
+                seller.getFullName(),
+                1
+        );
+        ProductUpdateDTO productUpdateDTO = new ProductUpdateDTO(
+                productInformation,
+                List.of("Image"),
+                List.of()
+        );
+
+        MultipartFile[] multipartFiles = new MultipartFile[1];
+
+        assertThrowsExactly(InvalidUserCredentialsException.class, () -> productService.updateProduct(productUpdateDTO, multipartFiles, seller.getId(), 1));
+    }
+
+    @Test
+    void updateProduct_withProductRepositoryReturnsEmptyOptionalShouldThrowNonExistingProductException(){
+        UserEntity seller = new UserEntity();
+        seller.setRoles(Set.of(Role.ROLE_CUSTOMER, Role.ROLE_SELLER));
+        seller.setEmail("seller@gmail.com");
+        seller.setId(1);
+        seller.setLastName("Seller");
+        seller.setFirstName("Seller");
+
+        when(userRepositoryMock.findById(1L))
+                .thenReturn(Optional.of(
+                        seller
+                ));
+
+        when(productRepositoryMock.findById(1L))
+                .thenReturn(Optional.empty());
+
+
+        ProductInformation productInformation = new ProductInformation(
+                "Shirt",
+                10,
+                10,
+                10,
+                3,
+                5,
+                100,
+                "Test",
+                "This is a test shirt",
+                seller.getFullName(),
+                1
+        );
+        ProductUpdateDTO productUpdateDTO = new ProductUpdateDTO(
+                productInformation,
+                List.of("Image"),
+                List.of()
+        );
+
+        MultipartFile[] multipartFiles = new MultipartFile[1];
+
+        assertThrowsExactly(NonExistingProductException.class, () -> productService.updateProduct(productUpdateDTO, multipartFiles, seller.getId(), 1));
+    }
+
+    @Test
+    void updateProduct_withUserIdAndProductSellerIdNotMatchingShouldThrowIncorrectSellerException(){
+        UserEntity notCorrectSeller = new UserEntity();
+        notCorrectSeller.setRoles(Set.of(Role.ROLE_CUSTOMER, Role.ROLE_SELLER));
+        notCorrectSeller.setEmail("seller@gmail.com");
+        notCorrectSeller.setId(1);
+        notCorrectSeller.setLastName("Seller");
+        notCorrectSeller.setFirstName("Seller");
+
+        UserEntity correctSeller = new UserEntity();
+        correctSeller.setId(2);
+        correctSeller.setLastName("Correct");
+        correctSeller.setFirstName("Correct");
+
+        Product product = new Product();
+        product.setSeller(correctSeller);
+
+        when(userRepositoryMock.findById(1L))
+                .thenReturn(Optional.of(
+                        notCorrectSeller
+                ));
+
+
+
+        when(productRepositoryMock.findById(1L))
+                .thenReturn(Optional.of(product));
+
+
+        ProductInformation productInformation = new ProductInformation(
+                "Shirt",
+                10,
+                10,
+                10,
+                3,
+                5,
+                100,
+                "Test",
+                "This is a test shirt",
+                correctSeller.getFullName(),
+                1
+        );
+        ProductUpdateDTO productUpdateDTO = new ProductUpdateDTO(
+                productInformation,
+                List.of("Image"),
+                List.of()
+        );
+
+        MultipartFile[] multipartFiles = new MultipartFile[1];
+
+        assertThrowsExactly(IncorrectSellerException.class, () -> productService.updateProduct(productUpdateDTO, multipartFiles, notCorrectSeller.getId(), 1));
+    }
+
+    @Test
+    void updateProduct_withNoImageUploadedShouldThrowMissingImageException(){
+        UserEntity seller = new UserEntity();
+        seller.setRoles(Set.of(Role.ROLE_CUSTOMER, Role.ROLE_SELLER));
+        seller.setEmail("seller@gmail.com");
+        seller.setId(1);
+        seller.setLastName("Seller");
+        seller.setFirstName("Seller");
+
+        Product product = new Product();
+        product.setId(1);
+        product.setSeller(seller);
+
+        when(userRepositoryMock.findById(1L))
+                .thenReturn(Optional.of(
+                        seller
+                ));
+
+        when(productRepositoryMock.findById(1L))
+                .thenReturn(Optional.of(
+                        product
+                ));
+
+
+        ProductInformation productInformation = new ProductInformation(
+                "Shirt",
+                10,
+                10,
+                10,
+                3,
+                5,
+                100,
+                "Test",
+                "This is a test shirt",
+                seller.getFullName(),
+                1
+        );
+        ProductUpdateDTO productUpdateDTO = new ProductUpdateDTO(
+                productInformation,
+                List.of(),
+                List.of()
+        );
+
+        MultipartFile[] multipartFiles = null;
+
+        assertThrowsExactly(MissingImageException.class, () -> productService.updateProduct(productUpdateDTO, multipartFiles, seller.getId(), 1));
     }
 }
