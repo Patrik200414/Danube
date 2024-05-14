@@ -172,8 +172,8 @@ class UserServiceTest {
                 "Password",
                 Set.of(Role.ROLE_CUSTOMER),
                 List.of(),
-                orders);
-        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("CUSTOMER");
+                List.of());
+        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("ROLE_CUSTOMER");
         User principal = new User(
                 userLoginDTO.email(),
                 userLoginDTO.password(),
@@ -192,7 +192,7 @@ class UserServiceTest {
         )).thenReturn(
                 authentication
         );
-        when(jwtUtilsMock.generateJwtToken(authentication)).thenReturn(expectedJwtToken);
+        when(jwtUtilsMock.generateJwtToken(user.getEmail())).thenReturn(expectedJwtToken);
         when(userRepositoryMock.findByEmail(userLoginDTO.email())).thenReturn(
                 Optional.of(user)
         );
@@ -205,11 +205,11 @@ class UserServiceTest {
                 user.getLastName(),
                 user.getEmail(),
                 user.getId(),
-                List.of("CUSTOMER")
+                List.of("ROLE_CUSTOMER")
         );
 
 
-        assertEquals(response, expected);
+        assertEquals(expected, response);
     }
 
     @Test
@@ -335,7 +335,7 @@ class UserServiceTest {
                 "OldPassword",
                 Set.of(Role.ROLE_CUSTOMER),
                 List.of(),
-                orders);
+                List.of());
 
         when(userRepositoryMock.findById(1L)).thenReturn(
                 Optional.of(oldUser)
@@ -350,7 +350,7 @@ class UserServiceTest {
                         "OldPassword",
                         Set.of(Role.ROLE_CUSTOMER),
                         List.of(),
-                        orders)
+                        List.of())
         );
 
         when(jwtUtilsMock.generateJwtToken(userUpdateDTO.email())).thenReturn(expectedJwtToken);
@@ -373,7 +373,8 @@ class UserServiceTest {
         PasswordUpdateDTO passwordUpdateDTO = new PasswordUpdateDTO(
                 "Password",
                 "NewPassword",
-                "NewPassword"
+                "NewPassword",
+                1
         );
 
         when(userRepositoryMock.findById(1L)).thenReturn(
@@ -389,7 +390,8 @@ class UserServiceTest {
         PasswordUpdateDTO passwordUpdateDTO = new PasswordUpdateDTO(
                 "Password",
                 "NewPassword",
-                "NewPassword"
+                "NewPassword",
+                1
         );
         UserEntity expectedUser = new UserEntity(
                 1,
@@ -399,7 +401,7 @@ class UserServiceTest {
                 "PasswordCurrent",
                 Set.of(Role.ROLE_CUSTOMER),
                 List.of(),
-                orders);
+                List.of());
 
 
         when(userRepositoryMock.findById(1L)).thenReturn(
@@ -417,7 +419,8 @@ class UserServiceTest {
         PasswordUpdateDTO passwordUpdateDTO = new PasswordUpdateDTO(
                 "Password",
                 "NewPassword",
-                "WrongNewPassword"
+                "WrongNewPassword",
+                1
         );
         UserEntity expectedUser = new UserEntity(
                 1,
@@ -427,7 +430,7 @@ class UserServiceTest {
                 "Password",
                 Set.of(Role.ROLE_CUSTOMER),
                 List.of(),
-                orders);
+                List.of());
 
 
         when(userRepositoryMock.findById(1L)).thenReturn(
