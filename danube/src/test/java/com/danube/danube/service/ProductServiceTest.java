@@ -575,4 +575,112 @@ class ProductServiceTest {
         assertThrowsExactly(NonExistingUserException.class, () -> productService.getMyProducts(1));
     }
 
+    @Test
+    void getCategoriesAndSubCategories_ShouldReturnOneCategoryAndSubCategoryDTOWithExpectedCategoryAndSubcategoryData(){
+        Subcategory subcategory1 = new Subcategory();
+        Subcategory subcategory2 = new Subcategory();
+        Subcategory subcategory3 = new Subcategory();
+
+        subcategory1.setName("Shirt");
+        subcategory2.setName("Jeans");
+        subcategory3.setName("Jacket");
+
+        Category expectedCategory = new Category(
+                1,
+                "Clothing",
+                List.of(
+                        subcategory1,
+                        subcategory2,
+                        subcategory3
+                )
+        );
+
+        when(categoryRepositoryMock.findAll())
+                .thenReturn(List.of(
+                        expectedCategory
+                ));
+
+        CategoryAndSubCategoryDTO expected = new CategoryAndSubCategoryDTO(
+                expectedCategory.getName(),
+                List.of(
+                        subcategory1.getName(),
+                        subcategory2.getName(),
+                        subcategory3.getName()
+                )
+        );
+        List<CategoryAndSubCategoryDTO> result = productService.getCategoriesAndSubCategories();
+
+        assertEquals(1, result.size());
+        assertEquals(expected, result.getFirst());
+    }
+
+    @Test
+    void getCategoriesAndSubCategories_ShouldReturnTwoCategoryAndSubCategoryDTOsWithExpectedCategoriesAndSubcategoryDatas(){
+        Subcategory subcategory1 = new Subcategory();
+        Subcategory subcategory2 = new Subcategory();
+        Subcategory subcategory3 = new Subcategory();
+
+        Subcategory subcategory4 = new Subcategory();
+        Subcategory subcategory5 = new Subcategory();
+        Subcategory subcategory6 = new Subcategory();
+
+        subcategory1.setName("Shirt");
+        subcategory2.setName("Jeans");
+        subcategory3.setName("Jacket");
+
+        subcategory4.setName("Screen size");
+        subcategory5.setName("Display quality");
+        subcategory6.setName("Technology");
+
+        Category expectedCategory1 = new Category(
+                1,
+                "Clothing",
+                List.of(
+                        subcategory1,
+                        subcategory2,
+                        subcategory3
+                )
+        );
+
+
+        Category expectedCategory2 = new Category(
+                2,
+                "Monitor",
+                List.of(
+                        subcategory4,
+                        subcategory5,
+                        subcategory6
+                )
+        );
+
+
+        when(categoryRepositoryMock.findAll())
+                .thenReturn(List.of(
+                        expectedCategory1,
+                        expectedCategory2
+                ));
+
+        CategoryAndSubCategoryDTO expectedCategorySubcategory1 = new CategoryAndSubCategoryDTO(
+                expectedCategory1.getName(),
+                List.of(
+                        subcategory1.getName(),
+                        subcategory2.getName(),
+                        subcategory3.getName()
+                )
+        );
+        CategoryAndSubCategoryDTO expectedCategorySubcategory2 = new CategoryAndSubCategoryDTO(
+                expectedCategory2.getName(),
+                List.of(
+                        subcategory4.getName(),
+                        subcategory5.getName(),
+                        subcategory6.getName()
+                )
+        );
+
+        List<CategoryAndSubCategoryDTO> expected = List.of(expectedCategorySubcategory1, expectedCategorySubcategory2);
+        List<CategoryAndSubCategoryDTO> result = productService.getCategoriesAndSubCategories();
+
+
+        assertArrayEquals(expected.toArray(), result.toArray());
+    }
 }
