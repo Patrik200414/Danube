@@ -35,7 +35,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
-    public static final String BASE_IMAGE_PATH = String.format("%s\\src\\main\\resources\\static\\images\\", System.getProperty("user.dir"));
+    @org.springframework.beans.factory.annotation.Value("${PRODUCT_IMAGE_DIRECTORY_PATH}")
+    public String BASE_IMAGE_PATH;
     public static final int SIMILAR_RECOMENDED_PRODUCTS_RESULT_COUNT = 15;
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
