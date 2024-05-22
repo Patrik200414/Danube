@@ -66,12 +66,16 @@ If not here are some links where you can download from :
 
 ### Prerequisites
 
-For manual setup add the following environment variables:
+#### Backend: 
+For manual setup add the following environment variables (If you use a shell to set the environment you should insert the values between quotes ("VALUE")):
   - `DB_PASSWORD`: [Your database password]
   - `DB_URL`: [Your database URL]
   - `DB_USERNAME`: [Your database username]
   - `JWT_SECRET`: [Your JWT key]
   - `JWT_EXPIRATION`: [JWT token expiration time in millisecond]
+  - JWT_VERIFICATION_TIME_IN_MINUTES: [If the user want to modify there data the server will ask to authorize after verification time expires, the recomandation is 5 minutes]
+  - PRODUCT_IMAGE_DIRECTORY_PATH: [The directory where you want to save the uploaded images. Create a direactoy where you want to save the directory, in the created directory create an images directory (If you don't do it, it will doesn't work!)]
+
 
 <!-- For Docker setup add the following environment variables:
   - `DB_NAME`: [Your database name]
@@ -83,6 +87,19 @@ For manual setup add the following environment variables:
 
 
 ### Run Project
+
+#### Manual setup
+- Backend:
+  - Navigate to danube/target
+  - Run `java -jar danube-0.0.1-SNAPSHOT.jar`
+ 
+- Frontend:
+  - Navigate to client/
+  - Run `npm install`
+  - Create .env file like in the .env.sample
+  - Run `npm run dev`
+
+ - You can check out `http://localhost:5173/` to see the project!
 
 <!-- - Manual setup:
   1. Run `mvn clean package` command
