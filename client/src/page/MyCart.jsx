@@ -5,6 +5,7 @@ import useGetCartItems from "../utility/customHook/useGetCartItems";
 import fetchDeleteAuthorization from "../utility/fetchDeleteAuthorization";
 import { useContext } from 'react';
 import { NavbarContext } from '../NavbarContext';
+import { Link } from 'react-router-dom';
 
 
 function MyCart({onNavbarInformationChange}){
@@ -60,9 +61,15 @@ function MyCart({onNavbarInformationChange}){
     return (
         <div className="my-cart-dashboard">
             {error && <h1 className="error-message">{error}</h1>}
-            {cartItems?.length ? <ProductsTable products={cartItems} buttons={[
-                buttonObjectGenerator('removeItem', 'Remove item', true, '', (id) => handleDeleteion(id))
-            ]} keyName={'orderId'}/> 
+            {cartItems?.length ? <>
+                <ProductsTable products={cartItems} buttons={[
+                    buttonObjectGenerator('removeItem', 'Remove item', true, '', (id) => handleDeleteion(id))
+                ]} keyName={'orderId'}/> 
+
+                <Link to='/user/checkout'>
+                    <button className='submit-button'>Checkout!</button>
+                </Link>
+            </>
             : 
             cartItems !== undefined ? <h1 className="empty-cart-title">Your Danube Cart is empty!</h1> : ''}
             

@@ -74,6 +74,7 @@ public class OrderService {
         List<Order> cartItems = orderRepository.findAllByCustomer(customer);
 
         return cartItems.stream()
+                .filter(cartItem -> !cartItem.isOrdered())
                 .map(cartItem -> converter.convertOrderToCarItemShowDTO(cartItem))
                 .toList();
     }
@@ -153,7 +154,7 @@ public class OrderService {
 
         List<Order> customerOrders = orderRepository.findAllByProductIsInAndCustomer(productsById, customer);
         return customerOrders.stream()
-                .collect(Collectors.toMap(Order::getId, order -> order));
+                .collect(Collectors.toMap(order -> order.getProduct().getId(), order -> order));
     }
 
     private Order modifyProductAndOrderQuantity(AddToCartDTO cartElement, UserEntity customer, Product product, int remainedQuantity) {

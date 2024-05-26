@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function useVerifyUserAccess(navigateUrl){
+function useVerifyUserAccess(navigateUrl, fallBackUrl){
     const [isVerifed, setIsVerified] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
-        const verifyUser = async () => {
-            const userJwt = JSON.parse(sessionStorage.getItem('USER_JWT'))
+        const verifyUser = async (userJwt) => {
             const verifyData = await fetch('/api/user/verify', {
                 method: 'POST',
                 headers: {
@@ -24,7 +23,12 @@ function useVerifyUserAccess(navigateUrl){
             setIsVerified(true);
         }
 
-        verifyUser();
+        const currUser = JSON.parse(sessionStorage.getItem('USER_JWT'));
+        if(currUser){
+            verifyUser(currUser);
+        } else{
+            navigate(fallBackUrl);
+        }
 
     }, [navigateUrl, navigate])
 
