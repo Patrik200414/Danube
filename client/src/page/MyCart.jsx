@@ -66,7 +66,7 @@ function MyCart({onNavbarInformationChange}){
                     buttonObjectGenerator('removeItem', 'Remove item', true, '', (id) => handleDeleteion(id))
                 ]} keyName={'orderId'}/> 
 
-                <Link to='/checkout'>
+                <Link to='/user/checkout'>
                     <button className='submit-button'>Checkout!</button>
                 </Link>
             </>

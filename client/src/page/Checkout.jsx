@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import ProductsTable from "../component/product/ProductsTable";
-import useFetchGetAuthorization from "../utility/customHook/useFetchGetAuthorization";
 import useVerifyUserAccess from "../utility/customHook/useVerifyUserAccess";
 import fetchGetAuthorization from "../utility/fetchGetAuthorization";
 
@@ -11,9 +10,10 @@ function Checkout(){
     useEffect(() => {
         const getCartItems = async () => {
             const currUser = JSON.parse(sessionStorage.getItem("USER_JWT"));
-            const products = await fetchGetAuthorization(`/api/cart/${currUser.id}`, currUser.jwt);
+            const productsResponse = await fetchGetAuthorization(`/api/cart/${currUser.id}`, currUser.jwt);
+            const cartItemProducts = await productsResponse.json();
 
-            console.log(products);
+            setCartItems(cartItemProducts.cartItems);
         };
 
         if(isVerified){
@@ -24,8 +24,15 @@ function Checkout(){
 
     return(
         <div className="checkout-dashboard">
-            <h1>Checkout</h1>
-            {/* <ProductsTable /> */}
+            {cartItems ? 
+                <>
+                    <h1>Checkout</h1>
+                    <ProductsTable products={cartItems} buttons={[]}/>
+                </>
+                :
+                <p className="loading-text">Loading...</p>
+            }
+            
         </div>
     )
 }

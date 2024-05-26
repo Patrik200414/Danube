@@ -74,6 +74,7 @@ public class OrderService {
         List<Order> cartItems = orderRepository.findAllByCustomer(customer);
 
         return cartItems.stream()
+                .filter(cartItem -> !cartItem.isOrdered())
                 .map(cartItem -> converter.convertOrderToCarItemShowDTO(cartItem))
                 .toList();
     }

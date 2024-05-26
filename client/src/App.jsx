@@ -78,7 +78,7 @@ const router = createBrowserRouter([
           element: <NotFound />
         },
         {
-          path: '/checkout',
+          path: '/user/checkout',
           element: <Checkout />
         }
       ]
