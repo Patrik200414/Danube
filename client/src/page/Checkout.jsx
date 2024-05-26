@@ -7,6 +7,13 @@ import ShippingInformationForm from "../component/order/ShippingInformationForm"
 function Checkout(){
     const isVerified = useVerifyUserAccess('/verification/user/checkout', '/login');
     const [cartItems, setCartItems] = useState();
+    const [shippingInformation, setShippingInformation] = useState({
+        streetAddress: '',
+        city: '',
+        state: '',
+        zip: '',
+        country: ''
+    })
 
     useEffect(() => {
         const getCartItems = async () => {
@@ -22,6 +29,13 @@ function Checkout(){
         }
     }, [isVerified])
 
+    function handleShippingInformationChange(informationKey, value){
+        setShippingInformation(prev => ({
+            ...prev,
+            [informationKey]: value
+        }));
+    }
+
 
     return(
         <div className="checkout-dashboard">
@@ -30,7 +44,7 @@ function Checkout(){
                     <h1>Checkout</h1>
                     <ProductsTable products={cartItems} buttons={[]}/>
                     <h3>Shipping information: </h3>
-                    <ShippingInformationForm />
+                    <ShippingInformationForm shippingInformation={shippingInformation} onShippingIformationChange={(informationKey, value) => handleShippingInformationChange(informationKey, value)}/>
                 </>
                 :
                 <p className="loading-text">Loading...</p>
