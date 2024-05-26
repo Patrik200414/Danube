@@ -19,11 +19,12 @@ import ProductDashBoard from './page/ProductDashBoard';
 import ProductUpdate from './page/ProductUpdate';
 import useGetNavbarInformation from './utility/customHook/useGetNavbarInformation';
 import MyCart from "./page/MyCart";
+import Checkout from "./page/Checkout";
 
 function App() {
   const [navbarInformation, setNavbarInformation] = useGetNavbarInformation(JSON.parse(sessionStorage.getItem('USER_JWT')));
 
-  const verificationToPages = ['upload', 'update', 'password'];
+  const verificationToPages = ['upload', 'update', 'password', 'checkout'];
 
 
 const router = createBrowserRouter([
@@ -75,6 +76,10 @@ const router = createBrowserRouter([
         {
           path: '*',
           element: <NotFound />
+        },
+        {
+          path: '/checkout',
+          element: <Checkout />
         }
       ]
     },
