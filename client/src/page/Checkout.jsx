@@ -6,6 +6,7 @@ import ShippingInformationForm from "../component/order/ShippingInformationForm"
 
 function Checkout(){
     const isVerified = useVerifyUserAccess('/verification/user/checkout', '/login');
+    const [user, setUser] = useState();
     const [cartItems, setCartItems] = useState();
     const [shippingInformation, setShippingInformation] = useState({
         streetAddress: '',
@@ -14,6 +15,7 @@ function Checkout(){
         zip: '',
         country: ''
     })
+    const [error, setError] = useState();
 
     useEffect(() => {
         const getCartItems = async () => {
@@ -22,6 +24,7 @@ function Checkout(){
             const cartItemProducts = await productsResponse.json();
 
             setCartItems(cartItemProducts.cartItems);
+            setUser(currUser);
         };
 
         if(isVerified){
@@ -36,6 +39,36 @@ function Checkout(){
         }));
     }
 
+    function validateAddressInformation(addressInformation){
+        const missingFields = Object.keys(addressInformation).filter(key => !addressInformation[key]);
+
+        if(missingFields.length){
+            return `Missing values at: ${missingFields.join(', ')}`;
+        }
+
+        
+        if(addressInformation.zip.length < 4){
+            return 'Invalid Zip/Postal code!';
+        }
+    }
+
+
+    function handleProceedPayout(e){
+        e.preventDefault();
+
+        const errorMessage = validateAddressInformation(shippingInformation);
+        if(errorMessage){
+            setError(errorMessage);
+            return;
+        }
+
+        const userShippingInformation = {
+            ...shippingInformation,
+            customerId: user.id
+        }
+
+        console.log(userShippingInformation);
+    }
 
     return(
         <div className="checkout-dashboard">
@@ -45,6 +78,8 @@ function Checkout(){
                     <ProductsTable products={cartItems} buttons={[]}/>
                     <h3>Shipping information: </h3>
                     <ShippingInformationForm shippingInformation={shippingInformation} onShippingIformationChange={(informationKey, value) => handleShippingInformationChange(informationKey, value)}/>
+                    <p className="error-message">{error}</p>
+                    <button className="submit-button" onClick={handleProceedPayout}>Proceed Payout</button>
                 </>
                 :
                 <p className="loading-text">Loading...</p>
