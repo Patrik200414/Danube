@@ -58,15 +58,7 @@ public class OrderService {
 
         Map<Long, Order> ordersByCustomer = getExistingOrdersByCustomer(cartItems, customer);
 
-
-        List<Order> updatedOrdersThatIsInUserCart = new ArrayList<>();
-        List<Product> updatedProductsThatIsInUserCart = new ArrayList<>();
-
-
-        handleOrderCreation(cartItems, ordersByCustomer, updatedOrdersThatIsInUserCart, updatedProductsThatIsInUserCart, customer);
-
-        productRepository.saveAll(updatedProductsThatIsInUserCart);
-        orderRepository.saveAll(updatedOrdersThatIsInUserCart);
+        handleOrderCreation(cartItems, ordersByCustomer, customer);
 
         List<Order> allByCustomer = orderRepository.findAllByCustomer(customer);
 
@@ -97,7 +89,10 @@ public class OrderService {
         orderRepository.delete(order);
     }
 
-    private void handleOrderCreation(ItemIntegrationDTO cartItems, Map<Long, Order> ordersByCustomer, List<Order> updatedOrdersThatIsInUserCart, List<Product> updatedProductsThatIsInUserCart, UserEntity customer) {
+    private void handleOrderCreation(ItemIntegrationDTO cartItems, Map<Long, Order> ordersByCustomer, UserEntity customer) {
+        List<Order> updatedOrdersThatIsInUserCart = new ArrayList<>();
+        List<Product> updatedProductsThatIsInUserCart = new ArrayList<>();
+
         Map<Long, Integer> newlyOrderedProductIdsAndOrderedQuantities = new HashMap<>();
         handleAlreadyExistingOrderCreation(cartItems, ordersByCustomer, updatedOrdersThatIsInUserCart, updatedProductsThatIsInUserCart, newlyOrderedProductIdsAndOrderedQuantities);
 
@@ -107,6 +102,9 @@ public class OrderService {
 
         List<Product> newProducts = productRepository.findAllById(newProductsIds);
         handleNewOrderCreation(updatedOrdersThatIsInUserCart, updatedProductsThatIsInUserCart, customer, newProducts, newlyOrderedProductIdsAndOrderedQuantities);
+
+        productRepository.saveAll(updatedProductsThatIsInUserCart);
+        orderRepository.saveAll(updatedOrdersThatIsInUserCart);
     }
 
     private void handleNewOrderCreation(List<Order> updatedOrdersThatIsInUserCart, List<Product> updatedProductsThatIsInUserCart, UserEntity customer, List<Product> newProducts, Map<Long, Integer> newlyOrderedProductIdsAndOrderedQuantities) {
