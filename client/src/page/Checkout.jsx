@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import ProductsTable from "../component/product/ProductsTable";
 import useVerifyUserAccess from "../utility/customHook/useVerifyUserAccess";
 import fetchGetAuthorization from "../utility/fetchGetAuthorization";
+import ShippingInformationForm from "../component/order/ShippingInformationForm";
 
 function Checkout(){
     const isVerified = useVerifyUserAccess('/verification/user/checkout', '/login');
@@ -28,6 +29,8 @@ function Checkout(){
                 <>
                     <h1>Checkout</h1>
                     <ProductsTable products={cartItems} buttons={[]}/>
+                    <h3>Shipping information: </h3>
+                    <ShippingInformationForm />
                 </>
                 :
                 <p className="loading-text">Loading...</p>

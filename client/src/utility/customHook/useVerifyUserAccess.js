@@ -30,7 +30,7 @@ function useVerifyUserAccess(navigateUrl, fallBackUrl){
             navigate(fallBackUrl);
         }
 
-    }, [navigateUrl, navigate])
+    }, [navigateUrl, fallBackUrl, navigate])
 
     return isVerifed;
 }
