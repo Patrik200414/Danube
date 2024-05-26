@@ -153,7 +153,7 @@ public class OrderService {
 
         List<Order> customerOrders = orderRepository.findAllByProductIsInAndCustomer(productsById, customer);
         return customerOrders.stream()
-                .collect(Collectors.toMap(Order::getId, order -> order));
+                .collect(Collectors.toMap(order -> order.getProduct().getId(), order -> order));
     }
 
     private Order modifyProductAndOrderQuantity(AddToCartDTO cartElement, UserEntity customer, Product product, int remainedQuantity) {
