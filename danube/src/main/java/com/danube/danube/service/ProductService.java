@@ -24,6 +24,7 @@ import com.danube.danube.utility.filellogger.FileLogger;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.param.ProductCreateParams;
+import com.stripe.param.ProductUpdateParams;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -205,7 +206,8 @@ public class ProductService {
     }
 
     @Transactional
-    public void updateProduct(ProductUpdateDTO updatedProductDetails, MultipartFile[] newImages, long sellerId, long updatedProductId) throws IOException {
+    public void updateProduct(ProductUpdateDTO updatedProductDetails, MultipartFile[] newImages, long sellerId, long updatedProductId) throws IOException, StripeException {
+        Stripe.apiKey = PAYMENT_SECRET;
         UserEntity seller = sellerValidator(sellerId);
         Product updatedProduct = productRepository.findById(updatedProductId)
                 .orElseThrow(NonExistingProductException::new);
@@ -220,6 +222,14 @@ public class ProductService {
 
         List<Value> updatedValues = updateProductDetailValues(updatedProductDetails);
         valueRepository.saveAll(updatedValues);
+
+        com.stripe.model.Product stripeProduct = com.stripe.model.Product.retrieve(String.valueOf(updatedProductId));
+        ProductUpdateParams updatedParams = ProductUpdateParams.builder()
+                .setName(updatedProductInformation.productName())
+                .setDescription(updatedProductInformation.description())
+                .build();
+
+        stripeProduct.update(updatedParams);
     }
 
     private void productSellerValidation(Product product, UserEntity seller) {
