@@ -22,9 +22,6 @@ import com.danube.danube.repository.user.UserRepository;
 import com.danube.danube.utility.converter.Converter;
 import com.danube.danube.utility.filellogger.FileLogger;
 import com.stripe.Stripe;
-import com.stripe.exception.StripeException;
-import com.stripe.param.ProductCreateParams;
-import com.stripe.param.ProductUpdateParams;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -41,9 +38,6 @@ import java.util.stream.Collectors;
 public class ProductService {
     @org.springframework.beans.factory.annotation.Value("${PRODUCT_IMAGE_DIRECTORY_PATH}")
     public String BASE_IMAGE_PATH;
-
-    @org.springframework.beans.factory.annotation.Value("${danube.app.payment.secret}")
-    private String PAYMENT_SECRET;
     public static final int SIMILAR_RECOMENDED_PRODUCTS_RESULT_COUNT = 15;
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
@@ -133,8 +127,7 @@ public class ProductService {
     }
 
     @Transactional
-    public void saveProduct(ProductUploadDTO productUploadDTO) throws IOException, StripeException {
-        Stripe.apiKey = PAYMENT_SECRET;
+    public void saveProduct(ProductUploadDTO productUploadDTO) throws IOException{
 
         UserEntity seller = sellerValidator(productUploadDTO.userId());
         Subcategory subcategory = subcategoryRepository.findById(productUploadDTO.productDetail().subcategoryId())
@@ -151,20 +144,10 @@ public class ProductService {
         imageRepository.saveAll(images);
 
         product.setImages(images);
-        Product savedProduct = productRepository.save(product);
+        productRepository.save(product);
 
         Map<String, String> productInformation = productUploadDTO.productInformation();
         saveProductValues(productInformation, product);
-
-        ProductCreateParams productParams = ProductCreateParams.builder()
-                .setId(String.valueOf(savedProduct.getId()))
-                .setActive(true)
-                .setShippable(true)
-                .setName(savedProduct.getProductName())
-                .setDescription(savedProduct.getDescription())
-                .build();
-
-        com.stripe.model.Product.create(productParams);
     }
 
     public List<Map<String, String>> getMyProducts(long userId){
@@ -206,8 +189,7 @@ public class ProductService {
     }
 
     @Transactional
-    public void updateProduct(ProductUpdateDTO updatedProductDetails, MultipartFile[] newImages, long sellerId, long updatedProductId) throws IOException, StripeException {
-        Stripe.apiKey = PAYMENT_SECRET;
+    public void updateProduct(ProductUpdateDTO updatedProductDetails, MultipartFile[] newImages, long sellerId, long updatedProductId) throws IOException{
         UserEntity seller = sellerValidator(sellerId);
         Product updatedProduct = productRepository.findById(updatedProductId)
                 .orElseThrow(NonExistingProductException::new);
@@ -222,14 +204,6 @@ public class ProductService {
 
         List<Value> updatedValues = updateProductDetailValues(updatedProductDetails);
         valueRepository.saveAll(updatedValues);
-
-        com.stripe.model.Product stripeProduct = com.stripe.model.Product.retrieve(String.valueOf(updatedProductId));
-        ProductUpdateParams updatedParams = ProductUpdateParams.builder()
-                .setName(updatedProductInformation.productName())
-                .setDescription(updatedProductInformation.description())
-                .build();
-
-        stripeProduct.update(updatedParams);
     }
 
     private void productSellerValidation(Product product, UserEntity seller) {
