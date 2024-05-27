@@ -21,6 +21,9 @@ import com.danube.danube.repository.product.connection.SubcategoryDetailReposito
 import com.danube.danube.repository.user.UserRepository;
 import com.danube.danube.utility.converter.Converter;
 import com.danube.danube.utility.filellogger.FileLogger;
+import com.stripe.Stripe;
+import com.stripe.exception.StripeException;
+import com.stripe.param.ProductCreateParams;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -37,6 +40,9 @@ import java.util.stream.Collectors;
 public class ProductService {
     @org.springframework.beans.factory.annotation.Value("${PRODUCT_IMAGE_DIRECTORY_PATH}")
     public String BASE_IMAGE_PATH;
+
+    @org.springframework.beans.factory.annotation.Value("${danube.app.payment.secret}")
+    private String PAYMENT_SECRET;
     public static final int SIMILAR_RECOMENDED_PRODUCTS_RESULT_COUNT = 15;
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
@@ -126,7 +132,9 @@ public class ProductService {
     }
 
     @Transactional
-    public void saveProduct(ProductUploadDTO productUploadDTO) throws IOException {
+    public void saveProduct(ProductUploadDTO productUploadDTO) throws IOException, StripeException {
+        Stripe.apiKey = PAYMENT_SECRET;
+
         UserEntity seller = sellerValidator(productUploadDTO.userId());
         Subcategory subcategory = subcategoryRepository.findById(productUploadDTO.productDetail().subcategoryId())
                         .orElseThrow(NonExistingSubcategoryException::new);
@@ -142,10 +150,20 @@ public class ProductService {
         imageRepository.saveAll(images);
 
         product.setImages(images);
-        productRepository.save(product);
+        Product savedProduct = productRepository.save(product);
 
         Map<String, String> productInformation = productUploadDTO.productInformation();
         saveProductValues(productInformation, product);
+
+        ProductCreateParams productParams = ProductCreateParams.builder()
+                .setId(String.valueOf(savedProduct.getId()))
+                .setActive(true)
+                .setShippable(true)
+                .setName(savedProduct.getProductName())
+                .setDescription(savedProduct.getDescription())
+                .build();
+
+        com.stripe.model.Product.create(productParams);
     }
 
     public List<Map<String, String>> getMyProducts(long userId){
