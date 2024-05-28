@@ -17,6 +17,13 @@ function Checkout(){
         country: ''
     })
     const [error, setError] = useState();
+    const [paymentUrl, setPaymentUrl] = useState();
+
+    useEffect(() => {
+        if(paymentUrl){
+            window.location.href = paymentUrl;
+        }
+    }, [paymentUrl])
 
     useEffect(() => {
         const getCartItems = async () => {
@@ -69,8 +76,14 @@ function Checkout(){
         }
 
         const paymentData = await fetchPostAuthorizationFetch(`/api/payment`, user.jwt, JSON.stringify({userId: user.id}), true);
-        const paymentResponse = await paymentData;
+        const paymentResponse = await paymentData.json();
 
+        if(paymentData.ok){
+            setPaymentUrl(paymentResponse.paymentUrl);
+        } else{
+            setError(paymentResponse.message);
+        }
+        
     }
 
     return(
