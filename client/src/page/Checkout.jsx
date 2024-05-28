@@ -4,6 +4,7 @@ import useVerifyUserAccess from "../utility/customHook/useVerifyUserAccess";
 import fetchGetAuthorization from "../utility/fetchGetAuthorization";
 import ShippingInformationForm from "../component/order/ShippingInformationForm";
 import fetchPostAuthorizationFetch from "../utility/fetchPostAuthorizationFetch";
+import fetchPatchAuthorizationFetch from "../utility/fetchPatchAuthorizationFetch";
 
 function Checkout(){
     const isVerified = useVerifyUserAccess('/verification/user/checkout', '/login');
@@ -74,14 +75,17 @@ function Checkout(){
             ...shippingInformation,
             customerId: user.id
         }
-
+        console.log(userShippingInformation);
         const paymentData = await fetchPostAuthorizationFetch(`/api/payment`, user.jwt, JSON.stringify({userId: user.id}), true);
         const paymentResponse = await paymentData.json();
 
         if(paymentData.ok){
-            setPaymentUrl(paymentResponse.paymentUrl);
+            const orderInformationDetails = await fetchPatchAuthorizationFetch('/api/order', user.jwt, userShippingInformation);
+            if(orderInformationDetails.ok){
+                setPaymentUrl(paymentResponse.paymentUrl);
+            }
         } else{
-            setError(paymentResponse.message);
+            setError(paymentResponse.errorMessage);
         }
         
     }

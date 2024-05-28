@@ -14,5 +14,4 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findAllByProduct(Product product);
     Optional<Order> findByCustomerAndProduct(UserEntity customer, Product product);
     List<Order> findAllByProductIsInAndCustomer(List<Product> products, UserEntity customer);
-
 }

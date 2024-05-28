@@ -4,6 +4,7 @@ import com.danube.danube.custom_exception.login_registration.InputTooShortExcept
 import com.danube.danube.custom_exception.login_registration.InvalidEmailFormatException;
 import com.danube.danube.custom_exception.login_registration.NonExistingUserException;
 import com.danube.danube.custom_exception.login_registration.RegistrationFieldNullException;
+import com.danube.danube.custom_exception.order.OrderFailedException;
 import com.danube.danube.custom_exception.product.*;
 import com.danube.danube.custom_exception.user.*;
 import com.danube.danube.model.error.UserErrorMessage;
@@ -168,6 +169,14 @@ public class Advice {
                 new UserErrorMessage("Payment process failed! Please try it again!")
         );
     }
+
+    @ExceptionHandler(OrderFailedException.class)
+    public ResponseEntity<?> handleOrderFailedException(){
+        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(
+                new UserErrorMessage("Order couldn't be fulfilled! Please try again!")
+        );
+    }
+
     private UserErrorMessage handleInputTooShortError(InputTooShortException e){
         String fieldName = e.getMessage().split("-")[0];
         String minLength = e.getMessage().split("-")[1];
