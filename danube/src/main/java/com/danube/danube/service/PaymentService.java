@@ -80,12 +80,12 @@ public class PaymentService {
                 .build();
 
 
-
         SessionCreateParams params = SessionCreateParams.builder()
                 .setMode(SessionCreateParams.Mode.PAYMENT)
                 .setSuccessUrl(PAGE_BASE_URL + "/payment/success")
                 .setCancelUrl(PAGE_BASE_URL + "/")
                 .setCustomerEmail(customerEmail)
+                .setMode(SessionCreateParams.Mode.PAYMENT)
                 .addLineItem(
                         lineItem
                 ).build();
