@@ -20,7 +20,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class OrderService {
+public class CartService {
 
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
@@ -28,7 +28,7 @@ public class OrderService {
     private final Converter converter;
 
     @Autowired
-    public OrderService(UserRepository userRepository, ProductRepository productRepository, OrderRepository orderRepository, Converter converter) {
+    public CartService(UserRepository userRepository, ProductRepository productRepository, OrderRepository orderRepository, Converter converter) {
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.orderRepository = orderRepository;
