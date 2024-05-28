@@ -1,6 +1,6 @@
 package com.danube.danube.controller;
 
-import com.danube.danube.model.dto.order.OrderInformation;
+import com.danube.danube.model.dto.payment.PaymentNavigationDTO;
 import com.danube.danube.model.dto.payment.PaymentUserIdDTO;
 import com.danube.danube.service.PaymentService;
 import com.stripe.exception.StripeException;
@@ -19,8 +19,8 @@ public class PaymentController {
     }
 
     @PostMapping("")
-    public void createPaymentSession(@RequestBody PaymentUserIdDTO paymentUserIdDTO) throws StripeException {
+    public PaymentNavigationDTO createPaymentSession(@RequestBody PaymentUserIdDTO paymentUserIdDTO) throws StripeException {
         Session paymentSession = paymentService.createPaymentSession(paymentUserIdDTO.userId());
-        System.out.println(paymentSession);
+        return new PaymentNavigationDTO(paymentSession.getUrl());
     }
 }
