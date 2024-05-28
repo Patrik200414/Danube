@@ -19,11 +19,23 @@ public class Order {
     private boolean isOrdered;
     private boolean isSent;
     private int quantity;
+    private String streetAddress;
+    private String city;
+    private String state;
+    private String country;
+    private int zip;
+
 
     public Order() {
     }
 
-    public Order(long id, UserEntity customer, Product product, boolean isOrdered, boolean isSent, int quantity) {
+    public Order(
+            long id,
+            UserEntity customer,
+            Product product,
+            boolean isOrdered,
+            boolean isSent,
+            int quantity) {
         this.id = id;
         this.customer = customer;
         this.product = product;
@@ -86,5 +98,45 @@ public class Order {
     @Override
     public int hashCode() {
         return Objects.hash(getId());
+    }
+
+    public String getStreetAddress() {
+        return streetAddress;
+    }
+
+    public void setStreetAddress(String streetAddress) {
+        this.streetAddress = streetAddress;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public int getZip() {
+        return zip;
+    }
+
+    public void setZip(int zip) {
+        this.zip = zip;
     }
 }

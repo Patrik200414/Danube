@@ -8,6 +8,7 @@ import com.danube.danube.custom_exception.product.*;
 import com.danube.danube.custom_exception.user.*;
 import com.danube.danube.model.error.UserErrorMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.stripe.exception.StripeException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -161,7 +162,12 @@ public class Advice {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-
+    @ExceptionHandler(StripeException.class)
+    public ResponseEntity<?> handlePaymentException(){
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(
+                new UserErrorMessage("Payment process failed! Please try it again!")
+        );
+    }
     private UserErrorMessage handleInputTooShortError(InputTooShortException e){
         String fieldName = e.getMessage().split("-")[0];
         String minLength = e.getMessage().split("-")[1];

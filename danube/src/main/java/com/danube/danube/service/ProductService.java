@@ -21,6 +21,7 @@ import com.danube.danube.repository.product.connection.SubcategoryDetailReposito
 import com.danube.danube.repository.user.UserRepository;
 import com.danube.danube.utility.converter.Converter;
 import com.danube.danube.utility.filellogger.FileLogger;
+import com.stripe.Stripe;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -126,7 +127,8 @@ public class ProductService {
     }
 
     @Transactional
-    public void saveProduct(ProductUploadDTO productUploadDTO) throws IOException {
+    public void saveProduct(ProductUploadDTO productUploadDTO) throws IOException{
+
         UserEntity seller = sellerValidator(productUploadDTO.userId());
         Subcategory subcategory = subcategoryRepository.findById(productUploadDTO.productDetail().subcategoryId())
                         .orElseThrow(NonExistingSubcategoryException::new);
@@ -187,7 +189,7 @@ public class ProductService {
     }
 
     @Transactional
-    public void updateProduct(ProductUpdateDTO updatedProductDetails, MultipartFile[] newImages, long sellerId, long updatedProductId) throws IOException {
+    public void updateProduct(ProductUpdateDTO updatedProductDetails, MultipartFile[] newImages, long sellerId, long updatedProductId) throws IOException{
         UserEntity seller = sellerValidator(sellerId);
         Product updatedProduct = productRepository.findById(updatedProductId)
                 .orElseThrow(NonExistingProductException::new);

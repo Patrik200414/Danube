@@ -4,6 +4,7 @@ import com.danube.danube.model.dto.product.*;
 import com.danube.danube.service.ProductService;
 import com.danube.danube.utility.converter.Converter;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.stripe.exception.StripeException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -90,7 +91,7 @@ public class ProductController {
             @RequestParam("productInformation") String productInformation,
             @RequestParam("userId") long userId,
             @RequestParam("images") MultipartFile[] images
-    ) throws IOException {
+    ) throws IOException, StripeException {
         ProductUploadDTO productUploadDTO = converter.convertRequestParamToProductUploadDTO(
                 productDetail,
                 productInformation,
@@ -109,7 +110,7 @@ public class ProductController {
             @RequestParam("updatedValues") String updatedValue,
             @RequestParam(value = "newImages", required = false) MultipartFile[] newImages,
             @RequestParam("seller") long sellerId
-    ) throws IOException {
+    ) throws IOException, StripeException {
         ProductUpdateDTO productUpdateDTO = converter.convertUpdateDataToProductUpdateDTO(updatedValue);
         productService.updateProduct(productUpdateDTO, newImages, sellerId, productId);
         return HttpStatus.CREATED;

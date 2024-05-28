@@ -20,6 +20,7 @@ import ProductUpdate from './page/ProductUpdate';
 import useGetNavbarInformation from './utility/customHook/useGetNavbarInformation';
 import MyCart from "./page/MyCart";
 import Checkout from "./page/Checkout";
+import PaymentSuccess from "./page/PaymentSuccess";
 
 function App() {
   const [navbarInformation, setNavbarInformation] = useGetNavbarInformation(JSON.parse(sessionStorage.getItem('USER_JWT')));
@@ -80,6 +81,10 @@ const router = createBrowserRouter([
         {
           path: '/user/checkout',
           element: <Checkout />
+        },
+        {
+          path: '/payment/success',
+          element: <PaymentSuccess />
         }
       ]
     },
