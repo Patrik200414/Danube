@@ -3,6 +3,7 @@ import ProductsTable from "../component/product/ProductsTable";
 import useVerifyUserAccess from "../utility/customHook/useVerifyUserAccess";
 import fetchGetAuthorization from "../utility/fetchGetAuthorization";
 import ShippingInformationForm from "../component/order/ShippingInformationForm";
+import fetchPostAuthorizationFetch from "../utility/fetchPostAuthorizationFetch";
 
 function Checkout(){
     const isVerified = useVerifyUserAccess('/verification/user/checkout', '/login');
@@ -53,7 +54,7 @@ function Checkout(){
     }
 
 
-    function handleProceedPayout(e){
+    async function handleProceedPayout(e){
         e.preventDefault();
 
         const errorMessage = validateAddressInformation(shippingInformation);
@@ -67,7 +68,9 @@ function Checkout(){
             customerId: user.id
         }
 
-        console.log(userShippingInformation);
+        const paymentData = await fetchPostAuthorizationFetch(`/api/payment`, user.jwt, JSON.stringify({userId: user.id}), true);
+        const paymentResponse = await paymentData;
+
     }
 
     return(

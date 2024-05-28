@@ -1,10 +1,11 @@
 package com.danube.danube.model.dto.order;
 
-public record LocationInformation(
+public record OrderInformation(
         String streetAddess,
         String city,
         String state,
         String country,
-        int zip
+        int zip,
+        long userId
 ) {
 }
