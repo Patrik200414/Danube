@@ -41,12 +41,15 @@ public class PaymentService {
         Stripe.apiKey = PAYMENT_SECRET;
 
         double price = orders.stream()
-                .mapToDouble(order -> order.getProduct().getPrice() + order.getProduct().getShippingPrice()).sum() * PRICE_MULTIPLIER;
+                .mapToDouble(order -> order.getProduct().getPrice() * order.getQuantity()).sum() * PRICE_MULTIPLIER;
+
+        double shippingPrice = orders.stream()
+                .mapToDouble(order -> order.getProduct().getShippingPrice()).sum() * PRICE_MULTIPLIER;
 
         PriceCreateParams priceParams = PriceCreateParams.builder()
                 .setCurrency("usd")
                 .setActive(true)
-                .setUnitAmount((long) Math.ceil(price))
+                .setUnitAmount((long) Math.ceil(price + shippingPrice))
                 .setProduct(product.getId())
                 .build();
 
@@ -100,9 +103,7 @@ public class PaymentService {
         UserEntity customer = userRepository.findById(customerId)
                 .orElseThrow(NonExistingUserException::new);
 
-        List<Order> ordersByCustomer = orderRepository.findAllByCustomer(customer).stream()
-                .filter(order -> !order.isOrdered())
-                .toList();
+        List<Order> ordersByCustomer = orderRepository.findAllByCustomerIsOrderedFalse(customer);
 
         if(ordersByCustomer.isEmpty()){
             throw new UnableToCreatePaymentSessionException();
