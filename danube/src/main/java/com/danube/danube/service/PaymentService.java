@@ -100,7 +100,9 @@ public class PaymentService {
         UserEntity customer = userRepository.findById(customerId)
                 .orElseThrow(NonExistingUserException::new);
 
-        List<Order> ordersByCustomer = orderRepository.findAllByCustomer(customer);
+        List<Order> ordersByCustomer = orderRepository.findAllByCustomer(customer).stream()
+                .filter(order -> !order.isOrdered())
+                .toList();
 
         if(ordersByCustomer.isEmpty()){
             throw new UnableToCreatePaymentSessionException();

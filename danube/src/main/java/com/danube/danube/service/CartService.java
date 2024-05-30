@@ -158,7 +158,7 @@ public class CartService {
     }
 
     private Order modifyProductAndOrderQuantity(AddToCartDTO cartElement, UserEntity customer, Product product, int remainedQuantity) {
-        Optional<Order> searchedOrderByCustomer = orderRepository.findByCustomerAndProduct(customer, product);
+        Optional<Order> searchedOrderByCustomer = orderRepository.findByCustomerAndProductAndIsOrderedFalse(customer, product);
 
         product.setQuantity(remainedQuantity);
         productRepository.save(product);
