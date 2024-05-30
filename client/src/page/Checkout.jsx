@@ -19,6 +19,7 @@ function Checkout(){
     })
     const [error, setError] = useState();
     const [paymentUrl, setPaymentUrl] = useState();
+    const [isPaymentLoading, setIsPaymentLoading] = useState();
 
     useEffect(() => {
         if(paymentUrl){
@@ -41,6 +42,7 @@ function Checkout(){
         }
     }, [isVerified])
 
+
     function handleShippingInformationChange(informationKey, value){
         setShippingInformation(prev => ({
             ...prev,
@@ -61,10 +63,10 @@ function Checkout(){
         }
     }
 
-
     async function handleProceedPayout(e){
         e.preventDefault();
 
+        setIsPaymentLoading(true);
         const errorMessage = validateAddressInformation(shippingInformation);
         if(errorMessage){
             setError(errorMessage);
@@ -75,13 +77,19 @@ function Checkout(){
             ...shippingInformation,
             customerId: user.id
         }
-        console.log(userShippingInformation);
         const paymentData = await fetchPostAuthorizationFetch(`/api/payment`, user.jwt, JSON.stringify({userId: user.id}), true);
         const paymentResponse = await paymentData.json();
-
+        
         if(paymentData.ok){
             const orderInformationDetails = await fetchPatchAuthorizationFetch('/api/order', user.jwt, userShippingInformation);
             if(orderInformationDetails.ok){
+                
+                const paymentSessionId = JSON.stringify({
+                    paymentSessionId: paymentResponse.paymentSessionId,
+                    userId: user.id
+                });
+
+                sessionStorage.setItem('ORDER_SESSION', paymentSessionId);
                 setPaymentUrl(paymentResponse.paymentUrl);
             }
         } else{
@@ -104,7 +112,9 @@ function Checkout(){
                 :
                 <p className="loading-text">Loading...</p>
             }
-            
+            {
+                isPaymentLoading && <p className="loading-text">Loading...</p>
+            }
         </div>
     )
 }
