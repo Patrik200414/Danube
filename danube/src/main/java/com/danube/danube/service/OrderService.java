@@ -11,6 +11,8 @@ import com.danube.danube.repository.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -50,7 +52,10 @@ public class OrderService {
 
         List<Order> orders = orderRepository.findAllByCustomer(customer);
 
-        orders.forEach(order -> order.setOrdered(true));
+        orders.forEach(order -> {
+            order.setOrdered(true);
+            order.setOrderTime(Timestamp.valueOf(LocalDateTime.now()));
+        });
         orderRepository.saveAll(orders);
     }
 }
