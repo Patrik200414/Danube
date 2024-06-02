@@ -27,7 +27,8 @@ public class PaymentService {
     public static final int PRICE_MULTIPLIER = 100;
     @Value("${danube.app.payment.secret}")
     private String PAYMENT_SECRET;
-    private final String PAGE_BASE_URL = "http://localhost:5173";
+    @Value("${danube.app.payment.redirectionPage}")
+    private String PAGE_BASE_URL;
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
 
