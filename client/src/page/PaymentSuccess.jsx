@@ -10,7 +10,6 @@ function PaymentSuccess({onNavbarInformationChange}){
 
             const paymentSessionId = JSON.parse(sessionStorage.getItem('ORDER_SESSION'));
             const currUser = JSON.parse(sessionStorage.getItem("USER_JWT"));
-            console.log(paymentSessionId);
             if(currUser && currUser.id == paymentSessionId.userId){
                 const orderItemData = await fetchPatchAuthorizationFetch("/api/order/confirm", currUser.jwt, paymentSessionId);
                 if(orderItemData.ok){
@@ -32,7 +31,7 @@ function PaymentSuccess({onNavbarInformationChange}){
     }, [onNavbarInformationChange])
     return(
         <div className="success-page-container">
-            {orderSuccess !== null || orderSuccess !== undefined ? 
+            {orderSuccess !== undefined ? 
                 orderSuccess === true ? 
                     <>
                         <h1>Thank you for your purchase!</h1>

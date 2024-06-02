@@ -84,7 +84,7 @@ const router = createBrowserRouter([
         },
         {
           path: '/payment/success',
-          element: <PaymentSuccess />
+          element: <PaymentSuccess onNavbarInformationChange={(information) => setNavbarInformation(information)}/>
         }
       ]
     },
