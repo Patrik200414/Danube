@@ -21,6 +21,6 @@ public class PaymentController {
     @PostMapping("")
     public PaymentNavigationDTO createPaymentSession(@RequestBody PaymentUserIdDTO paymentUserIdDTO) throws StripeException {
         Session paymentSession = paymentService.createPaymentSession(paymentUserIdDTO.userId());
-        return new PaymentNavigationDTO(paymentSession.getUrl());
+        return new PaymentNavigationDTO(paymentSession.getUrl(), paymentSession.getId());
     }
 }

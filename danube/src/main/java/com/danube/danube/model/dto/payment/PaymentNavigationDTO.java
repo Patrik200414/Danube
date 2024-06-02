@@ -1,5 +1,5 @@
 package com.danube.danube.model.dto.payment;
 
-public record PaymentNavigationDTO(String paymentUrl) {
+public record PaymentNavigationDTO(String paymentUrl, String paymentSessionId) {
 
 }

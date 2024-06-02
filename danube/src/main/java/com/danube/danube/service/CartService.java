@@ -60,7 +60,7 @@ public class CartService {
 
         handleOrderCreation(cartItems, ordersByCustomer, customer);
 
-        List<Order> allByCustomer = orderRepository.findAllByCustomer(customer);
+        List<Order> allByCustomer = orderRepository.findAllByCustomerIsOrderedFalse(customer);
 
         return allByCustomer.stream()
                 .map(cartItem -> converter.convertOrderToCarItemShowDTO(cartItem))
@@ -152,13 +152,13 @@ public class CartService {
                 .toList();
         List<Product> productsById = productRepository.findAllById(productIds);
 
-        List<Order> customerOrders = orderRepository.findAllByProductIsInAndCustomer(productsById, customer);
+        List<Order> customerOrders = orderRepository.findAllByProductIsInAndCustomerAndNotOrdered(productsById, customer);
         return customerOrders.stream()
                 .collect(Collectors.toMap(order -> order.getProduct().getId(), order -> order));
     }
 
     private Order modifyProductAndOrderQuantity(AddToCartDTO cartElement, UserEntity customer, Product product, int remainedQuantity) {
-        Optional<Order> searchedOrderByCustomer = orderRepository.findByCustomerAndProduct(customer, product);
+        Optional<Order> searchedOrderByCustomer = orderRepository.findByCustomerAndProductAndIsOrderedFalse(customer, product);
 
         product.setQuantity(remainedQuantity);
         productRepository.save(product);

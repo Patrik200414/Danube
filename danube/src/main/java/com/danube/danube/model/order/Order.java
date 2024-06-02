@@ -4,6 +4,7 @@ import com.danube.danube.model.product.Product;
 import com.danube.danube.model.user.UserEntity;
 import jakarta.persistence.*;
 
+import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
@@ -24,6 +25,7 @@ public class Order {
     private String state;
     private String country;
     private int zip;
+    private Timestamp orderTime;
 
 
     public Order() {
@@ -35,13 +37,14 @@ public class Order {
             Product product,
             boolean isOrdered,
             boolean isSent,
-            int quantity) {
+            int quantity, Timestamp orderTime) {
         this.id = id;
         this.customer = customer;
         this.product = product;
         this.isOrdered = isOrdered;
         this.isSent = isSent;
         this.quantity = quantity;
+        this.orderTime = orderTime;
     }
 
     public long getId() {
@@ -138,5 +141,13 @@ public class Order {
 
     public void setZip(int zip) {
         this.zip = zip;
+    }
+
+    public Timestamp getOrderTime() {
+        return orderTime;
+    }
+
+    public void setOrderTime(Timestamp orderTime) {
+        this.orderTime = orderTime;
     }
 }

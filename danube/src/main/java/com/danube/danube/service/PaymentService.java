@@ -19,12 +19,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 public class PaymentService {
+    public static final int PRICE_MULTIPLIER = 100;
     @Value("${danube.app.payment.secret}")
     private String PAYMENT_SECRET;
     private final String PAGE_BASE_URL = "http://localhost:5173";
@@ -41,12 +41,15 @@ public class PaymentService {
         Stripe.apiKey = PAYMENT_SECRET;
 
         double price = orders.stream()
-                .mapToDouble(order -> order.getProduct().getPrice() + order.getProduct().getShippingPrice()).sum() * 100;
+                .mapToDouble(order -> order.getProduct().getPrice() * order.getQuantity()).sum() * PRICE_MULTIPLIER;
+
+        double shippingPrice = orders.stream()
+                .mapToDouble(order -> order.getProduct().getShippingPrice()).sum() * PRICE_MULTIPLIER;
 
         PriceCreateParams priceParams = PriceCreateParams.builder()
                 .setCurrency("usd")
                 .setActive(true)
-                .setUnitAmount((long) Math.ceil(price))
+                .setUnitAmount((long) Math.ceil(price + shippingPrice))
                 .setProduct(product.getId())
                 .build();
 
@@ -100,7 +103,7 @@ public class PaymentService {
         UserEntity customer = userRepository.findById(customerId)
                 .orElseThrow(NonExistingUserException::new);
 
-        List<Order> ordersByCustomer = orderRepository.findAllByCustomer(customer);
+        List<Order> ordersByCustomer = orderRepository.findAllByCustomerIsOrderedFalse(customer);
 
         if(ordersByCustomer.isEmpty()){
             throw new UnableToCreatePaymentSessionException();
@@ -109,5 +112,12 @@ public class PaymentService {
         Product stripeProduct = createStripeProduct(ordersByCustomer, customer.getEmail());
         Price stripePrice = createStripePrice(ordersByCustomer, stripeProduct);
         return createSession(stripePrice, customer.getEmail());
+    }
+
+    public boolean isPaid(String paymentSessionId) throws StripeException {
+        Stripe.apiKey = PAYMENT_SECRET;
+
+        Session searchedPaymentSession = Session.retrieve(paymentSessionId);
+        return searchedPaymentSession.getPaymentStatus().equals("paid");
     }
 }
