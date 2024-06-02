@@ -19,7 +19,9 @@ import com.danube.danube.repository.product.*;
 import com.danube.danube.repository.product.connection.ProductValueRepository;
 import com.danube.danube.repository.product.connection.SubcategoryDetailRepository;
 import com.danube.danube.repository.user.UserRepository;
-import com.danube.danube.utility.converter.Converter;
+import com.danube.danube.utility.converter.categoriesanddetails.ProductCategoriesAndDetailsConverter;
+import com.danube.danube.utility.converter.productview.ProductViewConverter;
+import com.danube.danube.utility.converter.uploadproduct.ProductUploadConverter;
 import com.danube.danube.utility.filellogger.FileLogger;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,11 +49,13 @@ public class ProductService {
     private final ProductValueRepository productValueRepository;
     private final ImageRepository imageRepository;
     private final SubcategoryDetailRepository subcategoryDetailRepository;
-    private final Converter converter;
+    private final ProductViewConverter productViewConverter;
+    private final ProductCategoriesAndDetailsConverter productCategoriesAndDetailsConverter;
+    private final ProductUploadConverter productUploadConverter;
     private final FileLogger fileLogger;
 
     @Autowired
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, SubcategoryRepository subcategoryRepository, DetailRepository detailRepository, UserRepository userRepository, ValueRepository valueRepository, ProductValueRepository productValueRepository, ImageRepository imageRepository, SubcategoryDetailRepository subcategoryDetailRepository, Converter converter, FileLogger fileLogger) {
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, SubcategoryRepository subcategoryRepository, DetailRepository detailRepository, UserRepository userRepository, ValueRepository valueRepository, ProductValueRepository productValueRepository, ImageRepository imageRepository, SubcategoryDetailRepository subcategoryDetailRepository, ProductViewConverter productViewConverter, ProductCategoriesAndDetailsConverter productCategoriesAndDetailsConverter, ProductUploadConverter productUploadConverter, FileLogger fileLogger) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.subcategoryRepository = subcategoryRepository;
@@ -61,7 +65,9 @@ public class ProductService {
         this.productValueRepository = productValueRepository;
         this.imageRepository = imageRepository;
         this.subcategoryDetailRepository = subcategoryDetailRepository;
-        this.converter = converter;
+        this.productViewConverter = productViewConverter;
+        this.productCategoriesAndDetailsConverter = productCategoriesAndDetailsConverter;
+        this.productUploadConverter = productUploadConverter;
         this.fileLogger = fileLogger;
     }
 
@@ -69,7 +75,7 @@ public class ProductService {
     public Set<ProductShowSmallDTO> getProducts(int pageNumber, int itemPerPage){
         PageRequest pageRequest = PageRequest.of(pageNumber, itemPerPage);
         Page<Product> pagedProducts = productRepository.findAll(pageRequest);
-        return converter.convertProductToProductShowSmallDTORandomOrder(pagedProducts);
+        return productViewConverter.convertProductToProductShowSmallDTORandomOrder(pagedProducts);
     }
 
     public long getProductCount(){
@@ -88,7 +94,7 @@ public class ProductService {
 
     public List<CategoryDTO> getCategories(){
         List<Category> categories = categoryRepository.findAll();
-        return converter.convertCategoryToCategoryDTO(categories);
+        return productCategoriesAndDetailsConverter.convertCategoryToCategoryDTO(categories);
     }
 
     public List<SubcategoriesDTO> getSubCategoriesByCategory(long categoryId){
@@ -100,7 +106,7 @@ public class ProductService {
 
         Category category = searchedCategory.get();
         List<Subcategory> subcategories = subcategoryRepository.findAllByCategory(category);
-        return converter.convertSubcategoriesToSubcategoryDTOs(subcategories);
+        return productCategoriesAndDetailsConverter.convertSubcategoriesToSubcategoryDTOs(subcategories);
     }
 
     public List<DetailDTO> getDetailsBySubcategory(long id){
@@ -113,7 +119,7 @@ public class ProductService {
         List<Detail> detailsBySubCategory = subcategoryDetailRepository.findAllBySubcategory(subcategory).stream()
                 .map(SubcategoryDetail::getDetail)
                 .toList();
-        return converter.convertDetailsToDetailsDTO(detailsBySubCategory);
+        return productCategoriesAndDetailsConverter.convertDetailsToDetailsDTO(detailsBySubCategory);
     }
 
     public List<ProductShowSmallDTO> getSimilarProducts(long productFromId){
@@ -122,7 +128,7 @@ public class ProductService {
 
         Pageable pageable = PageRequest.of(0, SIMILAR_RECOMENDED_PRODUCTS_RESULT_COUNT);
         List<Product> similarProducts = productRepository.findBySubcategoryAndIdNotOrderBySoldDescRatingDesc(product.getSubcategory(), productFromId, pageable);
-        return converter.convertProductsToProductShowSmallDTO(similarProducts);
+        return productViewConverter.convertProductsToProductShowSmallDTO(similarProducts);
     }
 
     @Transactional
@@ -133,13 +139,13 @@ public class ProductService {
                         .orElseThrow(NonExistingSubcategoryException::new);
 
         fileLogger.saveFile(productUploadDTO.images(), BASE_IMAGE_PATH);
-        Product product = converter.convertProductDetailUploadDTOToProduct(
+        Product product = productUploadConverter.convertProductDetailUploadDTOToProduct(
                 productUploadDTO.productDetail(),
                 seller,
                 subcategory
         );
 
-        List<Image> images = converter.convertMultiPartFilesToListOfImages(productUploadDTO.images(), product);
+        List<Image> images = productUploadConverter.convertMultiPartFilesToListOfImages(productUploadDTO.images(), product);
         imageRepository.saveAll(images);
 
         product.setImages(images);
@@ -157,7 +163,7 @@ public class ProductService {
 
         List<Product> products = productRepository.findBySeller(seller);
         return products.stream()
-                .map(converter::convertProductToMyProductInformation)
+                .map(productViewConverter::convertProductToMyProductInformation)
                 .toList();
     }
 
@@ -179,12 +185,12 @@ public class ProductService {
 
     public ProductItemDTO getProductItem(long id){
         Product product = productRepository.findById(id).orElseThrow(NonExistingProductException::new);
-        return converter.convertProductToProductItemDTO(product);
+        return productViewConverter.convertProductToProductItemDTO(product);
     }
 
     public ProductUpdateDTO getUpdatableProductItem(long id){
         Product product = productRepository.findById(id).orElseThrow(NonExistingProductException::new);
-        return converter.convertProductToProductUpdateDTO(product);
+        return productUploadConverter.convertProductToProductUpdateDTO(product);
     }
 
     @Transactional
@@ -260,7 +266,7 @@ public class ProductService {
     private void addNewImage(MultipartFile[] newImages, Product updatedProduct) throws IOException {
         if(newImages != null){
             fileLogger.saveFile(newImages, BASE_IMAGE_PATH);
-            List<Image> newUploadedImages = converter.convertMultiPartFilesToListOfImages(newImages, updatedProduct);
+            List<Image> newUploadedImages = productUploadConverter.convertMultiPartFilesToListOfImages(newImages, updatedProduct);
             imageRepository.saveAll(newUploadedImages);
         }
     }

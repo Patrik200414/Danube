@@ -2,7 +2,6 @@ package com.danube.danube.service;
 
 import com.danube.danube.custom_exception.login_registration.NonExistingUserException;
 import com.danube.danube.custom_exception.order.OrderFailedException;
-import com.danube.danube.custom_exception.order.OrderNotFoundException;
 import com.danube.danube.model.dto.order.OrderInformationDTO;
 import com.danube.danube.model.order.Order;
 import com.danube.danube.model.user.UserEntity;

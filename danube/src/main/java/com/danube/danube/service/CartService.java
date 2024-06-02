@@ -11,7 +11,7 @@ import com.danube.danube.model.user.UserEntity;
 import com.danube.danube.repository.order.OrderRepository;
 import com.danube.danube.repository.product.ProductRepository;
 import com.danube.danube.repository.user.UserRepository;
-import com.danube.danube.utility.converter.Converter;
+import com.danube.danube.utility.converter.productview.ProductViewConverter;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,14 +25,16 @@ public class CartService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
-    private final Converter converter;
+    private final ProductViewConverter productViewConverter;
+
 
     @Autowired
-    public CartService(UserRepository userRepository, ProductRepository productRepository, OrderRepository orderRepository, Converter converter) {
+    public CartService(UserRepository userRepository, ProductRepository productRepository, OrderRepository orderRepository, ProductViewConverter productViewConverter) {
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.orderRepository = orderRepository;
-        this.converter = converter;
+        this.productViewConverter = productViewConverter;
+
     }
 
     @Transactional
@@ -50,7 +52,7 @@ public class CartService {
         Optional<Order> searchedOrderByCustomer = modifyProductAndOrderQuantity(customer, product, remainedQuantity);
         Order orderItem = validateIfOrderAlreadyExists(cartElement.quantity(), searchedOrderByCustomer, customer, product);
 
-        return converter.convertOrderToCarItemShowDTO(orderRepository.save(orderItem));
+        return productViewConverter.convertOrderToCarItemShowDTO(orderRepository.save(orderItem));
     }
 
     @Transactional
@@ -65,7 +67,7 @@ public class CartService {
         List<Order> allByCustomer = orderRepository.findAllByCustomerIsOrderedFalse(customer);
 
         return allByCustomer.stream()
-                .map(cartItem -> converter.convertOrderToCarItemShowDTO(cartItem))
+                .map(cartItem -> productViewConverter.convertOrderToCarItemShowDTO(cartItem))
                 .toList();
     }
 
@@ -77,7 +79,7 @@ public class CartService {
 
         return cartItems.stream()
                 .filter(cartItem -> !cartItem.isOrdered())
-                .map(cartItem -> converter.convertOrderToCarItemShowDTO(cartItem))
+                .map(cartItem -> productViewConverter.convertOrderToCarItemShowDTO(cartItem))
                 .toList();
     }
 

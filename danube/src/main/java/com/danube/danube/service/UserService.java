@@ -11,21 +11,17 @@ import com.danube.danube.model.user.Role;
 import com.danube.danube.model.user.UserEntity;
 import com.danube.danube.repository.user.UserRepository;
 import com.danube.danube.security.jwt.JwtUtils;
-import com.danube.danube.utility.converter.Converter;
+import com.danube.danube.utility.converter.user.UserConverter;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.security.Timestamp;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -42,20 +38,20 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
-    private final Converter converter;
+    private final UserConverter userConverter;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtUtils jwtUtils, Converter converter) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtUtils jwtUtils, UserConverter userConverter) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
-        this.converter = converter;
+        this.userConverter = userConverter;
     }
 
     public void saveUser(UserRegistrationDTO userRegistrationDTO){
         registrationValidator(userRegistrationDTO);
-        UserEntity user = converter.convertUserRegistrationDTOToUserEntity(userRegistrationDTO, passwordEncoder);
+        UserEntity user = userConverter.convertUserRegistrationDTOToUserEntity(userRegistrationDTO, passwordEncoder);
         userRepository.save(user);
     }
 
