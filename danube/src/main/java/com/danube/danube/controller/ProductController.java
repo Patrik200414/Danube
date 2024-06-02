@@ -2,18 +2,13 @@ package com.danube.danube.controller;
 
 import com.danube.danube.model.dto.product.*;
 import com.danube.danube.service.ProductService;
-import com.danube.danube.utility.converter.Converter;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.stripe.exception.StripeException;
-import jakarta.transaction.Transactional;
+import com.danube.danube.utility.converter.uploadproduct.ProductUploadConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,12 +18,12 @@ import java.util.Set;
 public class ProductController {
 
     private final ProductService productService;
-    private final Converter converter;
+    private final ProductUploadConverter productUploadConverter;
 
     @Autowired
-    public ProductController(ProductService productService, Converter converter) {
+    public ProductController(ProductService productService, ProductUploadConverter productUploadConverter) {
         this.productService = productService;
-        this.converter = converter;
+        this.productUploadConverter = productUploadConverter;
     }
 
     @GetMapping()
@@ -84,15 +79,14 @@ public class ProductController {
         return productService.getMyProducts(userId);
     }
 
-    @Async
     @PostMapping()
     public HttpStatus saveProduct(
             @RequestParam("productDetail") String productDetail,
             @RequestParam("productInformation") String productInformation,
             @RequestParam("userId") long userId,
             @RequestParam("images") MultipartFile[] images
-    ) throws IOException, StripeException {
-        ProductUploadDTO productUploadDTO = converter.convertRequestParamToProductUploadDTO(
+    ) throws IOException {
+        ProductUploadDTO productUploadDTO = productUploadConverter.convertRequestParamToProductUploadDTO(
                 productDetail,
                 productInformation,
                 userId,
@@ -103,15 +97,15 @@ public class ProductController {
         return HttpStatus.CREATED;
     }
 
-    @Async
+
     @PutMapping("/update/{productId}")
     public HttpStatus updateProduct(
             @PathVariable long productId,
             @RequestParam("updatedValues") String updatedValue,
             @RequestParam(value = "newImages", required = false) MultipartFile[] newImages,
             @RequestParam("seller") long sellerId
-    ) throws IOException, StripeException {
-        ProductUpdateDTO productUpdateDTO = converter.convertUpdateDataToProductUpdateDTO(updatedValue);
+    ) throws IOException {
+        ProductUpdateDTO productUpdateDTO = productUploadConverter.convertUpdateDataToProductUpdateDTO(updatedValue);
         productService.updateProduct(productUpdateDTO, newImages, sellerId, productId);
         return HttpStatus.CREATED;
     }

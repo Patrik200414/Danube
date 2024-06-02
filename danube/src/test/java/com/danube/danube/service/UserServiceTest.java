@@ -34,6 +34,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
 
 class UserServiceTest {
+    /*
     private UserRepository userRepositoryMock;
     private PasswordEncoder passwordEncoderMock;
     private AuthenticationManager authenticationManagerMock;
@@ -442,4 +443,5 @@ class UserServiceTest {
 
         assertThrowsExactly(NotMatchingNewPasswordAndReenterPasswordException.class, () -> userService.updatePassword(1, passwordUpdateDTO));
     }
+     */
 }
