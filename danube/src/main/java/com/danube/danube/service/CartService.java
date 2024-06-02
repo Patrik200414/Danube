@@ -47,7 +47,9 @@ public class CartService {
             throw new NotEnoughQuantityToOrderException(cartElement.quantity(), product.getQuantity());
         }
 
-        Order orderItem = modifyProductAndOrderQuantity(cartElement, customer, product, remainedQuantity);
+        Optional<Order> searchedOrderByCustomer = modifyProductAndOrderQuantity(customer, product, remainedQuantity);
+        Order orderItem = validateIfOrderAlreadyExists(cartElement.quantity(), searchedOrderByCustomer, customer, product);
+
         return converter.convertOrderToCarItemShowDTO(orderRepository.save(orderItem));
     }
 
@@ -91,6 +93,11 @@ public class CartService {
     }
 
     private void handleOrderCreation(ItemIntegrationDTO cartItems, Map<Long, Order> ordersByCustomer, UserEntity customer) {
+        /*
+         * Checks if the user is already has the same item in the cart
+         * If the item exists in the cart than increment the order quantity
+         * Else it will create a new item in the cart
+         */
         List<Order> updatedOrdersThatIsInUserCart = new ArrayList<>();
         List<Product> updatedProductsThatIsInUserCart = new ArrayList<>();
 
@@ -122,6 +129,10 @@ public class CartService {
     }
 
     private void handleAlreadyExistingOrderCreation(ItemIntegrationDTO cartItems, Map<Long, Order> ordersByCustomer, List<Order> updatedOrdersThatIsInUserCart, List<Product> updatedProductsThatIsInUserCart, Map<Long, Integer> newlyOrderedProductIdsAndOrderedQuantities) {
+        /*
+         * Modifies the order's quantity and the product remained quantity if the product exists in the user's order
+         * If doesn't exist than creates an entry to the newly ordered map
+         */
         for(CartItemShowDTO cartItem : cartItems.products()){
             if(ordersByCustomer.containsKey(cartItem.id())){
                 Order alreadyStoredOrder = ordersByCustomer.get(cartItem.id());
@@ -138,9 +149,17 @@ public class CartService {
     }
 
     private void handleQuantityChange(List<Order> updatedOrdersThatIsInUserCart, List<Product> updatedProductsThatIsInUserCart, CartItemShowDTO cartItem, Order alreadyStoredOrder, Product alreadyOrderedProduct) {
+        /*
+         * Change the ordered item quantity
+         * Change the ordered product remained quantity
+         * */
         alreadyStoredOrder.setQuantity(alreadyStoredOrder.getQuantity() + cartItem.orderedQuantity());
         alreadyOrderedProduct.setQuantity(alreadyOrderedProduct.getQuantity() - cartItem.orderedQuantity());
 
+        /*
+        * Add the modified order to the user's order list
+        * Add the modified product to the product list
+        * */
         updatedOrdersThatIsInUserCart.add(alreadyStoredOrder);
         updatedProductsThatIsInUserCart.add(alreadyOrderedProduct);
     }
@@ -150,29 +169,29 @@ public class CartService {
         List<Long> productIds = cartItems.products().stream()
                 .map(CartItemShowDTO::id)
                 .toList();
-        List<Product> productsById = productRepository.findAllById(productIds);
+        List<Product> productsByIds = productRepository.findAllById(productIds);
 
-        List<Order> customerOrders = orderRepository.findAllByProductIsInAndCustomerAndNotOrdered(productsById, customer);
+        List<Order> customerOrders = orderRepository.findAllByProductIsInAndCustomerAndNotOrdered(productsByIds, customer);
         return customerOrders.stream()
                 .collect(Collectors.toMap(order -> order.getProduct().getId(), order -> order));
     }
 
-    private Order modifyProductAndOrderQuantity(AddToCartDTO cartElement, UserEntity customer, Product product, int remainedQuantity) {
+    private Optional<Order> modifyProductAndOrderQuantity(UserEntity customer, Product product, int remainedQuantity) {
         Optional<Order> searchedOrderByCustomer = orderRepository.findByCustomerAndProductAndIsOrderedFalse(customer, product);
 
         product.setQuantity(remainedQuantity);
         productRepository.save(product);
 
-        return validateIfOrderAlreadyExists(cartElement, searchedOrderByCustomer, customer, product);
+        return searchedOrderByCustomer;
     }
 
-    private Order validateIfOrderAlreadyExists(AddToCartDTO cartElement, Optional<Order> searchedOrderByCustomer, UserEntity customer, Product product) {
+    private Order validateIfOrderAlreadyExists(int orderedQuantity, Optional<Order> searchedOrderByCustomer, UserEntity customer, Product product) {
         Order orderItem;
         if(searchedOrderByCustomer.isEmpty()){
-            orderItem = createNewOrder(customer, product, cartElement.quantity());
+            orderItem = createNewOrder(customer, product, orderedQuantity);
         } else {
             orderItem = searchedOrderByCustomer.get();
-            orderItem.setQuantity(orderItem.getQuantity() + cartElement.quantity());
+            orderItem.setQuantity(orderItem.getQuantity() + orderedQuantity);
         }
         return orderItem;
     }
