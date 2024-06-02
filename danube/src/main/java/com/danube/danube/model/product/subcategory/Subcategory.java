@@ -3,7 +3,6 @@ package com.danube.danube.model.product.subcategory;
 import com.danube.danube.model.product.Product;
 import com.danube.danube.model.product.category.Category;
 import com.danube.danube.model.product.connection.SubcategoryDetail;
-import com.danube.danube.model.product.detail.Detail;
 import jakarta.persistence.*;
 
 import java.util.List;

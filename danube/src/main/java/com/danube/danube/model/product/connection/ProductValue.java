@@ -20,11 +20,7 @@ public class ProductValue {
     public ProductValue(long id, Product product, Value value) {
         this.id = id;
         this.product = product;
-
-
         this.value = value;
-
-
     }
 
     public long getId() {
