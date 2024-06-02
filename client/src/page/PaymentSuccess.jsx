@@ -28,7 +28,7 @@ function PaymentSuccess({onNavbarInformationChange}){
 
         orderItem();
         
-    }, [onNavbarInformationChange])
+    }, [])
     return(
         <div className="success-page-container">
             {orderSuccess !== undefined ? 

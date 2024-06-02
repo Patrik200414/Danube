@@ -16,5 +16,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Optional<Order> findByCustomerAndProductAndIsOrderedFalse(UserEntity customer, Product product);
     @Query("SELECT o FROM Order o WHERE o.customer = :customer AND o.isOrdered = false")
     List<Order> findAllByCustomerIsOrderedFalse(UserEntity customer);
-    List<Order> findAllByProductIsInAndCustomer(List<Product> products, UserEntity customer);
+    @Query("SELECT o FROM Order o WHERE o.product IN :products AND o.customer = :customer AND o.isOrdered = false ")
+    List<Order> findAllByProductIsInAndCustomerAndNotOrdered(List<Product> products, UserEntity customer);
 }
