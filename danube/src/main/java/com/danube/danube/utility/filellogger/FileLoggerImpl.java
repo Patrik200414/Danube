@@ -7,7 +7,6 @@ import java.io.IOException;
 
 public class FileLoggerImpl implements FileLogger{
     public void saveFile(MultipartFile[] multipartFile, String basePath) throws IOException {
-        System.out.println(basePath);
         for(MultipartFile file : multipartFile){
             String filePath = basePath + "\\images\\" + file.getOriginalFilename();
             writeToFile(file.getBytes(), filePath);

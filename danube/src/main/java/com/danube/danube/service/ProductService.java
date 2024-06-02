@@ -21,7 +21,6 @@ import com.danube.danube.repository.product.connection.SubcategoryDetailReposito
 import com.danube.danube.repository.user.UserRepository;
 import com.danube.danube.utility.converter.Converter;
 import com.danube.danube.utility.filellogger.FileLogger;
-import com.stripe.Stripe;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -279,6 +278,8 @@ public class ProductService {
 
 
     private void saveProductValues(Map<String, String> productInformation, Product product){
+        List<Value> savedValues = new ArrayList<>();
+        List<ProductValue> savedProductValue = new ArrayList<>();
         for(Map.Entry<String, String> entry : productInformation.entrySet()){
             Detail detail = detailRepository.findByName(entry.getKey()).orElseThrow(
                     NonExistingDetailException::new
@@ -287,13 +288,16 @@ public class ProductService {
             Value value = new Value();
             value.setDetail(detail);
             value.setValue(entry.getValue());
+            savedValues.add(value);
 
-            Value savedValue = valueRepository.save(value);
             ProductValue productValue = new ProductValue();
             productValue.setProduct(product);
-            productValue.setValue(savedValue);
-            productValueRepository.save(productValue);
+            productValue.setValue(value);
+            savedProductValue.add(productValue);
+
         }
+        valueRepository.saveAll(savedValues);
+        productValueRepository.saveAll(savedProductValue);
     }
 
     private UserEntity sellerValidator(long userId){
