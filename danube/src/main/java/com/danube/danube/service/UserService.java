@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -62,8 +63,9 @@ public class UserService {
         return generateJwtResponse(user);
     }
 
-    public JwtResponse addSellerRoleToUser(long id){
+    public JwtResponse addSellerRoleToUser(long id, String token){
         UserEntity user = userRepository.findById(id).orElseThrow(NonExistingUserException::new);
+        validateUserByThereRequestTokenInformation(token, user);
 
         Set<Role> userRoles = user.getRoles();
         userRoles.add(Role.ROLE_SELLER);
@@ -76,12 +78,15 @@ public class UserService {
     }
 
     @Transactional
-    public JwtResponse updateUser(long id, UserUpdateDTO userUpdateDTO){
+    public JwtResponse updateUser(long id, UserUpdateDTO userUpdateDTO, String token){
         validateEmail(userUpdateDTO.email());
         validateFirstNameAndLastName(userUpdateDTO.firstName(), userUpdateDTO.lastName());
-        validateUploadIdAndUserIdMatch(id, userUpdateDTO.userId());
 
         UserEntity user = userRepository.findById(id).orElseThrow(NonExistingUserException::new);
+        String emailFromJwtToken = jwtUtils.getEmailFromJwtToken(token);
+
+        validateUserByThereRequestTokenInformation(emailFromJwtToken, user);
+
         user.setEmail(userUpdateDTO.email());
         user.setFirstName(userUpdateDTO.firstName());
         user.setLastName(userUpdateDTO.lastName());
@@ -90,22 +95,17 @@ public class UserService {
         return generateJwtResponse(updatedUser);
     }
 
-    private void validateUploadIdAndUserIdMatch(long id, long userId) {
-        if(id != userId){
-            throw new NotMatchingUserAndUpdateUserIdException();
-        }
-    }
-
     @Transactional
-    public void updatePassword(long id, PasswordUpdateDTO passwordUpdateDTO){
+    public void updatePassword(long id, PasswordUpdateDTO passwordUpdateDTO, String token){
         UserEntity user = userRepository.findById(id).orElseThrow(NonExistingUserException::new);
-        validatePasswordUpdate(passwordUpdateDTO, user, id);
+
+        validatePasswordUpdate(passwordUpdateDTO, user, token);
         user.setPassword(passwordEncoder.encode(passwordUpdateDTO.newPassword()));
         userRepository.save(user);
     }
 
-    public boolean verifyUser(UserVerificationDTO userVerification){
-        long tokenIssuedAt = jwtUtils.getIssuedAtMilliseconds(userVerification.token());
+    public boolean verifyUser(String token){
+        long tokenIssuedAt = jwtUtils.getIssuedAtMilliseconds(token);
         long currDate = new Date().getTime();
         long difference = currDate - tokenIssuedAt;
         int differenceInMinutes = Math.round((float) difference / MINUTE_TO_MILLISECONDS);
@@ -134,8 +134,8 @@ public class UserService {
         return authentication;
     }
 
-    private void validatePasswordUpdate(PasswordUpdateDTO passwordUpdateDTO, UserEntity user, long id) {
-        validateUploadIdAndUserIdMatch(id, passwordUpdateDTO.userId());
+    private void validatePasswordUpdate(PasswordUpdateDTO passwordUpdateDTO, UserEntity user, String toke) {
+        validateUserByThereRequestTokenInformation(toke, user);
 
         if(!passwordEncoder.matches(passwordUpdateDTO.currentPassword(), user.getPassword())){
             throw new NotMatchingCurrentPasswordException();
@@ -200,6 +200,14 @@ public class UserService {
     private void validateEmail(String email){
         if(!Pattern.compile(".+\\@.+\\..+").matcher(email).matches()){
             throw new InvalidEmailFormatException();
+        }
+    }
+
+    private void validateUserByThereRequestTokenInformation(String token, UserEntity user){
+        String emailFromJwtToken = jwtUtils.getEmailFromJwtToken(token);
+
+        if(!Objects.equals(user.getEmail(), emailFromJwtToken)){
+            throw new InvalidUserCredentialsException();
         }
     }
 }

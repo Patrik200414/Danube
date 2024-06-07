@@ -4,7 +4,10 @@ import com.danube.danube.custom_exception.user.ExpiredVerificationTokenException
 import com.danube.danube.model.dto.jwt.JwtResponse;
 import com.danube.danube.model.dto.user.*;
 import com.danube.danube.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,24 +36,28 @@ public class UserController {
     }
 
     @PatchMapping("/{id}/role")
-    public JwtResponse updateUserRole(@PathVariable long id){
-        return userService.addSellerRoleToUser(id);
+    public JwtResponse updateUserRole(@PathVariable long id, HttpServletRequest request){
+        String jwtToken = getJwtTokenFromBearerToken(request);
+        return userService.addSellerRoleToUser(id, jwtToken);
     }
 
     @PutMapping("/{id}")
-    public JwtResponse updateUser(@PathVariable long id, @RequestBody UserUpdateDTO userUpdateDTO){
-        return userService.updateUser(id, userUpdateDTO);
+    public JwtResponse updateUser(@PathVariable long id, @RequestBody UserUpdateDTO userUpdateDTO, HttpServletRequest request){
+        String jwtToken = getJwtTokenFromBearerToken(request);
+        return userService.updateUser(id, userUpdateDTO, jwtToken);
     }
 
     @PutMapping("/password/{id}")
-    public HttpStatus updatePassword(@PathVariable long id, @RequestBody PasswordUpdateDTO passwordUpdateDTO){
-        userService.updatePassword(id, passwordUpdateDTO);
+    public HttpStatus updatePassword(@PathVariable long id, @RequestBody PasswordUpdateDTO passwordUpdateDTO, HttpServletRequest request){
+        String jwtToken = getJwtTokenFromBearerToken(request);
+        userService.updatePassword(id, passwordUpdateDTO, jwtToken);
         return HttpStatus.OK;
     }
 
     @PostMapping("/verify")
-    public HttpStatus verifySeller(@RequestBody UserVerificationDTO userVerification){
-        boolean isUserVerified = userService.verifyUser(userVerification);
+    public HttpStatus verifySeller(HttpServletRequest request){
+        String jwtToken = getJwtTokenFromBearerToken(request);
+        boolean isUserVerified = userService.verifyUser(jwtToken);
         if(!isUserVerified){
             throw new ExpiredVerificationTokenException();
         }
@@ -63,4 +70,8 @@ public class UserController {
     }
 
 
+    private String getJwtTokenFromBearerToken(HttpServletRequest request){
+        String bearerToken = request.getHeader("Authorization");
+        return bearerToken.split(" ")[1];
+    }
 }
