@@ -10,6 +10,8 @@ import com.danube.danube.custom_exception.user.*;
 import com.danube.danube.model.error.UserErrorMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.stripe.exception.StripeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +25,11 @@ import java.io.IOException;
 
 @ControllerAdvice
 public class Advice {
+    private final Logger logger = LoggerFactory.getLogger(Advice.class);
+
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<UserErrorMessage> handleDataIntegrityViolationException(){
+    public ResponseEntity<UserErrorMessage> handleDataIntegrityViolationException(DataIntegrityViolationException exception){
+        logger.error(exception.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 new UserErrorMessage("Already existing email!")
         );
@@ -32,8 +37,9 @@ public class Advice {
 
     @ExceptionHandler(InternalAuthenticationServiceException.class)
     public ResponseEntity<UserErrorMessage> handleInternalAuthenticationServiceException(InternalAuthenticationServiceException e){
+        logger.error(e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                new UserErrorMessage(e.getMessage())
+                new UserErrorMessage("Authentication failed!")
         );
     }
 
@@ -117,7 +123,8 @@ public class Advice {
     }
 
     @ExceptionHandler({IOException.class, JsonProcessingException.class})
-    public ResponseEntity<UserErrorMessage> handleIOExceptionAndJsonProcessingException(){
+    public ResponseEntity<UserErrorMessage> handleIOExceptionAndJsonProcessingException(Exception exception){
+        logger.error(exception.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                 new UserErrorMessage("Something went wrong! Couldn't save product! Please try again!")
         );
@@ -159,12 +166,14 @@ public class Advice {
     }
 
     @ExceptionHandler(ExpiredVerificationTokenException.class)
-    public ResponseEntity<?> handleExpiredVerificationTokenException(){
+    public ResponseEntity<?> handleExpiredVerificationTokenException(ExpiredVerificationTokenException exception){
+        logger.error(exception.getMessage());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @ExceptionHandler(StripeException.class)
-    public ResponseEntity<?> handlePaymentException(){
+    public ResponseEntity<?> handlePaymentException(StripeException exception){
+        logger.error(exception.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(
                 new UserErrorMessage("Payment process failed! Please try it again!")
         );
