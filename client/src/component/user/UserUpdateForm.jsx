@@ -36,7 +36,6 @@ function UserUpdateForm({onNavbarInformationChange}){
             email: user.email,
             firstName: user.firstName,
             lastName: user.lastName,
-            userId: user.id
         };
 
         const updateUserData = await fetch(`/api/user/${user.id}`, {

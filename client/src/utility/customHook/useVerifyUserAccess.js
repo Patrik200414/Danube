@@ -12,8 +12,7 @@ function useVerifyUserAccess(navigateUrl, fallBackUrl){
                 headers: {
                     'Content-type': 'application/json',
                     'Authorization': `Bearer ${userJwt.jwt}`
-                },
-                body: JSON.stringify({token: userJwt.jwt})
+                }
             });
             
             if(!verifyData.ok){

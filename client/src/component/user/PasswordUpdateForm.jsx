@@ -15,7 +15,6 @@ function PasswordUpdateForm({user, navigate}){
             currentPassword: currentPassword,
             newPassword: newPassword,
             reenterPassword: reenterPassword,
-            userId: user.id
         };
 
         

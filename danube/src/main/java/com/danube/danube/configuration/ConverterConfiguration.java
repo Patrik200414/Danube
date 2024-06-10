@@ -1,5 +1,6 @@
 package com.danube.danube.configuration;
 
+import com.danube.danube.security.jwt.JwtUtils;
 import com.danube.danube.utility.converter.categoriesanddetails.ProductCategoriesAndDetailsConverter;
 import com.danube.danube.utility.converter.categoriesanddetails.ProductCategoriesAndDetailsConverterImpl;
 import com.danube.danube.utility.converter.productview.ProductViewConverter;
