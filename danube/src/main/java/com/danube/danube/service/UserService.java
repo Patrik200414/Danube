@@ -77,9 +77,8 @@ public class UserService {
         validateFirstNameAndLastName(userUpdateDTO.firstName(), userUpdateDTO.lastName());
 
         UserEntity user = userRepository.findById(id).orElseThrow(NonExistingUserException::new);
-        String emailFromJwtToken = jwtUtils.getEmailFromJwtToken(token);
 
-        validateUserByThereRequestTokenInformation(emailFromJwtToken, user);
+        validateUserByThereRequestTokenInformation(token, user);
 
         user.setEmail(userUpdateDTO.email());
         user.setFirstName(userUpdateDTO.firstName());
