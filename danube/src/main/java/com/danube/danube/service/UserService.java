@@ -4,8 +4,6 @@ import com.danube.danube.custom_exception.login_registration.*;
 import com.danube.danube.custom_exception.user.InvalidUserCredentialsException;
 import com.danube.danube.custom_exception.user.NotMatchingCurrentPasswordException;
 import com.danube.danube.custom_exception.user.NotMatchingNewPasswordAndReenterPasswordException;
-import com.danube.danube.custom_exception.user.NotMatchingUserAndUpdateUserIdException;
-import com.danube.danube.model.dto.jwt.JwtResponse;
 import com.danube.danube.model.dto.user.*;
 import com.danube.danube.model.user.Role;
 import com.danube.danube.model.user.UserEntity;
@@ -23,7 +21,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -56,14 +53,13 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public JwtResponse loginUser(UserLoginDTO userLoginDTO){
+    public UserEntity loginUser(UserLoginDTO userLoginDTO){
         validateEmail(userLoginDTO.email());
         verifyUserCredentials(userLoginDTO.email(), userLoginDTO.password());
-        UserEntity user = userRepository.findByEmail(userLoginDTO.email()).orElseThrow(() -> new EmailNotFoundException(userLoginDTO.email()));
-        return generateJwtResponse(user);
+        return userRepository.findByEmail(userLoginDTO.email()).orElseThrow(() -> new EmailNotFoundException(userLoginDTO.email()));
     }
 
-    public JwtResponse addSellerRoleToUser(long id, String token){
+    public UserEntity addSellerRoleToUser(long id, String token){
         UserEntity user = userRepository.findById(id).orElseThrow(NonExistingUserException::new);
         validateUserByThereRequestTokenInformation(token, user);
 
@@ -72,13 +68,11 @@ public class UserService {
 
         user.setRoles(userRoles);
 
-        UserEntity updatedUser = userRepository.save(user);
-
-        return generateJwtResponse(updatedUser);
+        return userRepository.save(user);
     }
 
     @Transactional
-    public JwtResponse updateUser(long id, UserUpdateDTO userUpdateDTO, String token){
+    public UserEntity updateUser(long id, UserUpdateDTO userUpdateDTO, String token){
         validateEmail(userUpdateDTO.email());
         validateFirstNameAndLastName(userUpdateDTO.firstName(), userUpdateDTO.lastName());
 
@@ -91,8 +85,7 @@ public class UserService {
         user.setFirstName(userUpdateDTO.firstName());
         user.setLastName(userUpdateDTO.lastName());
 
-        UserEntity updatedUser = userRepository.save(user);
-        return generateJwtResponse(updatedUser);
+        return userRepository.save(user);
     }
 
     @Transactional
@@ -113,15 +106,14 @@ public class UserService {
         return JWT_VERIFICATION_TIME_IN_MINUTES > differenceInMinutes;
     }
 
-    public JwtResponse authenticateUser(String email, String password){
+    public UserEntity authenticateUser(String email, String password){
         Authentication authentication = verifyUserCredentials(email, password);
 
         if(!authentication.isAuthenticated()){
             throw new InvalidUserCredentialsException();
         }
 
-        UserEntity user = userRepository.findByEmail(email).orElseThrow(() -> new EmailNotFoundException(email));
-        return generateJwtResponse(user);
+        return userRepository.findByEmail(email).orElseThrow(() -> new EmailNotFoundException(email));
     }
 
 
@@ -173,21 +165,6 @@ public class UserService {
         }
     }
 
-    private JwtResponse generateJwtResponse(UserEntity user){
-        String jwtToken = jwtUtils.generateJwtToken(user.getEmail());
-        List<String> roles = user.getRoles().stream()
-                .map(Enum::name)
-                .toList();
-
-        return new JwtResponse(
-                jwtToken,
-                user.getFirstName(),
-                user.getLastName(),
-                user.getEmail(),
-                user.getId(),
-                roles
-        );
-    }
 
     private void validateFirstNameAndLastName(String firstName, String lastName){
         if(firstName.length() < MIN_LENGTH_NAME){
