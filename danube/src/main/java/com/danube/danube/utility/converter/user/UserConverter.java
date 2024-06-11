@@ -7,6 +7,6 @@ import com.danube.danube.security.jwt.JwtUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 public interface UserConverter {
-    UserEntity convertUserRegistrationDTOToUserEntity(UserRegistrationDTO userRegistrationDTO, PasswordEncoder passwordEncoder);
+    UserEntity convertUserRegistrationDTOToUserEntity(UserRegistrationDTO userRegistrationDTO, String encodedPassword);
     JwtResponse generateJwtResponse(UserEntity user, JwtUtils jwtUtils);
 }
