@@ -1,20 +1,16 @@
 package com.danube.danube.service;
 
 import com.danube.danube.custom_exception.login_registration.*;
+import com.danube.danube.custom_exception.user.InvalidUserCredentialsException;
 import com.danube.danube.custom_exception.user.NotMatchingCurrentPasswordException;
 import com.danube.danube.custom_exception.user.NotMatchingNewPasswordAndReenterPasswordException;
-import com.danube.danube.custom_exception.user.NotMatchingUserAndUpdateUserIdException;
-import com.danube.danube.model.dto.jwt.JwtResponse;
 import com.danube.danube.model.dto.user.PasswordUpdateDTO;
 import com.danube.danube.model.dto.user.UserLoginDTO;
 import com.danube.danube.model.dto.user.UserRegistrationDTO;
-import com.danube.danube.model.dto.user.UserUpdateDTO;
-import com.danube.danube.model.user.Role;
 import com.danube.danube.model.user.UserEntity;
 import com.danube.danube.repository.user.UserRepository;
 import com.danube.danube.security.jwt.JwtUtils;
-import com.danube.danube.utility.converter.Converter;
-import com.danube.danube.utility.converter.ConverterImpl;
+import com.danube.danube.utility.converter.user.UserConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,426 +18,240 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
+
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
+import static  org.mockito.Mockito.when;
 
 class UserServiceTest {
-    /*
-    private UserRepository userRepositoryMock;
-    private PasswordEncoder passwordEncoderMock;
-    private AuthenticationManager authenticationManagerMock;
-    private UserService userService;
-    private JwtUtils jwtUtilsMock;
-    private Converter converter;
+
+    UserService userService;
+    UserRepository userRepositoryMock;
+    PasswordEncoder passwordEncoderMock;
+    AuthenticationManager authenticationManagerMock;
+    JwtUtils jwtUtilsMock;
+    UserConverter userConverterMock;
+    String mockToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ5b3VyLWFwcCIsInN1YiI6InRlc3R1c2VyIiwiaWF0IjoxNjI1MjU2MDAwLCJleHAiOjE2MjUyNTY2MDB9.2FhwBLVhsn4M3G3x5h6-1Z09ZogUIr9EHz1dxYaCe0Y";
+
 
     @BeforeEach
-    void setup(){
+    public void setUp(){
         userRepositoryMock = mock(UserRepository.class);
         passwordEncoderMock = mock(PasswordEncoder.class);
         authenticationManagerMock = mock(AuthenticationManager.class);
         jwtUtilsMock = mock(JwtUtils.class);
-        converter = new ConverterImpl();
+        userConverterMock = mock(UserConverter.class);
+
         userService = new UserService(
                 userRepositoryMock,
                 passwordEncoderMock,
                 authenticationManagerMock,
                 jwtUtilsMock,
-                converter
+                userConverterMock
         );
     }
+
     @Test
-    void saveUser_WithFirstNameIsEmptyString_ShouldThrowRegistrationFieldNullException() {
-        UserRegistrationDTO userRegistrationDTO = new UserRegistrationDTO(
+    void testLoginUser_WithInvalidEmail_ThrowsInvalidEmailFormatException() {
+        UserLoginDTO registration = new UserLoginDTO("ThisIsInvalidEmail", "Password");
+
+        assertThrowsExactly(InvalidEmailFormatException.class, () -> userService.loginUser(registration));
+    }
+
+    @Test
+    void testLoginUser_WithNotExistingEmail_ThrowsEmailNotFoundException(){
+        UserLoginDTO registration = new UserLoginDTO("test@gmail.com", "Password");
+        when(userRepositoryMock.findByEmail(registration.email())).thenReturn(Optional.empty());
+
+        assertThrowsExactly(EmailNotFoundException.class, () -> userService.loginUser(registration));
+    }
+
+    @Test
+    void testSaveUser_WithEmptyValue_ThrowsRegistrationFieldNullException(){
+        UserRegistrationDTO registration = new UserRegistrationDTO(
                 "",
                 "Last",
-                "test@gmail.com",
+                "email@gmail.com",
                 "Password"
         );
-
-        assertThrowsExactly(RegistrationFieldNullException.class, () -> userService.saveUser(userRegistrationDTO));
+        assertThrowsExactly(RegistrationFieldNullException.class, () -> userService.saveUser(registration));
     }
 
     @Test
-    void saveUser_WithLastNameIsEmptyString_ShouldThrowRegistrationFieldNullException() {
-        UserRegistrationDTO userRegistrationDTO = new UserRegistrationDTO(
-                "First",
-                "",
-                "test@gmail.com",
+    void testSaveUser_WithTooShortNameFirstNameConsistOfOneLetter_ThrowsInputTooShortException(){
+        UserRegistrationDTO registration = new UserRegistrationDTO(
+                "A",
+                "User",
+                "auser@gmaile.com",
                 "Password"
         );
-
-        assertThrowsExactly(RegistrationFieldNullException.class, () -> userService.saveUser(userRegistrationDTO));
+        assertThrowsExactly(InputTooShortException.class, () -> userService.saveUser(registration));
     }
 
+    @Test
+    void testSaveUser_WithTooShortPasswordPasswordConsistsOfFiveCharacters_ExpectedInputTooShortException(){
+        UserRegistrationDTO registration = new UserRegistrationDTO(
+                "First",
+                "User",
+                "firstuser@gmail.com",
+                "Test"
+        );
+        assertThrowsExactly(InputTooShortException.class, () -> userService.saveUser(registration));
+    }
 
     @Test
-    void saveUser_WithEmailIsEmptyString_ShouldThrowRegistrationFieldNullException() {
-        UserRegistrationDTO userRegistrationDTO = new UserRegistrationDTO(
+    void testSaveUser_WithInvalidEmailFormat_ExpectedInvalidEmailFormatException(){
+        UserRegistrationDTO registration = new UserRegistrationDTO(
                 "First",
-                "Last",
-                "",
+                "User",
+                "NotValidEmail",
                 "Password"
         );
+        assertThrowsExactly(InvalidEmailFormatException.class, () -> userService.saveUser(registration));
+    }
 
-        assertThrowsExactly(RegistrationFieldNullException.class, () -> userService.saveUser(userRegistrationDTO));
+    @Test
+    void testAddSellerRoleToUser_WithNonExistingUserUserRepositoryReturnsEmptyOptional_ExpectedNonExistingUserException() {
+        when(userRepositoryMock.findById(1L))
+                .thenReturn(Optional.empty());
+
+        assertThrowsExactly(NonExistingUserException.class, () -> userService.addSellerRoleToUser(1L, mockToken));
+    }
+
+    @Test
+    void testAddSellerRoleToUser_WithInvalidRequestToken_ExpectedInvalidUserCredentialsException(){
+        UserEntity expectedUser = new UserEntity();
+        expectedUser.setFirstName("User");
+        expectedUser.setLastName("First");
+        expectedUser.setEmail("userfirst@gmail.com");
+        expectedUser.setId(1);
+
+        when(userRepositoryMock.findById(1L))
+                .thenReturn(Optional.of(expectedUser));
+
+        when(jwtUtilsMock.getEmailFromJwtToken(mockToken))
+                .thenReturn("notthesame@gmail.com");
+
+        assertThrowsExactly(InvalidUserCredentialsException.class, () -> userService.addSellerRoleToUser(1L, mockToken));
     }
 
 
     @Test
-    void saveUser_WithPasswordIsEmptyString_ShouldThrowRegistrationFieldNullException() {
-        UserRegistrationDTO userRegistrationDTO = new UserRegistrationDTO(
-                "First",
-                "Last",
-                "test@gmail.com",
-                ""
+    void testUpdatePassword_WithInCorrectCurrentPassword_ExpectedNotMatchingCurrentPasswordException() {
+        String expectedEmail = "userfirst@gmail.com";
+
+        UserEntity expectedUser = new UserEntity();
+        expectedUser.setFirstName("User");
+        expectedUser.setLastName("First");
+        expectedUser.setEmail(expectedEmail);
+        expectedUser.setId(1);
+        expectedUser.setPassword("Password");
+
+        PasswordUpdateDTO passwordUpdateDTO = new PasswordUpdateDTO(
+                "NotGoodCurrPassword",
+                "NewPassword",
+                "NewPassword"
         );
 
-        assertThrowsExactly(RegistrationFieldNullException.class, () -> userService.saveUser(userRegistrationDTO));
+        when(userRepositoryMock.findById(1L))
+                .thenReturn(Optional.of(expectedUser));
+
+        when(jwtUtilsMock.getEmailFromJwtToken(mockToken))
+                .thenReturn(expectedEmail);
+
+        when(passwordEncoderMock.matches(passwordUpdateDTO.currentPassword(), expectedUser.getPassword()))
+                .thenReturn(false);
+
+        assertThrowsExactly(NotMatchingCurrentPasswordException.class, () -> userService.updatePassword(1L, passwordUpdateDTO, mockToken));
     }
 
     @Test
-    void saveUser_WithFirstNameContainsOneChar_ShouldThrowInputTooShortException(){
-        UserRegistrationDTO userRegistrationDTO = new UserRegistrationDTO(
-                "F",
-                "Last",
-                "test@gmail.com",
-                "password"
-        );
+    void testUpdatePassword_WithUpdatedPasswordNotMatchingWithReenterPassword_ExpectedNotMatchingNewPasswordAndReenterPasswordException(){
+        String expectedEmail = "userfirst@gmail.com";
 
-        assertThrowsExactly(InputTooShortException.class, () -> userService.saveUser(userRegistrationDTO));
-    }
+        UserEntity expectedUser = new UserEntity();
+        expectedUser.setFirstName("User");
+        expectedUser.setLastName("First");
+        expectedUser.setEmail(expectedEmail);
+        expectedUser.setId(1);
+        expectedUser.setPassword("Password");
 
-    @Test
-    void saveUser_WithLastNameContainsOneChar_ShouldThrowInputTooShortException(){
-        UserRegistrationDTO userRegistrationDTO = new UserRegistrationDTO(
-                "First",
-                "L",
-                "test@gmail.com",
-                "password"
-        );
-
-        assertThrowsExactly(InputTooShortException.class, () -> userService.saveUser(userRegistrationDTO));
-    }
-
-    @Test
-    void saveUser_WithPasswordContainsOneChar_ShouldThrowInputTooShortException(){
-        UserRegistrationDTO userRegistrationDTO = new UserRegistrationDTO(
-                "First",
-                "Last",
-                "test@gmail.com",
-                "p"
-        );
-
-        assertThrowsExactly(InputTooShortException.class, () -> userService.saveUser(userRegistrationDTO));
-    }
-
-    @Test
-    void saveUser_WithInvalidEmailFormat_ShouldThrowInvalidEmailFormatException(){
-        UserRegistrationDTO userRegistrationDTO = new UserRegistrationDTO(
-                "First",
-                "Last",
-                "thisIsNotValidEmailAddress",
-                "password"
-        );
-
-        assertThrowsExactly(InvalidEmailFormatException.class, () -> userService.saveUser(userRegistrationDTO));
-    }
-
-    @Test
-    void loginUser_WithInvalidEmail_ShouldThrowInvalidEmailFormatException() {
-        UserLoginDTO userLoginDTO = new UserLoginDTO("NotValidEmailFormat", "Password");
-        assertThrowsExactly(InvalidEmailFormatException.class, () -> userService.loginUser(userLoginDTO));
-    }
-
-    @Test
-    void loginUser_WithValidLogin_ShouldReturnExpectedJwtResponse(){
-        String expectedJwtToken = "JWT_TOKEN";
-        UserLoginDTO userLoginDTO = new UserLoginDTO("test@gmail.com", "Password");
-        UserEntity user = new UserEntity(
-                1,
-                "First",
-                "Last",
-                "test@gmail.com",
+        PasswordUpdateDTO passwordUpdate = new PasswordUpdateDTO(
                 "Password",
-                Set.of(Role.ROLE_CUSTOMER),
-                List.of(),
-                List.of());
+                "NewPassword",
+                "NotNewPassword"
+        );
+
+        when(userRepositoryMock.findById(1L))
+                .thenReturn(Optional.of(expectedUser));
+
+        when(jwtUtilsMock.getEmailFromJwtToken(mockToken))
+                .thenReturn(expectedEmail);
+
+        when(passwordEncoderMock.matches(passwordUpdate.currentPassword(), expectedUser.getPassword()))
+                .thenReturn(true);
+
+        assertThrowsExactly(NotMatchingNewPasswordAndReenterPasswordException.class, () -> userService.updatePassword(1, passwordUpdate, mockToken));
+    }
+
+    @Test
+    void testAuthenticateUser_WithAuthenticatedSetFalse_ExpectedInvalidUserCredentialsException() {
+        String expectedEmail = "test@gmail.com";
+        String expectedPassword = "testpass";
+
+        Authentication auth = new UsernamePasswordAuthenticationToken(expectedEmail, expectedPassword);
+        auth.setAuthenticated(false);
+
+        when(authenticationManagerMock.authenticate(
+                new UsernamePasswordAuthenticationToken(expectedEmail, expectedPassword)
+        )).thenReturn(auth);
+
+        assertThrowsExactly(InvalidUserCredentialsException.class, () -> userService.authenticateUser(expectedEmail, expectedPassword));
+    }
+
+    @Test
+    void testAuthenticateUser_WithUserRepositoryFindByEmailReturnsEmptyOptional_ExpectedEmailNotFoundException(){
+        String expectedEmail = "test@gmail.com";
+        String expectedPassword = "testpass";
+
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("ROLE_CUSTOMER");
-        User principal = new User(
-                userLoginDTO.email(),
-                userLoginDTO.password(),
-                true,
-                true,
-                true,
-                true,
-                List.of(grantedAuthority)
-        );
-
-
-        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, userLoginDTO.password(), Set.of(grantedAuthority));
+        Authentication auth = new UsernamePasswordAuthenticationToken(expectedEmail, expectedPassword, List.of(grantedAuthority));
 
         when(authenticationManagerMock.authenticate(
-                new UsernamePasswordAuthenticationToken(userLoginDTO.email(), userLoginDTO.password())
-        )).thenReturn(
-                authentication
-        );
-        when(jwtUtilsMock.generateJwtToken(user.getEmail())).thenReturn(expectedJwtToken);
-        when(userRepositoryMock.findByEmail(userLoginDTO.email())).thenReturn(
-                Optional.of(user)
-        );
+                new UsernamePasswordAuthenticationToken(expectedEmail, expectedPassword)
+        )).thenReturn(auth);
 
+        when(userRepositoryMock.findByEmail(expectedEmail))
+                .thenReturn(Optional.empty());
 
-        JwtResponse response = userService.loginUser(userLoginDTO);
-        JwtResponse expected = new JwtResponse(
-                expectedJwtToken,
-                user.getFirstName(),
-                user.getLastName(),
-                user.getEmail(),
-                user.getId(),
-                List.of("ROLE_CUSTOMER")
-        );
-
-
-        assertEquals(expected, response);
+        assertThrowsExactly(EmailNotFoundException.class, () -> userService.authenticateUser(expectedEmail, expectedPassword));
     }
 
     @Test
-    void loginUser_WithInvalidEmailFormat_ShouldThrowInvalidEmailFormatException(){
-        UserLoginDTO userLoginDTO = new UserLoginDTO(
-                "notvalidEmail",
-                "Password"
-        );
+    void testVerifyUser_WithTokenIssuedAtOneMinuteAgo_ExpectedTrue(){
+        long currTime = new Date().getTime();
+
+        when(jwtUtilsMock.getIssuedAtMilliseconds(mockToken))
+                .thenReturn(currTime + 60000);
 
 
-        assertThrowsExactly(InvalidEmailFormatException.class, () -> userService.loginUser(userLoginDTO));
+        assertTrue(userService.verifyUser(mockToken));
     }
 
     @Test
-    void loginUser_WithInvalidCredentialEmail_ShouldThrowEmailNotFoundException(){
-        String expectedJwtToken = "JWT_TOKEN";
-        UserLoginDTO userLoginDTO = new UserLoginDTO("test@gmail.com", "Password");
-        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("CUSTOMER");
-        User principal = new User(
-                userLoginDTO.email(),
-                userLoginDTO.password(),
-                true,
-                true,
-                true,
-                true,
-                List.of(grantedAuthority)
-        );
+    void testVerifyUser_WithTokenIssuedAtSixMinutesAgo_ExpectedFalse(){
+        long currTime = new Date().getTime();
+
+        when(jwtUtilsMock.getIssuedAtMilliseconds(mockToken))
+                .thenReturn(currTime - 3600000);
 
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, userLoginDTO.password(), Set.of(grantedAuthority));
-        when(authenticationManagerMock.authenticate(
-                new UsernamePasswordAuthenticationToken(userLoginDTO.email(), userLoginDTO.password())
-        )).thenReturn(
-                authentication
-        );
-        when(jwtUtilsMock.generateJwtToken(authentication)).thenReturn(expectedJwtToken);
-        when(userRepositoryMock.findByEmail(userLoginDTO.email())).thenReturn(
-                Optional.empty()
-        );
-
-
-         assertThrowsExactly(EmailNotFoundException.class, () -> userService.loginUser(userLoginDTO));
+        assertFalse(userService.verifyUser(mockToken));
     }
-
-    @Test
-    void addSellerRoleToUser_WithUserRepositoryReturnEmptyOptional_ShouldThrowNonExistingUserException() {
-        when(userRepositoryMock.findById(1L)).thenReturn(
-                Optional.empty()
-        );
-
-
-        assertThrowsExactly(NonExistingUserException.class, () -> userService.addSellerRoleToUser(1));
-    }
-
-
-    @Test
-    void updateUser_WithDifferentUserIdAndUpdateId_ShouldReturnNotMatchingUserAndUpdateUserIdException() {
-        UserUpdateDTO userUpdateDTO = new UserUpdateDTO(
-                "test@gmail.com",
-                "First",
-                "Last",
-                1
-        );
-
-
-        assertThrowsExactly(NotMatchingUserAndUpdateUserIdException.class, () -> userService.updateUser(2, userUpdateDTO));
-    }
-
-    @Test
-    void updateUser_WithUserRepositoryReturnsEmptyOptional_ShouldThrowNonExistingUserException() {
-        UserUpdateDTO userUpdateDTO = new UserUpdateDTO(
-                "test@gmail.com",
-                "First",
-                "Last",
-                1
-        );
-
-        when(userRepositoryMock.findById(userUpdateDTO.userId())).thenReturn(Optional.empty());
-
-        assertThrowsExactly(NonExistingUserException.class, () -> userService.updateUser(1, userUpdateDTO));
-    }
-
-    @Test
-    void updateUser_WithNewEmailFormatInvalid_ShouldThrowInvalidEmailFormatException() {
-        UserUpdateDTO userUpdateDTO = new UserUpdateDTO(
-                "ThisIsNotValidEmail",
-                "First",
-                "Last",
-                1
-        );
-
-        assertThrowsExactly(InvalidEmailFormatException.class, () -> userService.updateUser(1, userUpdateDTO));
-    }
-
-    @Test
-    void updateUser_WithFirstNameIsTooShort_ShouldThrowInputTooShortException() {
-        UserUpdateDTO userUpdateDTO = new UserUpdateDTO(
-                "test@gmail.com",
-                "F",
-                "Last",
-                1
-        );
-
-        assertThrowsExactly(InputTooShortException.class, () -> userService.updateUser(1, userUpdateDTO));
-    }
-
-    @Test
-    void updateUser_WithValidUserUpdateDTO_ShouldReturnJwtResponse(){
-        String expectedJwtToken = "EXPECTED_JWT_TOKEN";
-
-        UserUpdateDTO userUpdateDTO = new UserUpdateDTO(
-                "test@gmail.com",
-                "First",
-                "Last",
-                1
-        );
-
-        UserEntity oldUser = new UserEntity(
-                1,
-                "Oldfirst",
-                "Oldlast",
-                "oldTest@gmail.com",
-                "OldPassword",
-                Set.of(Role.ROLE_CUSTOMER),
-                List.of(),
-                List.of());
-
-        when(userRepositoryMock.findById(1L)).thenReturn(
-                Optional.of(oldUser)
-        );
-
-        when(userRepositoryMock.save(oldUser)).thenReturn(
-                new UserEntity(
-                        userUpdateDTO.userId(),
-                        userUpdateDTO.firstName(),
-                        userUpdateDTO.lastName(),
-                        userUpdateDTO.email(),
-                        "OldPassword",
-                        Set.of(Role.ROLE_CUSTOMER),
-                        List.of(),
-                        List.of())
-        );
-
-        when(jwtUtilsMock.generateJwtToken(userUpdateDTO.email())).thenReturn(expectedJwtToken);
-
-        JwtResponse result = userService.updateUser(1, userUpdateDTO);
-        JwtResponse expected = new JwtResponse(
-                expectedJwtToken,
-                userUpdateDTO.firstName(),
-                userUpdateDTO.lastName(),
-                userUpdateDTO.email(),
-                userUpdateDTO.userId(),
-                List.of(String.valueOf(Role.ROLE_CUSTOMER))
-        );
-
-        assertEquals(expected, result);
-    }
-
-    @Test
-    void updatePassword_WithUserRepositoryReturnsEmptyOptional_ShouldThrowNonExistingUserException() {
-        PasswordUpdateDTO passwordUpdateDTO = new PasswordUpdateDTO(
-                "Password",
-                "NewPassword",
-                "NewPassword",
-                1
-        );
-
-        when(userRepositoryMock.findById(1L)).thenReturn(
-                Optional.empty()
-        );
-
-        assertThrowsExactly(NonExistingUserException.class, () -> userService.updatePassword(1L, passwordUpdateDTO));
-    }
-
-
-    @Test
-    void updatePassword_WithNotMatchingCurrentPassword_ShouldThrowNotMatchingCurrentPasswordException() {
-        PasswordUpdateDTO passwordUpdateDTO = new PasswordUpdateDTO(
-                "Password",
-                "NewPassword",
-                "NewPassword",
-                1
-        );
-        UserEntity expectedUser = new UserEntity(
-                1,
-                "First",
-                "Last",
-                "test@gmail.com",
-                "PasswordCurrent",
-                Set.of(Role.ROLE_CUSTOMER),
-                List.of(),
-                List.of());
-
-
-        when(userRepositoryMock.findById(1L)).thenReturn(
-                Optional.of(
-                        expectedUser
-                )
-        );
-        when(passwordEncoderMock.matches(passwordUpdateDTO.currentPassword(), expectedUser.getPassword())).thenReturn(false);
-
-        assertThrowsExactly(NotMatchingCurrentPasswordException.class, () -> userService.updatePassword(1L, passwordUpdateDTO));
-    }
-
-    @Test
-    void updatePassword_(){
-        PasswordUpdateDTO passwordUpdateDTO = new PasswordUpdateDTO(
-                "Password",
-                "NewPassword",
-                "WrongNewPassword",
-                1
-        );
-        UserEntity expectedUser = new UserEntity(
-                1,
-                "First",
-                "Last",
-                "test@gmail.com",
-                "Password",
-                Set.of(Role.ROLE_CUSTOMER),
-                List.of(),
-                List.of());
-
-
-        when(userRepositoryMock.findById(1L)).thenReturn(
-                Optional.of(
-                        expectedUser
-                )
-        );
-        when(passwordEncoderMock.matches(passwordUpdateDTO.currentPassword(), expectedUser.getPassword())).thenReturn(true);
-
-        assertThrowsExactly(NotMatchingNewPasswordAndReenterPasswordException.class, () -> userService.updatePassword(1, passwordUpdateDTO));
-    }
-     */
 }

@@ -16,12 +16,12 @@ import java.util.Set;
 public class UserConverterImpl implements UserConverter{
 
     @Override
-    public UserEntity convertUserRegistrationDTOToUserEntity(UserRegistrationDTO userRegistrationDTO, PasswordEncoder passwordEncoder){
+    public UserEntity convertUserRegistrationDTOToUserEntity(UserRegistrationDTO userRegistrationDTO, String encodedPassword){
         UserEntity user = new UserEntity();
         user.setFirstName(userRegistrationDTO.firstName());
         user.setLastName(userRegistrationDTO.lastName());
         user.setEmail(userRegistrationDTO.email());
-        user.setPassword(passwordEncoder.encode(userRegistrationDTO.password()));
+        user.setPassword(encodedPassword);
         user.setRoles(Set.of(Role.ROLE_CUSTOMER));
 
         return user;

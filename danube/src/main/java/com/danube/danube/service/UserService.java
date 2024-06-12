@@ -49,7 +49,8 @@ public class UserService {
 
     public void saveUser(UserRegistrationDTO userRegistrationDTO){
         registrationValidator(userRegistrationDTO);
-        UserEntity user = userConverter.convertUserRegistrationDTOToUserEntity(userRegistrationDTO, passwordEncoder);
+        String encodedPassword = passwordEncoder.encode(userRegistrationDTO.password());
+        UserEntity user = userConverter.convertUserRegistrationDTOToUserEntity(userRegistrationDTO, encodedPassword);
         userRepository.save(user);
     }
 
