@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import Proptypes from 'prop-types';
 
-import calculateImageSourceName from "../../utility/calculateImageSourceName";
+import calculateImageSourceName from "../../utility/convertBase64ToObjectUrlForImage";
 
 function ProductsTable({products, buttons, keyName}){
 

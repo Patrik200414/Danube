@@ -3,6 +3,8 @@ package com.danube.danube.configuration;
 import com.danube.danube.security.jwt.JwtUtils;
 import com.danube.danube.utility.converter.categoriesanddetails.ProductCategoriesAndDetailsConverter;
 import com.danube.danube.utility.converter.categoriesanddetails.ProductCategoriesAndDetailsConverterImpl;
+import com.danube.danube.utility.converter.converterhelper.ConverterHelper;
+import com.danube.danube.utility.converter.converterhelper.ConverterHelperImpl;
 import com.danube.danube.utility.converter.productview.ProductViewConverter;
 import com.danube.danube.utility.converter.productview.ProductViewConverterImpl;
 import com.danube.danube.utility.converter.uploadproduct.ProductUploadConverter;
@@ -32,5 +34,9 @@ public class ConverterConfiguration {
     @Bean
     public UserConverter userConverter(){
         return new UserConverterImpl();
+    }
+    @Bean
+    public ConverterHelper converterHelper(){
+        return new ConverterHelperImpl();
     }
 }

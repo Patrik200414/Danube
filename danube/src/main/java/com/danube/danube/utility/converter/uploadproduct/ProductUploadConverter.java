@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.zip.DataFormatException;
 
 public interface ProductUploadConverter {
     Product convertProductDetailUploadDTOToProduct(ProductDetailUploadDTO productDetails, UserEntity seller, Subcategory subcategory);
@@ -23,6 +24,6 @@ public interface ProductUploadConverter {
             MultipartFile[] image
     ) throws JsonProcessingException;
     List<Image> convertMultiPartFilesToListOfImages(MultipartFile[] images, Product product, ImageUtility imageUtility) throws IOException;
-    ProductUpdateDTO convertProductToProductUpdateDTO(Product product);
+    ProductUpdateDTO convertProductToProductUpdateDTO(Product product, ImageUtility imageUtility) throws DataFormatException, IOException;
     ProductUpdateDTO convertUpdateDataToProductUpdateDTO(String updatedValue) throws JsonProcessingException;
 }

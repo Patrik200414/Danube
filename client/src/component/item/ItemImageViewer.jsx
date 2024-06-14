@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Proptypes from 'prop-types';
-import calculateImageSourceName from "../../utility/calculateImageSourceName";
+import calculateImageSourceName from "../../utility/convertBase64ToObjectUrlForImage";
 
 function ItemImageContainer({images}){
     const [currentImage, setCurrentImage] = useState(images.length ? calculateImageSourceName(images[0]) : '');

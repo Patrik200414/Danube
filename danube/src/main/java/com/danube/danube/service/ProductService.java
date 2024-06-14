@@ -20,6 +20,7 @@ import com.danube.danube.repository.product.connection.ProductValueRepository;
 import com.danube.danube.repository.product.connection.SubcategoryDetailRepository;
 import com.danube.danube.repository.user.UserRepository;
 import com.danube.danube.utility.converter.categoriesanddetails.ProductCategoriesAndDetailsConverter;
+import com.danube.danube.utility.converter.converterhelper.ConverterHelper;
 import com.danube.danube.utility.converter.productview.ProductViewConverter;
 import com.danube.danube.utility.converter.uploadproduct.ProductUploadConverter;
 import com.danube.danube.utility.imageutility.ImageUtility;
@@ -34,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.zip.DataFormatException;
 
 @Service
 public class ProductService {
@@ -53,9 +55,10 @@ public class ProductService {
     private final ProductCategoriesAndDetailsConverter productCategoriesAndDetailsConverter;
     private final ProductUploadConverter productUploadConverter;
     private final ImageUtility imageUtility;
+    private final ConverterHelper converterHelper;
 
     @Autowired
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, SubcategoryRepository subcategoryRepository, DetailRepository detailRepository, UserRepository userRepository, ValueRepository valueRepository, ProductValueRepository productValueRepository, ImageRepository imageRepository, SubcategoryDetailRepository subcategoryDetailRepository, ProductViewConverter productViewConverter, ProductCategoriesAndDetailsConverter productCategoriesAndDetailsConverter, ProductUploadConverter productUploadConverter, ImageUtility imageUtility) {
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, SubcategoryRepository subcategoryRepository, DetailRepository detailRepository, UserRepository userRepository, ValueRepository valueRepository, ProductValueRepository productValueRepository, ImageRepository imageRepository, SubcategoryDetailRepository subcategoryDetailRepository, ProductViewConverter productViewConverter, ProductCategoriesAndDetailsConverter productCategoriesAndDetailsConverter, ProductUploadConverter productUploadConverter, ImageUtility imageUtility, ConverterHelper converterHelper) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.subcategoryRepository = subcategoryRepository;
@@ -69,13 +72,14 @@ public class ProductService {
         this.productCategoriesAndDetailsConverter = productCategoriesAndDetailsConverter;
         this.productUploadConverter = productUploadConverter;
         this.imageUtility = imageUtility;
+        this.converterHelper = converterHelper;
     }
 
     @Transactional
-    public Set<ProductShowSmallDTO> getProducts(int pageNumber, int itemPerPage){
+    public Set<ProductShowSmallDTO> getProducts(int pageNumber, int itemPerPage) throws DataFormatException, IOException {
         PageRequest pageRequest = PageRequest.of(pageNumber, itemPerPage);
         Page<Product> pagedProducts = productRepository.findAll(pageRequest);
-        return productViewConverter.convertProductToProductShowSmallDTORandomOrder(pagedProducts);
+        return productViewConverter.convertProductToProductShowSmallDTORandomOrder(pagedProducts, imageUtility, converterHelper);
     }
 
     public long getProductCount(){
@@ -122,13 +126,13 @@ public class ProductService {
         return productCategoriesAndDetailsConverter.convertDetailsToDetailsDTO(detailsBySubCategory);
     }
 
-    public List<ProductShowSmallDTO> getSimilarProducts(long productFromId){
+    public List<ProductShowSmallDTO> getSimilarProducts(long productFromId) throws DataFormatException, IOException {
         Product product = productRepository.findById(productFromId)
                 .orElseThrow(NonExistingProductException::new);
 
         Pageable pageable = PageRequest.of(0, SIMILAR_RECOMENDED_PRODUCTS_RESULT_COUNT);
         List<Product> similarProducts = productRepository.findBySubcategoryAndIdNotOrderBySoldDescRatingDesc(product.getSubcategory(), productFromId, pageable);
-        return productViewConverter.convertProductsToProductShowSmallDTO(similarProducts);
+        return productViewConverter.convertProductsToProductShowSmallDTO(similarProducts, imageUtility, converterHelper);
     }
 
     @Transactional
@@ -182,14 +186,14 @@ public class ProductService {
         return categoriesAndSubCategories;
     }
 
-    public ProductItemDTO getProductItem(long id){
+    public ProductItemDTO getProductItem(long id) throws DataFormatException, IOException {
         Product product = productRepository.findById(id).orElseThrow(NonExistingProductException::new);
-        return productViewConverter.convertProductToProductItemDTO(product);
+        return productViewConverter.convertProductToProductItemDTO(product, imageUtility, converterHelper);
     }
 
-    public ProductUpdateDTO getUpdatableProductItem(long id){
+    public ProductUpdateDTO getUpdatableProductItem(long id) throws DataFormatException, IOException {
         Product product = productRepository.findById(id).orElseThrow(NonExistingProductException::new);
-        return productUploadConverter.convertProductToProductUpdateDTO(product);
+        return productUploadConverter.convertProductToProductUpdateDTO(product, imageUtility);
     }
 
     @Transactional

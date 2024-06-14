@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.DataFormatException;
 
 @RestController
 @RequestMapping("/api/product")
@@ -27,7 +28,7 @@ public class ProductController {
     }
 
     @GetMapping()
-    public Set<ProductShowSmallDTO> getProducts(@RequestParam(defaultValue = "0") int pageNumber, @RequestParam(defaultValue = "10") int itemPerPage){
+    public Set<ProductShowSmallDTO> getProducts(@RequestParam(defaultValue = "0") int pageNumber, @RequestParam(defaultValue = "10") int itemPerPage) throws DataFormatException, IOException {
         return productService.getProducts(pageNumber, itemPerPage);
     }
 
@@ -59,17 +60,17 @@ public class ProductController {
     }
 
     @GetMapping("/similar/{productFromId}")
-    public List<ProductShowSmallDTO> getSimilarProducts(@PathVariable long productFromId){
+    public List<ProductShowSmallDTO> getSimilarProducts(@PathVariable long productFromId) throws DataFormatException, IOException {
         return productService.getSimilarProducts(productFromId);
     }
 
     @GetMapping("/item/{id}")
-    public ProductItemDTO getProductItems(@PathVariable long id){
+    public ProductItemDTO getProductItems(@PathVariable long id) throws DataFormatException, IOException {
         return productService.getProductItem(id);
     }
 
     @GetMapping("/update/item/{id}")
-    public ProductUpdateDTO getUpdatableProduct(@PathVariable long id){
+    public ProductUpdateDTO getUpdatableProduct(@PathVariable long id) throws DataFormatException, IOException {
         return productService.getUpdatableProductItem(id);
     }
 
