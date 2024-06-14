@@ -10,14 +10,14 @@ function ProductUpdate(){
     const [user] = useVerifyUserRole("ROLE_SELLER");
     const [myProducts, , error] = useFetchGetAuthorization(`/api/product/myProducts/${user ? user.id : ''}`, user);
 
-
+    console.log(myProducts);
     return(
         <div className="product-dashboard-container">
             {error && <h1 key={error} className="item-not-found-error">{error}</h1>}
             {(myProducts && isAccessible) &&
                 <>
                     <h2>Product update</h2>
-                    <ProductsTable products={myProducts} buttons={[
+                    <ProductsTable products={myProducts.map(myProduct => ({image: myProduct.image, 'Product name': myProduct.productName, 'Owner': myProduct.owner, id: myProduct.id}))} buttons={[
                         buttonObjectGenerator('Update', 'Update', true, '/update'),
                         buttonObjectGenerator('Delete', 'Delete', true, '', (id) => console.log(`Delete ${id}`))
                         ]}/>

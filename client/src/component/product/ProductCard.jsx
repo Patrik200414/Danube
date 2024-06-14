@@ -2,7 +2,7 @@ import { useState } from 'react';
 import defaultProductImage from '../../static/defaultProduct.jpg';
 import Proptypes from 'prop-types';
 import ImageContainer from './ImageContainer';
-import calculateImageSourceName from '../../utility/calculateImageSourceName';
+import convertBase64ToObjectUrlForImage from '../../utility/convertBase64ToObjectUrlForImage';
 import { Link } from 'react-router-dom';
 
 function ProductCard({product}){
@@ -49,7 +49,7 @@ function ProductCard({product}){
             {imagesLength ? 
                 <ImageContainer 
                     onImageButtonClick={handleClickImageButton}
-                    currImage={calculateImageSourceName(product.images[imageNumber])}
+                    currImage={convertBase64ToObjectUrlForImage(product.images[imageNumber].imageFile)}
                     isPrevButtonDisabled={isPrevButtonDisabled}
                     isNextButtonDisabled={isNextButtonDisabled}
                 /> : 

@@ -1,10 +1,9 @@
 import { Link } from "react-router-dom";
 import Proptypes from 'prop-types';
 
-import calculateImageSourceName from "../../utility/calculateImageSourceName";
+import convertBase64ToObjectUrlForImage from "../../utility/convertBase64ToObjectUrlForImage";
 
 function ProductsTable({products, buttons, keyName}){
-
 
     return(
         <table className="products-table">
@@ -18,7 +17,7 @@ function ProductsTable({products, buttons, keyName}){
                 {products.map(product => {
                     return (
                         <tr key={product.id ? product.id : product[keyName]}>
-                            {Object.keys(product).map(fieldName => !fieldName.toLowerCase().includes('id') ? <td key={`${fieldName}-${product.id}`}> {fieldName.toLocaleLowerCase().includes('image') ? <img className="my-product-image" src={calculateImageSourceName(product[fieldName])}/> : product[fieldName]}</td> : '')}
+                            {Object.keys(product).map(fieldName => !fieldName.toLowerCase().includes('id') ? <td key={`${fieldName}-${product.id}`}> {fieldName.toLocaleLowerCase().includes('image') ? <img className="my-product-image" src={convertBase64ToObjectUrlForImage(product[fieldName].imageFile)}/> : product[fieldName]}</td> : '')}
                             {buttons.map(button => (
                                 <td key={`${button.actionName}-${product.id}`}>
                                     <Link to={button.isDynamic && button.linkTo ? `${button.linkTo}/${product.id}` : button.linkTo}>

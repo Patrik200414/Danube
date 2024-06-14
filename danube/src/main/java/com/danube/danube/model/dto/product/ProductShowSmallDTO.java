@@ -1,6 +1,8 @@
 package com.danube.danube.model.dto.product;
 
 
+import com.danube.danube.model.dto.image.ImageShow;
+
 import java.util.List;
 
 public record ProductShowSmallDTO(
@@ -12,7 +14,7 @@ public record ProductShowSmallDTO(
         int rating,
         int sold,
         long id,
-        List<String> images,
+        List<ImageShow> images,
         String sellerName
 ) {
 }

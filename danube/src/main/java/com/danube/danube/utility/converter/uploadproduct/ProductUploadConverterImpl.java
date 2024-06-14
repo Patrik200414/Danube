@@ -10,16 +10,20 @@ import com.danube.danube.model.product.subcategory.Subcategory;
 import com.danube.danube.model.user.UserEntity;
 import com.danube.danube.utility.converter.converterhelper.ConverterHelper;
 import com.danube.danube.utility.converter.converterhelper.ConverterHelperImpl;
+import com.danube.danube.utility.imageutility.ImageUtility;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.DataFormatException;
 
 @Component
 public class ProductUploadConverterImpl implements ProductUploadConverter{
@@ -64,7 +68,7 @@ public class ProductUploadConverterImpl implements ProductUploadConverter{
     }
 
     @Override
-    public List<Image> convertMultiPartFilesToListOfImages(MultipartFile[] images, Product product) {
+    public List<Image> convertMultiPartFilesToListOfImages(MultipartFile[] images, Product product, ImageUtility imageUtility) throws IOException {
 
         List<Image> convertedImages = new ArrayList<>();
 
@@ -72,6 +76,7 @@ public class ProductUploadConverterImpl implements ProductUploadConverter{
             Image createdImage = new Image();
             createdImage.setProduct(product);
             createdImage.setFileName(image.getOriginalFilename());
+            createdImage.setImageFile(imageUtility.compressImage(image.getBytes()));
             convertedImages.add(createdImage);
         }
 
@@ -79,7 +84,7 @@ public class ProductUploadConverterImpl implements ProductUploadConverter{
     }
 
     @Override
-    public ProductUpdateDTO convertProductToProductUpdateDTO(Product product) {
+    public ProductUpdateDTO convertProductToProductUpdateDTO(Product product, ImageUtility imageUtility) throws DataFormatException, IOException {
         List<DetailValueDTO> detailValues = product.getProductValues().stream()
                 .map(productValue -> new DetailValueDTO(
                         productValue.getDetailName(),
@@ -90,7 +95,7 @@ public class ProductUploadConverterImpl implements ProductUploadConverter{
 
         return new ProductUpdateDTO(
                 converterHelper.createProductInformation(product),
-                converterHelper.getProductImages(product),
+                converterHelper.getProductImages(product, imageUtility),
                 detailValues
         );
     }
