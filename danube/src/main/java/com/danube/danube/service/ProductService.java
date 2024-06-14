@@ -126,6 +126,7 @@ public class ProductService {
         return productCategoriesAndDetailsConverter.convertDetailsToDetailsDTO(detailsBySubCategory);
     }
 
+    @Transactional
     public List<ProductShowSmallDTO> getSimilarProducts(long productFromId) throws DataFormatException, IOException {
         Product product = productRepository.findById(productFromId)
                 .orElseThrow(NonExistingProductException::new);
@@ -186,6 +187,7 @@ public class ProductService {
         return categoriesAndSubCategories;
     }
 
+    @Transactional
     public ProductItemDTO getProductItem(long id) throws DataFormatException, IOException {
         Product product = productRepository.findById(id).orElseThrow(NonExistingProductException::new);
         return productViewConverter.convertProductToProductItemDTO(product, imageUtility, converterHelper);
