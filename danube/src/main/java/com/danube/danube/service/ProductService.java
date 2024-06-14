@@ -22,7 +22,7 @@ import com.danube.danube.repository.user.UserRepository;
 import com.danube.danube.utility.converter.categoriesanddetails.ProductCategoriesAndDetailsConverter;
 import com.danube.danube.utility.converter.productview.ProductViewConverter;
 import com.danube.danube.utility.converter.uploadproduct.ProductUploadConverter;
-import com.danube.danube.utility.filellogger.FileLogger;
+import com.danube.danube.utility.imageutility.ImageUtility;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -52,10 +52,10 @@ public class ProductService {
     private final ProductViewConverter productViewConverter;
     private final ProductCategoriesAndDetailsConverter productCategoriesAndDetailsConverter;
     private final ProductUploadConverter productUploadConverter;
-    private final FileLogger fileLogger;
+    private final ImageUtility imageUtility;
 
     @Autowired
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, SubcategoryRepository subcategoryRepository, DetailRepository detailRepository, UserRepository userRepository, ValueRepository valueRepository, ProductValueRepository productValueRepository, ImageRepository imageRepository, SubcategoryDetailRepository subcategoryDetailRepository, ProductViewConverter productViewConverter, ProductCategoriesAndDetailsConverter productCategoriesAndDetailsConverter, ProductUploadConverter productUploadConverter, FileLogger fileLogger) {
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, SubcategoryRepository subcategoryRepository, DetailRepository detailRepository, UserRepository userRepository, ValueRepository valueRepository, ProductValueRepository productValueRepository, ImageRepository imageRepository, SubcategoryDetailRepository subcategoryDetailRepository, ProductViewConverter productViewConverter, ProductCategoriesAndDetailsConverter productCategoriesAndDetailsConverter, ProductUploadConverter productUploadConverter, ImageUtility imageUtility) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.subcategoryRepository = subcategoryRepository;
@@ -68,10 +68,10 @@ public class ProductService {
         this.productViewConverter = productViewConverter;
         this.productCategoriesAndDetailsConverter = productCategoriesAndDetailsConverter;
         this.productUploadConverter = productUploadConverter;
-        this.fileLogger = fileLogger;
+        this.imageUtility = imageUtility;
     }
 
-
+    @Transactional
     public Set<ProductShowSmallDTO> getProducts(int pageNumber, int itemPerPage){
         PageRequest pageRequest = PageRequest.of(pageNumber, itemPerPage);
         Page<Product> pagedProducts = productRepository.findAll(pageRequest);
@@ -132,20 +132,19 @@ public class ProductService {
     }
 
     @Transactional
-    public void saveProduct(ProductUploadDTO productUploadDTO) throws IOException{
+    public void saveProduct(ProductUploadDTO productUploadDTO) throws IOException {
 
         UserEntity seller = sellerValidator(productUploadDTO.userId());
         Subcategory subcategory = subcategoryRepository.findById(productUploadDTO.productDetail().subcategoryId())
                         .orElseThrow(NonExistingSubcategoryException::new);
 
-        fileLogger.saveFile(productUploadDTO.images(), BASE_IMAGE_PATH);
         Product product = productUploadConverter.convertProductDetailUploadDTOToProduct(
                 productUploadDTO.productDetail(),
                 seller,
                 subcategory
         );
 
-        List<Image> images = productUploadConverter.convertMultiPartFilesToListOfImages(productUploadDTO.images(), product);
+        List<Image> images = productUploadConverter.convertMultiPartFilesToListOfImages(productUploadDTO.images(), product, imageUtility);
         imageRepository.saveAll(images);
 
         product.setImages(images);
@@ -265,8 +264,7 @@ public class ProductService {
 
     private void addNewImage(MultipartFile[] newImages, Product updatedProduct) throws IOException {
         if(newImages != null){
-            fileLogger.saveFile(newImages, BASE_IMAGE_PATH);
-            List<Image> newUploadedImages = productUploadConverter.convertMultiPartFilesToListOfImages(newImages, updatedProduct);
+            List<Image> newUploadedImages = productUploadConverter.convertMultiPartFilesToListOfImages(newImages, updatedProduct, imageUtility);
             imageRepository.saveAll(newUploadedImages);
         }
     }
