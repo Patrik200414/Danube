@@ -1,6 +1,7 @@
 package com.danube.danube.utility.converter.productview;
 
 import com.danube.danube.model.dto.order.CartItemShowDTO;
+import com.danube.danube.model.dto.product.MyProductInformationDTO;
 import com.danube.danube.model.dto.product.ProductItemDTO;
 import com.danube.danube.model.dto.product.ProductShowSmallDTO;
 import com.danube.danube.model.order.Order;
@@ -21,6 +22,6 @@ public interface ProductViewConverter {
     ProductItemDTO convertProductToProductItemDTO(Product product, ImageUtility imageUtility, ConverterHelper converterHelper) throws DataFormatException, IOException;
 
     List<ProductShowSmallDTO> convertProductsToProductShowSmallDTO(Collection<Product> products, ImageUtility imageUtility, ConverterHelper converterHelper) throws DataFormatException, IOException;
-    Map<String, String> convertProductToMyProductInformation(Product product);
+    MyProductInformationDTO convertProductToMyProductInformation(Product product, ImageUtility imageUtility) throws DataFormatException, IOException;
     CartItemShowDTO convertOrderToCarItemShowDTO(Order order);
 }

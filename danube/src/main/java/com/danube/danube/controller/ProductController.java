@@ -10,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.zip.DataFormatException;
 
@@ -76,7 +75,7 @@ public class ProductController {
 
 
     @GetMapping("/myProducts/{userId}")
-    public List<Map<String, String>> getMyProducts(@PathVariable long userId){
+    public List<MyProductInformationDTO> getMyProducts(@PathVariable long userId) throws DataFormatException, IOException {
         return productService.getMyProducts(userId);
     }
 

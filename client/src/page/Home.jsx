@@ -5,8 +5,6 @@ function Home(){
     const itemPerPage = 9;
     const pageNumber = 0;
     const [products, , error] = useFetch(`/api/product?pageNumber=${pageNumber}&itemPerPage=${itemPerPage}`);
-    
-    console.log(products);
 
     return(
         <div className="home">

@@ -159,16 +159,23 @@ public class ProductService {
         saveProductValues(productInformation, product);
     }
 
-    public List<Map<String, String>> getMyProducts(long userId){
+    @Transactional
+    public List<MyProductInformationDTO> getMyProducts(long userId) throws DataFormatException, IOException {
         UserEntity seller = userRepository.findById(userId).orElseThrow(NonExistingUserException::new);
         if(!seller.getRoles().contains(Role.ROLE_SELLER)){
             throw new UserNotSellerException();
         }
 
         List<Product> products = productRepository.findBySeller(seller);
-        return products.stream()
-                .map(productViewConverter::convertProductToMyProductInformation)
-                .toList();
+
+
+        List<MyProductInformationDTO> myProductInformationDTOs = new ArrayList<>();
+        for(Product product : products){
+            MyProductInformationDTO myProductInformationDTO = productViewConverter.convertProductToMyProductInformation(product, imageUtility);
+            myProductInformationDTOs.add(myProductInformationDTO);
+        }
+
+        return myProductInformationDTOs;
     }
 
     private List<CategoryAndSubCategoryDTO> getCategoryAndSubCategories(List<Category> categories) {

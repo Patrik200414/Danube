@@ -3,21 +3,18 @@ package com.danube.danube.utility.converter.productview;
 import com.danube.danube.model.dto.image.ImageShow;
 import com.danube.danube.model.dto.order.CartItemShowDTO;
 import com.danube.danube.model.dto.product.DetailDTO;
+import com.danube.danube.model.dto.product.MyProductInformationDTO;
 import com.danube.danube.model.dto.product.ProductItemDTO;
 import com.danube.danube.model.dto.product.ProductShowSmallDTO;
 import com.danube.danube.model.order.Order;
 import com.danube.danube.model.product.Product;
 import com.danube.danube.utility.converter.converterhelper.ConverterHelper;
-import com.danube.danube.utility.converter.converterhelper.ConverterHelperImpl;
 import com.danube.danube.utility.imageutility.ImageUtility;
-import org.hibernate.internal.util.collections.LinkedIdentityHashMap;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.zip.DataFormatException;
 
 @Component
@@ -57,13 +54,17 @@ public class ProductViewConverterImpl implements ProductViewConverter{
     }
 
     @Override
-    public Map<String, String> convertProductToMyProductInformation(Product product) {
-        Map<String, String> myProductInformation = new LinkedIdentityHashMap<>();
-        myProductInformation.put("Product image", !product.getImages().isEmpty() ? product.getFirstProductImage().getFileName() : "defaultProduct.jpg");
-        myProductInformation.put("Product name", product.getProductName());
-        myProductInformation.put("Owner", product.getSellerFullName());
-        myProductInformation.put("id", String.valueOf(product.getId()));
-        return myProductInformation;
+    public MyProductInformationDTO convertProductToMyProductInformation(Product product, ImageUtility imageUtility) throws DataFormatException, IOException {
+
+        return new MyProductInformationDTO(
+                new ImageShow(
+                        !product.getImages().isEmpty() ? product.getFirstProductImage().getFileName() : "defaultProduct.jpg",
+                        imageUtility.decompressImage(product.getFirstProductImage().getImageFile())
+                ),
+                product.getProductName(),
+                product.getSellerFullName(),
+                product.getId()
+        );
     }
 
 
