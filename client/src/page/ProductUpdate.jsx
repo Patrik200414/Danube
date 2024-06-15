@@ -20,7 +20,6 @@ function ProductUpdate(){
     const [error, setError] = useState();
     const navigate = useNavigate();
 
-    console.log(product);
 
     function handleProductInformationChange(value, key){
         const updatedProduct = {

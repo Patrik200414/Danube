@@ -8,7 +8,6 @@ async function handlePromiseAllError(promiseAllResponse, callbackFunction){
             }
         }
     }
-    console.log(resultErrors);
     if(resultErrors.length){
         callbackFunction(resultErrors);
         return false;
