@@ -43,7 +43,7 @@ public class CartService {
     }
 
     @Transactional
-    public CartItemShowDTO addToCart(AddToCartDTO cartElement) throws DataFormatException, IOException {
+    public Order addToCart(AddToCartDTO cartElement) throws DataFormatException, IOException {
         UserEntity customer = userRepository.findById(cartElement.customerId())
                 .orElseThrow(NonExistingUserException::new);
 
@@ -57,7 +57,7 @@ public class CartService {
         Optional<Order> searchedOrderByCustomer = modifyProductAndOrderQuantity(customer, product, remainedQuantity);
         Order orderItem = validateIfOrderAlreadyExists(cartElement.quantity(), searchedOrderByCustomer, customer, product);
 
-        return productViewConverter.convertOrderToCarItemShowDTO(orderRepository.save(orderItem), imageUtility);
+        return orderRepository.save(orderItem);
     }
 
     @Transactional
