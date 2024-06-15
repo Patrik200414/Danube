@@ -30,7 +30,7 @@ public class OrderService {
                 .orElseThrow(NonExistingUserException::new);
 
         List<Order> ordersByCustomer = orderRepository.findAllByCustomer(customer);
-        ordersByCustomer.stream()
+        ordersByCustomer
                 .forEach(order -> {
                     order.setCity(orderInformation.city());
                     order.setCountry(orderInformation.country());
