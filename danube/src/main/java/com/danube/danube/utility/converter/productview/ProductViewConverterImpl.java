@@ -83,6 +83,17 @@ public class ProductViewConverterImpl implements ProductViewConverter{
         );
     }
 
+    @Override
+    public List<CartItemShowDTO> collectCartItemShowDTOs(List<Order> cartItems, ImageUtility imageUtility) throws DataFormatException, IOException {
+        List<CartItemShowDTO> cartItemShowDTOs = new ArrayList<>();
+
+        for(Order cartItem : cartItems){
+            CartItemShowDTO cartItemShowDTO = convertOrderToCarItemShowDTO(cartItem, imageUtility);
+            cartItemShowDTOs.add(cartItemShowDTO);
+        }
+
+        return cartItemShowDTOs;
+    }
 
 
     private void convertProductToSpecificCollection(Collection<Product> products, ImageUtility imageUtility, Collection<ProductShowSmallDTO> productShowSmallDTOs, ConverterHelper converterHelper) throws DataFormatException, IOException {

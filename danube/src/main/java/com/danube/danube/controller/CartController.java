@@ -38,13 +38,14 @@ public class CartController {
 
     @PostMapping("/integrate")
     public CartItemResponseDTO integrateItemsToUser(@RequestBody ItemIntegrationDTO cartItems) throws DataFormatException, IOException {
-        List<CartItemShowDTO> cartItemShowDTOS = cartService.integrateCartItemsToUser(cartItems);
-        return new CartItemResponseDTO(cartItemShowDTOS);
+        List<Order> orders = cartService.integrateCartItemsToUser(cartItems);
+        return new CartItemResponseDTO(productViewConverter.collectCartItemShowDTOs(orders, imageUtility));
     }
 
     @GetMapping("/{customerId}")
     public CartItemResponseDTO getMyCart(@PathVariable long customerId) throws DataFormatException, IOException {
-        return new CartItemResponseDTO(cartService.getCartItems(customerId));
+        List<Order> cartItems = cartService.getCartItems(customerId);
+        return new CartItemResponseDTO(productViewConverter.collectCartItemShowDTOs(cartItems, imageUtility));
     }
 
     @DeleteMapping("/{orderId}")

@@ -24,4 +24,5 @@ public interface ProductViewConverter {
     List<ProductShowSmallDTO> convertProductsToProductShowSmallDTO(Collection<Product> products, ImageUtility imageUtility, ConverterHelper converterHelper) throws DataFormatException, IOException;
     MyProductInformationDTO convertProductToMyProductInformation(Product product, ImageUtility imageUtility) throws DataFormatException, IOException;
     CartItemShowDTO convertOrderToCarItemShowDTO(Order order, ImageUtility imageUtility) throws DataFormatException, IOException;
+    List<CartItemShowDTO> collectCartItemShowDTOs(List<Order> cartItems, ImageUtility imageUtility) throws DataFormatException, IOException;
 }
