@@ -10,7 +10,6 @@ function ProductUpdate(){
     const [user] = useVerifyUserRole("ROLE_SELLER");
     const [myProducts, , error] = useFetchGetAuthorization(`/api/product/myProducts/${user ? user.id : ''}`, user);
 
-    console.log(myProducts);
     return(
         <div className="product-dashboard-container">
             {error && <h1 key={error} className="item-not-found-error">{error}</h1>}

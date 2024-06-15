@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 import Proptypes from "prop-types";
-import calculateImageSourceName from '../../utility/convertBase64ToObjectUrlForImage';
+import convertBase64ToObjectUrlForImage from '../../utility/convertBase64ToObjectUrlForImage';
 
 function UploadedImages({images, onImageDeletion}){
     const [imagesPreview, setImagesPreview] = useState([]);
     useEffect(() => {
         if(images.length){
             const blobedImages = images.map(image => {
-                if(typeof image === 'object'){
+                if(image instanceof File){
                     const blob = new Blob([image]);
                     return URL.createObjectURL(blob);
                 } else{
-                    return calculateImageSourceName(image);
+                   return convertBase64ToObjectUrlForImage(image.imageFile); 
                 }
                 
             })
