@@ -79,7 +79,7 @@ public class CartService {
         UserEntity customer = userRepository.findById(customerId)
                 .orElseThrow(NonExistingUserException::new);
 
-        List<Order> cartItems = orderRepository.findAllByCustomer(customer);
+        List<Order> cartItems = orderRepository.findAllByCustomerIsOrderedFalse(customer);
 
         return collectCartItemShowDTOs(cartItems);
     }
