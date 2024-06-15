@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.zip.DataFormatException;
 
 @RestController
 @RequestMapping("/api/cart")
@@ -22,18 +24,18 @@ public class CartController {
     }
 
     @PostMapping("")
-    public CartItemShowDTO addToCart(@RequestBody AddToCartDTO cartItem){
+    public CartItemShowDTO addToCart(@RequestBody AddToCartDTO cartItem) throws DataFormatException, IOException {
         return cartService.addToCart(cartItem);
     }
 
     @PostMapping("/integrate")
-    public CartItemResponseDTO integrateItemsToUser(@RequestBody ItemIntegrationDTO cartItems){
+    public CartItemResponseDTO integrateItemsToUser(@RequestBody ItemIntegrationDTO cartItems) throws DataFormatException, IOException {
         List<CartItemShowDTO> cartItemShowDTOS = cartService.integrateCartItemsToUser(cartItems);
         return new CartItemResponseDTO(cartItemShowDTOS);
     }
 
     @GetMapping("/{customerId}")
-    public CartItemResponseDTO getMyCart(@PathVariable long customerId){
+    public CartItemResponseDTO getMyCart(@PathVariable long customerId) throws DataFormatException, IOException {
         return new CartItemResponseDTO(cartService.getCartItems(customerId));
     }
 

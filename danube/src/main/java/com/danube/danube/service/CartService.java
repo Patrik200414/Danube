@@ -12,12 +12,15 @@ import com.danube.danube.repository.order.OrderRepository;
 import com.danube.danube.repository.product.ProductRepository;
 import com.danube.danube.repository.user.UserRepository;
 import com.danube.danube.utility.converter.productview.ProductViewConverter;
+import com.danube.danube.utility.imageutility.ImageUtility;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.zip.DataFormatException;
 
 @Service
 public class CartService {
@@ -26,19 +29,21 @@ public class CartService {
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
     private final ProductViewConverter productViewConverter;
+    private final ImageUtility imageUtility;
 
 
     @Autowired
-    public CartService(UserRepository userRepository, ProductRepository productRepository, OrderRepository orderRepository, ProductViewConverter productViewConverter) {
+    public CartService(UserRepository userRepository, ProductRepository productRepository, OrderRepository orderRepository, ProductViewConverter productViewConverter, ImageUtility imageUtility) {
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.orderRepository = orderRepository;
         this.productViewConverter = productViewConverter;
 
+        this.imageUtility = imageUtility;
     }
 
     @Transactional
-    public CartItemShowDTO addToCart(AddToCartDTO cartElement){
+    public CartItemShowDTO addToCart(AddToCartDTO cartElement) throws DataFormatException, IOException {
         UserEntity customer = userRepository.findById(cartElement.customerId())
                 .orElseThrow(NonExistingUserException::new);
 
@@ -52,11 +57,11 @@ public class CartService {
         Optional<Order> searchedOrderByCustomer = modifyProductAndOrderQuantity(customer, product, remainedQuantity);
         Order orderItem = validateIfOrderAlreadyExists(cartElement.quantity(), searchedOrderByCustomer, customer, product);
 
-        return productViewConverter.convertOrderToCarItemShowDTO(orderRepository.save(orderItem));
+        return productViewConverter.convertOrderToCarItemShowDTO(orderRepository.save(orderItem), imageUtility);
     }
 
     @Transactional
-    public List<CartItemShowDTO> integrateCartItemsToUser(ItemIntegrationDTO cartItems){
+    public List<CartItemShowDTO> integrateCartItemsToUser(ItemIntegrationDTO cartItems) throws DataFormatException, IOException {
         UserEntity customer = userRepository.findById(cartItems.customerId())
                 .orElseThrow(NonExistingUserException::new);
 
@@ -66,21 +71,17 @@ public class CartService {
 
         List<Order> allByCustomer = orderRepository.findAllByCustomerIsOrderedFalse(customer);
 
-        return allByCustomer.stream()
-                .map(cartItem -> productViewConverter.convertOrderToCarItemShowDTO(cartItem))
-                .toList();
+        return collectCartItemShowDTOs(allByCustomer);
     }
 
-    public List<CartItemShowDTO> getCartItems(long customerId){
+    @Transactional
+    public List<CartItemShowDTO> getCartItems(long customerId) throws DataFormatException, IOException {
         UserEntity customer = userRepository.findById(customerId)
                 .orElseThrow(NonExistingUserException::new);
 
         List<Order> cartItems = orderRepository.findAllByCustomer(customer);
 
-        return cartItems.stream()
-                .filter(cartItem -> !cartItem.isOrdered())
-                .map(cartItem -> productViewConverter.convertOrderToCarItemShowDTO(cartItem))
-                .toList();
+        return collectCartItemShowDTOs(cartItems);
     }
 
     public void deleteOrder(long orderId){
@@ -204,5 +205,16 @@ public class CartService {
         orderItem.setProduct(product);
         orderItem.setQuantity(quantity);
         return orderItem;
+    }
+
+    private List<CartItemShowDTO> collectCartItemShowDTOs(List<Order> cartItems) throws DataFormatException, IOException {
+        List<CartItemShowDTO> cartItemShowDTOs = new ArrayList<>();
+
+        for(Order cartItem : cartItems){
+            CartItemShowDTO cartItemShowDTO = productViewConverter.convertOrderToCarItemShowDTO(cartItem, imageUtility);
+            cartItemShowDTOs.add(cartItemShowDTO);
+        }
+
+        return cartItemShowDTOs;
     }
 }

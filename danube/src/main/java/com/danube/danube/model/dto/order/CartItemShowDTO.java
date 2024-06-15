@@ -1,10 +1,12 @@
 package com.danube.danube.model.dto.order;
 
+import com.danube.danube.model.dto.image.ImageShow;
+
 public record CartItemShowDTO(
         long id,
         String productName,
         double price,
-        String image,
+        ImageShow image,
         int orderedQuantity,
         double rating
         ) {

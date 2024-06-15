@@ -69,12 +69,15 @@ public class ProductViewConverterImpl implements ProductViewConverter{
 
 
     @Override
-    public CartItemShowDTO convertOrderToCarItemShowDTO(Order order) {
+    public CartItemShowDTO convertOrderToCarItemShowDTO(Order order, ImageUtility imageUtility) throws DataFormatException, IOException {
         return new CartItemShowDTO(
                 order.getId(),
                 order.getProduct().getProductName(),
                 order.getProduct().getPrice(),
-                order.getProduct().getImages().get(0).getFileName(),
+                new ImageShow(
+                        order.getProduct().getImages().getFirst().getFileName(),
+                        imageUtility.decompressImage(order.getProduct().getImages().getFirst().getImageFile())
+                ),
                 order.getQuantity(),
                 order.getProduct().getRating()
         );
