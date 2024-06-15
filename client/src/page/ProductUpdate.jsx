@@ -20,6 +20,7 @@ function ProductUpdate(){
     const [error, setError] = useState();
     const navigate = useNavigate();
 
+    console.log(product);
 
     function handleProductInformationChange(value, key){
         const updatedProduct = {
@@ -68,8 +69,8 @@ function ProductUpdate(){
         e.preventDefault();
         const productCopy = {...product};
 
-        const newImages = productCopy.images.filter(image => typeof image === 'object') ;
-        productCopy.images = productCopy.images.filter(image => typeof image === 'string');
+        const newImages = productCopy.images.filter(image => image instanceof File) ;
+        productCopy.images = productCopy.images.filter(image => !(image instanceof File));
 
 
         const formData = appendFilesToFormData(new FormData(), 'newImages', newImages);
@@ -100,7 +101,7 @@ function ProductUpdate(){
                 <div className="product-upload">
                     <ProductInformationForm onDetailsChange={(value, key) => handleProductInformationChange(value, key)} productDetail={product.productInformation}/>
                     <ProductDetailsForm details={product.detailValues} onDetailsChange={(value, key) => handleDetailChange(value, key)} subCategoryId={product.productInformation.subcategoryId} user={user} onImageUpload={(e) => handleImageUpload(e)}/>
-                    <UploadedImages onImageDeletion={(index) => handleImageDeletion(index)} images={product.images.map(image => image)}/>
+                    <UploadedImages onImageDeletion={(index) => handleImageDeletion(index)} images={product.images}/>
                     <p className="error-message">{error}</p>
                     <button onClick={handleSubmit} className="submit-button">Save</button>
                 </div>

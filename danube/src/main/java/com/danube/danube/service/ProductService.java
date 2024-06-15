@@ -4,6 +4,7 @@ import com.danube.danube.custom_exception.login_registration.NonExistingUserExce
 import com.danube.danube.custom_exception.product.*;
 import com.danube.danube.custom_exception.user.InvalidUserCredentialsException;
 import com.danube.danube.custom_exception.user.UserNotSellerException;
+import com.danube.danube.model.dto.image.ImageShow;
 import com.danube.danube.model.dto.product.*;
 import com.danube.danube.model.product.Product;
 import com.danube.danube.model.product.category.Category;
@@ -200,6 +201,7 @@ public class ProductService {
         return productViewConverter.convertProductToProductItemDTO(product, imageUtility, converterHelper);
     }
 
+    @Transactional
     public ProductUpdateDTO getUpdatableProductItem(long id) throws DataFormatException, IOException {
         Product product = productRepository.findById(id).orElseThrow(NonExistingProductException::new);
         return productUploadConverter.convertProductToProductUpdateDTO(product, imageUtility);
@@ -283,9 +285,17 @@ public class ProductService {
     }
 
     private void removeImage(ProductUpdateDTO updatedProductDetails, Product updatedProduct) {
-        List<String> deletedImagesName = updatedProduct.getImages().stream()
+        List<String> currentProductImages = updatedProduct.getImages().stream()
                 .map(Image::getFileName)
-                .filter(fileName -> !updatedProductDetails.images().contains(fileName))
+                //.filter(fileName -> !updatedProductDetails.images().contains(fileName))
+                .toList();
+
+        List<String> updatedDetailsImages = updatedProductDetails.images().stream()
+                .map(ImageShow::imageName)
+                .toList();
+
+        List<String> deletedImagesName = currentProductImages.stream()
+                .filter(currentImageName -> !updatedDetailsImages.contains(currentImageName))
                 .toList();
 
         if(!deletedImagesName.isEmpty()){
