@@ -28,18 +28,13 @@ public class CartService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
-    private final ProductViewConverter productViewConverter;
-    private final ImageUtility imageUtility;
 
 
     @Autowired
-    public CartService(UserRepository userRepository, ProductRepository productRepository, OrderRepository orderRepository, ProductViewConverter productViewConverter, ImageUtility imageUtility) {
+    public CartService(UserRepository userRepository, ProductRepository productRepository, OrderRepository orderRepository) {
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.orderRepository = orderRepository;
-        this.productViewConverter = productViewConverter;
-
-        this.imageUtility = imageUtility;
     }
 
     @Transactional
@@ -202,15 +197,4 @@ public class CartService {
         orderItem.setQuantity(quantity);
         return orderItem;
     }
-
-    /*private List<CartItemShowDTO> collectCartItemShowDTOs(List<Order> cartItems) throws DataFormatException, IOException {
-        List<CartItemShowDTO> cartItemShowDTOs = new ArrayList<>();
-
-        for(Order cartItem : cartItems){
-            CartItemShowDTO cartItemShowDTO = productViewConverter.convertOrderToCarItemShowDTO(cartItem, imageUtility);
-            cartItemShowDTOs.add(cartItemShowDTO);
-        }
-
-        return cartItemShowDTOs;
-    }*/
 }
