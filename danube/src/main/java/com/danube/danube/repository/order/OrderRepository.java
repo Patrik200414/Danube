@@ -11,7 +11,6 @@ import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findAllByCustomer(UserEntity customer);
-    List<Order> findAllByProduct(Product product);
     @Query("SELECT o FROM Order o WHERE o.customer = :customer AND o.product = :product AND o.isOrdered = false")
     Optional<Order> findByCustomerAndProductAndIsOrderedFalse(UserEntity customer, Product product);
     @Query("SELECT o FROM Order o WHERE o.customer = :customer AND o.isOrdered = false")
