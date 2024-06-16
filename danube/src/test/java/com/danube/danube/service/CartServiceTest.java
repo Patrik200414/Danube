@@ -217,9 +217,6 @@ class CartServiceTest {
 
     @Test
     void testIntegrateCartItemToUser_WithExistingUserAndExistingProductAndUserAlreadyHasItemsInThereCart_ShouldExecuteSaveAllOnProductAndOrderrepositoryWithExpectedValues(){
-        /*
-        TODO: finish testing this method
-         */
         CartItemShowDTO firstExpectedIntegrityItem = new CartItemShowDTO(
                 1,
                 "Product 1",
@@ -296,6 +293,81 @@ class CartServiceTest {
     }
 
     @Test
+    void testIntegrateCartItemToUser_WithExistingUserAndExistingProductAndUserNotHaveItemsInThereCart_ShouldExecuteSaveAllOnProductAndOrderrepositoryWithExpectedValues(){
+        CartItemShowDTO firstExpectedIntegrityItem = new CartItemShowDTO(
+                1,
+                "Product 1",
+                50,
+                new ImageShow("testImage1.jpg", new byte[1]),
+                5,
+                4.5
+        );
+
+        CartItemShowDTO secondExpectedIntegrityItem = new CartItemShowDTO(
+                2,
+                "Product 2",
+                70,
+                new ImageShow("testImage2.jpg", new byte[1]),
+                3,
+                4.0
+        );
+
+        ItemIntegrationDTO expectedIntegration = new ItemIntegrationDTO(
+                1,
+                List.of(
+                        firstExpectedIntegrityItem,
+                        secondExpectedIntegrityItem
+                )
+        );
+
+        UserEntity expectedUser = new UserEntity();
+        expectedUser.setEmail("test@gmail.com");
+        expectedUser.setId(1);
+        expectedUser.setFirstName("Test");
+        expectedUser.setLastName("User");
+
+        Product firstProduct = new Product();
+        firstProduct.setQuantity(30);
+        firstProduct.setId(1);
+
+        Product secondProduct = new Product();
+        secondProduct.setQuantity(40);
+        secondProduct.setId(2);
+
+        when(userRepositoryMock.findById(1L))
+                .thenReturn(Optional.of(expectedUser));
+
+        when(productRepositoryMock.findAllById(List.of(firstExpectedIntegrityItem.id(), secondExpectedIntegrityItem.id())))
+                .thenReturn(List.of(
+                        firstProduct,
+                        secondProduct
+                ));
+
+        Order firstExpectedOrder = new Order();
+        firstExpectedOrder.setQuantity(3);
+        firstExpectedOrder.setProduct(firstProduct);
+
+        Order secondExpectedOrder = new Order();
+        secondExpectedOrder.setQuantity(5);
+        secondExpectedOrder.setProduct(secondProduct);
+
+        when(orderRepositoryMock.findAllByProductIsInAndCustomerAndNotOrdered(List.of(firstProduct, secondProduct), expectedUser))
+                .thenReturn(List.of());
+
+
+        cartService.integrateCartItemsToUser(expectedIntegration);
+
+        firstProduct.setQuantity(firstProduct.getQuantity() - firstExpectedIntegrityItem.orderedQuantity());
+        secondProduct.setQuantity(secondProduct.getQuantity() - secondExpectedIntegrityItem.orderedQuantity());
+
+        firstExpectedOrder.setQuantity(firstExpectedOrder.getQuantity() + expectedIntegration.products().getFirst().orderedQuantity());
+        secondExpectedOrder.setQuantity(secondExpectedOrder.getQuantity() + expectedIntegration.products().get(1).orderedQuantity());
+
+        verify(productRepositoryMock, times(1)).saveAll(List.of(firstProduct, secondProduct));
+        verify(orderRepositoryMock, times(1)).saveAll(List.of(firstExpectedOrder, secondExpectedOrder));
+    }
+
+    @Test
     void testGetCartItems_WithNonExistingUser_ShouldThrowNonExistingUserException() {
         when(userRepositoryMock.findById(1L))
                 .thenReturn(Optional.empty());
@@ -305,10 +377,44 @@ class CartServiceTest {
     }
 
     @Test
+    void testGetCartItems_WithExistingUser_ShouldExecuteOrderRepositoryFindAllByCustomerIsOrderedFalse(){
+        UserEntity expectedUser = new UserEntity();
+        expectedUser.setEmail("test@gmail.com");
+        expectedUser.setId(1);
+        expectedUser.setFirstName("Test");
+        expectedUser.setLastName("User");
+
+        when(userRepositoryMock.findById(1L))
+                .thenReturn(Optional.of(expectedUser));
+
+        cartService.getCartItems(1);
+        verify(orderRepositoryMock, times(1)).findAllByCustomerIsOrderedFalse(expectedUser);
+    }
+
+    @Test
     void testDeleteOrder_WithNonExistingOrder_ShouldThrowOrderNotFoundException() {
         when(orderRepositoryMock.findById(1L))
                 .thenReturn(Optional.empty());
 
         assertThrowsExactly(OrderNotFoundException.class, () -> cartService.deleteOrder(1));
+    }
+
+    @Test
+    void testDeleteOrder_WithExistingOrder_Should(){
+        Product expectedProduct = new Product();
+        expectedProduct.setQuantity(5);
+
+        Order expectedOrder = new Order();
+        expectedOrder.setQuantity(3);
+        expectedOrder.setProduct(expectedProduct);
+
+        when(orderRepositoryMock.findById(1L))
+                .thenReturn(Optional.of(expectedOrder));
+
+        cartService.deleteOrder(1);
+        expectedProduct.setQuantity(expectedProduct.getQuantity() + expectedOrder.getQuantity());
+
+        verify(productRepositoryMock, times(1)).save(expectedProduct);
+        verify(orderRepositoryMock, times(1)).delete(expectedOrder);
     }
 }
