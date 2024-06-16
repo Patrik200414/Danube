@@ -11,7 +11,6 @@ import com.danube.danube.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -107,9 +106,10 @@ class OrderServiceTest {
     }
 
     @Test
-    void setIsOrdered() {
-        /*
-        * TODO: finish testing this method
-        *  */
+    void testSetIsOrdered_WithNonExistingUser_ShouldThrowNonExistingUserException() {
+        when(userRepositoryMock.findById(1L))
+                .thenReturn(Optional.empty());
+
+        assertThrowsExactly(NonExistingUserException.class, () -> orderService.setIsOrdered(1L));
     }
 }
