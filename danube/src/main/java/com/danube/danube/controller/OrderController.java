@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 @RestController
 @RequestMapping("/api/order")
 public class OrderController {
@@ -31,7 +33,7 @@ public class OrderController {
         boolean isPaid = paymentService.isPaid(orderSession.paymentSessionId());
 
         if (isPaid){
-            orderService.setIsOrdered(orderSession.userId());
+            orderService.setIsOrdered(orderSession.userId(), LocalDateTime.now());
             return HttpStatus.CREATED;
         }
 
