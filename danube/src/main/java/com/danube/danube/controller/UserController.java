@@ -3,10 +3,7 @@ package com.danube.danube.controller;
 import com.danube.danube.custom_exception.user.ExpiredVerificationTokenException;
 import com.danube.danube.model.dto.jwt.JwtResponse;
 import com.danube.danube.model.dto.user.*;
-import com.danube.danube.model.user.UserEntity;
-import com.danube.danube.security.jwt.JwtUtils;
 import com.danube.danube.service.UserService;
-import com.danube.danube.utility.converter.user.UserConverter;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,14 +15,10 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
-    private final UserConverter userConverter;
-    private final JwtUtils jwtUtils;
 
     @Autowired
-    public UserController(UserService userService, UserConverter userConverter, JwtUtils jwtUtils) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.userConverter = userConverter;
-        this.jwtUtils = jwtUtils;
     }
 
     @PostMapping("/registration")
@@ -36,23 +29,19 @@ public class UserController {
 
     @PostMapping("/login")
     public JwtResponse login(@RequestBody UserLoginDTO userLoginDTO){
-        UserEntity user = userService.loginUser(userLoginDTO);
-        return userConverter.generateJwtResponse(user, jwtUtils);
-
+        return userService.loginUser(userLoginDTO);
     }
 
     @PatchMapping("/{id}/role")
     public JwtResponse updateUserRole(@PathVariable long id, HttpServletRequest request){
         String jwtToken = getJwtTokenFromBearerToken(request);
-        UserEntity user = userService.addSellerRoleToUser(id, jwtToken);
-        return userConverter.generateJwtResponse(user, jwtUtils);
+        return userService.addSellerRoleToUser(id, jwtToken);
     }
 
     @PutMapping("/{id}")
     public JwtResponse updateUser(@PathVariable long id, @RequestBody UserUpdateDTO userUpdateDTO, HttpServletRequest request){
         String jwtToken = getJwtTokenFromBearerToken(request);
-        UserEntity user = userService.updateUser(id, userUpdateDTO, jwtToken);
-        return userConverter.generateJwtResponse(user, jwtUtils);
+        return userService.updateUser(id, userUpdateDTO, jwtToken);
     }
 
     @PutMapping("/password/{id}")
@@ -74,8 +63,7 @@ public class UserController {
 
     @PostMapping("/authenticate")
     public JwtResponse verifyProfile(@RequestBody UserLoginDTO userAuthentication){
-        UserEntity user = userService.authenticateUser(userAuthentication.email(), userAuthentication.password());
-        return userConverter.generateJwtResponse(user, jwtUtils);
+        return userService.authenticateUser(userAuthentication.email(), userAuthentication.password());
     }
 
 

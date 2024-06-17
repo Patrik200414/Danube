@@ -11,16 +11,13 @@ import com.danube.danube.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class OrderServiceTest {
     OrderService orderService;
@@ -107,9 +104,52 @@ class OrderServiceTest {
     }
 
     @Test
-    void setIsOrdered() {
-        /*
-        * TODO: finish testing this method
-        *  */
+    void testSetIsOrdered_WithNonExistingUser_ShouldThrowNonExistingUserException() {
+        LocalDateTime expectedDateTime = LocalDateTime.now();
+        when(userRepositoryMock.findById(1L))
+                .thenReturn(Optional.empty());
+
+        assertThrowsExactly(NonExistingUserException.class, () -> orderService.setIsOrdered(1L, expectedDateTime));
+    }
+
+    @Test
+    void testSetIsOrdered_WithExistingUser_ShouldCallOnceOrderRepositorySaveAll(){
+        UserEntity expectedUser = new UserEntity();
+        expectedUser.setId(1);
+        expectedUser.setEmail("test@gmail.com");
+        expectedUser.setFirstName("Test");
+        expectedUser.setLastName("User");
+
+        LocalDateTime expectedDateTime = LocalDateTime.now();
+
+        Order firstOrder = new Order();
+        firstOrder.setOrdered(false);
+
+        Order secondOrder = new Order();
+        firstOrder.setOrdered(false);
+
+        when(userRepositoryMock.findById(1L))
+                .thenReturn(Optional.of(expectedUser));
+
+        when(orderRepositoryMock.findAllByCustomer(expectedUser))
+                .thenReturn(List.of(
+                        firstOrder,
+                        secondOrder
+                ));
+
+
+
+        orderService.setIsOrdered(1, expectedDateTime);
+
+        firstOrder.setOrdered(true);
+        firstOrder.setOrderTime(Timestamp.valueOf(expectedDateTime));
+
+        secondOrder.setOrdered(true);
+        secondOrder.setOrderTime(Timestamp.valueOf(expectedDateTime));
+
+        verify(orderRepositoryMock, times(1)).saveAll(List.of(
+                firstOrder,
+                secondOrder
+        ));
     }
 }

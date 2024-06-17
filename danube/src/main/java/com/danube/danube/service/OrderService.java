@@ -45,7 +45,7 @@ public class OrderService {
         }
     }
 
-    public void setIsOrdered(long userId){
+    public void setIsOrdered(long userId, LocalDateTime orderTime){
         UserEntity customer = userRepository.findById(userId)
                 .orElseThrow(NonExistingUserException::new);
 
@@ -53,7 +53,7 @@ public class OrderService {
 
         orders.forEach(order -> {
             order.setOrdered(true);
-            order.setOrderTime(Timestamp.valueOf(LocalDateTime.now()));
+            order.setOrderTime(Timestamp.valueOf(orderTime));
         });
         orderRepository.saveAll(orders);
     }

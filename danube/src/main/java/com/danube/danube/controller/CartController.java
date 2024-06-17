@@ -20,32 +20,25 @@ import java.util.zip.DataFormatException;
 @RequestMapping("/api/cart")
 public class CartController {
     private final CartService cartService;
-    private final ProductViewConverter productViewConverter;
-    private final ImageUtility imageUtility;
 
     @Autowired
-    public CartController(CartService cartService, ProductViewConverter productViewConverter, ImageUtility imageUtility) {
+    public CartController(CartService cartService) {
         this.cartService = cartService;
-        this.productViewConverter = productViewConverter;
-        this.imageUtility = imageUtility;
     }
 
     @PostMapping("")
     public CartItemShowDTO addToCart(@RequestBody AddToCartDTO cartItem) throws DataFormatException, IOException {
-        Order order = cartService.addToCart(cartItem);
-        return  productViewConverter.convertOrderToCarItemShowDTO(order, imageUtility);
+        return cartService.addToCart(cartItem);
     }
 
     @PostMapping("/integrate")
     public CartItemResponseDTO integrateItemsToUser(@RequestBody ItemIntegrationDTO cartItems) throws DataFormatException, IOException {
-        List<Order> orders = cartService.integrateCartItemsToUser(cartItems);
-        return new CartItemResponseDTO(productViewConverter.collectCartItemShowDTOs(orders, imageUtility));
+        return cartService.integrateCartItemsToUser(cartItems);
     }
 
     @GetMapping("/{customerId}")
     public CartItemResponseDTO getMyCart(@PathVariable long customerId) throws DataFormatException, IOException {
-        List<Order> cartItems = cartService.getCartItems(customerId);
-        return new CartItemResponseDTO(productViewConverter.collectCartItemShowDTOs(cartItems, imageUtility));
+        return cartService.getCartItems(customerId);
     }
 
     @DeleteMapping("/{orderId}")

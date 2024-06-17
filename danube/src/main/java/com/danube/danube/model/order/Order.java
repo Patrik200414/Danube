@@ -150,4 +150,8 @@ public class Order {
     public void setOrderTime(Timestamp orderTime) {
         this.orderTime = orderTime;
     }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 }

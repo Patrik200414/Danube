@@ -28,17 +28,21 @@ public class CartService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
+    private final ProductViewConverter productViewConverter;
+    private final ImageUtility imageUtility;
 
 
     @Autowired
-    public CartService(UserRepository userRepository, ProductRepository productRepository, OrderRepository orderRepository) {
+    public CartService(UserRepository userRepository, ProductRepository productRepository, OrderRepository orderRepository, ProductViewConverter productViewConverter, ImageUtility imageUtility) {
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.orderRepository = orderRepository;
+        this.productViewConverter = productViewConverter;
+        this.imageUtility = imageUtility;
     }
 
     @Transactional
-    public Order addToCart(AddToCartDTO cartElement) {
+    public CartItemShowDTO addToCart(AddToCartDTO cartElement) throws DataFormatException, IOException {
         UserEntity customer = userRepository.findById(cartElement.customerId())
                 .orElseThrow(NonExistingUserException::new);
 
@@ -52,11 +56,12 @@ public class CartService {
         Optional<Order> searchedOrderByCustomer = modifyProductAndOrderQuantity(customer, product, remainedQuantity);
         Order orderItem = validateIfOrderAlreadyExists(cartElement.quantity(), searchedOrderByCustomer, customer, product);
 
-        return orderRepository.save(orderItem);
+        Order savedOrder = orderRepository.save(orderItem);
+        return productViewConverter.convertOrderToCarItemShowDTO(savedOrder, imageUtility);
     }
 
     @Transactional
-    public List<Order> integrateCartItemsToUser(ItemIntegrationDTO cartItems) {
+    public CartItemResponseDTO integrateCartItemsToUser(ItemIntegrationDTO cartItems) throws DataFormatException, IOException {
         UserEntity customer = userRepository.findById(cartItems.customerId())
                 .orElseThrow(NonExistingUserException::new);
 
@@ -64,15 +69,17 @@ public class CartService {
 
         handleOrderCreation(cartItems, ordersByCustomer, customer);
 
-        return orderRepository.findAllByCustomerIsOrderedFalse(customer);
+        List<Order> allByCustomer = orderRepository.findAllByCustomerIsOrderedFalse(customer);
+        return new CartItemResponseDTO(productViewConverter.collectCartItemShowDTOs(allByCustomer, imageUtility));
     }
 
     @Transactional
-    public List<Order> getCartItems(long customerId) {
+    public CartItemResponseDTO getCartItems(long customerId) throws DataFormatException, IOException {
         UserEntity customer = userRepository.findById(customerId)
                 .orElseThrow(NonExistingUserException::new);
 
-        return orderRepository.findAllByCustomerIsOrderedFalse(customer);
+        List<Order> allByCustomerCartItems = orderRepository.findAllByCustomerIsOrderedFalse(customer);
+        return new CartItemResponseDTO(productViewConverter.collectCartItemShowDTOs(allByCustomerCartItems, imageUtility));
     }
 
     public void deleteOrder(long orderId){

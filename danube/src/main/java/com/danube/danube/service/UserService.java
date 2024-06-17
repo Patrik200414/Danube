@@ -4,6 +4,7 @@ import com.danube.danube.custom_exception.login_registration.*;
 import com.danube.danube.custom_exception.user.InvalidUserCredentialsException;
 import com.danube.danube.custom_exception.user.NotMatchingCurrentPasswordException;
 import com.danube.danube.custom_exception.user.NotMatchingNewPasswordAndReenterPasswordException;
+import com.danube.danube.model.dto.jwt.JwtResponse;
 import com.danube.danube.model.dto.user.*;
 import com.danube.danube.model.user.Role;
 import com.danube.danube.model.user.UserEntity;
@@ -54,26 +55,31 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public UserEntity loginUser(UserLoginDTO userLoginDTO){
+    public JwtResponse loginUser(UserLoginDTO userLoginDTO){
         validateEmail(userLoginDTO.email());
         verifyUserCredentials(userLoginDTO.email(), userLoginDTO.password());
-        return userRepository.findByEmail(userLoginDTO.email()).orElseThrow(() -> new EmailNotFoundException(userLoginDTO.email()));
+        UserEntity user = userRepository.findByEmail(userLoginDTO.email()).orElseThrow(() -> new EmailNotFoundException(userLoginDTO.email()));
+        return userConverter.generateJwtResponse(user, jwtUtils);
     }
 
-    public UserEntity addSellerRoleToUser(long id, String token){
+    public JwtResponse addSellerRoleToUser(long id, String token){
         UserEntity user = userRepository.findById(id).orElseThrow(NonExistingUserException::new);
         validateUserByThereRequestTokenInformation(token, user);
 
         Set<Role> userRoles = user.getRoles();
-        userRoles.add(Role.ROLE_SELLER);
 
-        user.setRoles(userRoles);
+        if(!userRoles.contains(Role.ROLE_SELLER)){
+            userRoles.add(Role.ROLE_SELLER);
+            user.setRoles(userRoles);
+            UserEntity savedUser = userRepository.save(user);
+            return userConverter.generateJwtResponse(savedUser, jwtUtils);
+        }
 
-        return userRepository.save(user);
+        return userConverter.generateJwtResponse(user, jwtUtils);
     }
 
     @Transactional
-    public UserEntity updateUser(long id, UserUpdateDTO userUpdateDTO, String token){
+    public JwtResponse updateUser(long id, UserUpdateDTO userUpdateDTO, String token){
         validateEmail(userUpdateDTO.email());
         validateFirstNameAndLastName(userUpdateDTO.firstName(), userUpdateDTO.lastName());
 
@@ -85,7 +91,9 @@ public class UserService {
         user.setFirstName(userUpdateDTO.firstName());
         user.setLastName(userUpdateDTO.lastName());
 
-        return userRepository.save(user);
+
+        UserEntity savedUser = userRepository.save(user);
+        return userConverter.generateJwtResponse(savedUser, jwtUtils);
     }
 
     @Transactional
@@ -106,14 +114,15 @@ public class UserService {
         return JWT_VERIFICATION_TIME_IN_MINUTES > differenceInMinutes;
     }
 
-    public UserEntity authenticateUser(String email, String password){
+    public JwtResponse authenticateUser(String email, String password){
         Authentication authentication = verifyUserCredentials(email, password);
 
         if(!authentication.isAuthenticated()){
             throw new InvalidUserCredentialsException();
         }
 
-        return userRepository.findByEmail(email).orElseThrow(() -> new EmailNotFoundException(email));
+        UserEntity user = userRepository.findByEmail(email).orElseThrow(() -> new EmailNotFoundException(email));
+        return userConverter.generateJwtResponse(user, jwtUtils);
     }
 
 
