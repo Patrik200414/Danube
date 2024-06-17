@@ -37,7 +37,7 @@ class ProductServiceTest {
         //productService = new ProductService(productRepositoryMock, categoryRepository, subcategoryRepository, detailRepository, userRepository, valueRepository, productValueRepository, imageRepository, subcategoryDetailRepository, );
     }
 
-    @Test
+    /*@Test
     void getProducts() {
     }
 
@@ -83,5 +83,5 @@ class ProductServiceTest {
 
     @Test
     void updateProduct() {
-    }
+    }*/
 }

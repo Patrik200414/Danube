@@ -101,6 +101,7 @@ class UserServiceTest {
                 "firstuser@gmail.com",
                 "Test"
         );
+
         assertThrowsExactly(InputTooShortException.class, () -> userService.saveUser(registration));
     }
 
@@ -123,7 +124,7 @@ class UserServiceTest {
                 "test@gmail.com",
                 "Password"
         );
-        String expectedEncodedPassword = anyString();
+        String expectedEncodedPassword = "ExpectedEncodedPassword";
 
         UserEntity expectedUserEntity = new UserEntity();
         expectedUserEntity.setFirstName(expectedUserRegistration.firstName());
@@ -274,8 +275,7 @@ class UserServiceTest {
                 "Test",
                 "User"
         );
-        String expectedJwtToken = anyString();
-        assertThrowsExactly(InvalidEmailFormatException.class, () -> userService.updateUser(1, expectedUserUpdateDTO, expectedJwtToken));
+        assertThrowsExactly(InvalidEmailFormatException.class, () -> userService.updateUser(1, expectedUserUpdateDTO, mockToken));
     }
 
     @Test
@@ -285,9 +285,8 @@ class UserServiceTest {
                 "T",
                 "User"
         );
-        String expectedJwtToken = anyString();
 
-        assertThrowsExactly(InputTooShortException.class, () -> userService.updateUser(1, expectedUserUpdateDTO, expectedJwtToken));
+        assertThrowsExactly(InputTooShortException.class, () -> userService.updateUser(1, expectedUserUpdateDTO, mockToken));
     }
 
     @Test
@@ -304,6 +303,60 @@ class UserServiceTest {
         String expectedJwtToken = anyString();
 
         assertThrowsExactly(NonExistingUserException.class, () -> userService.updateUser(1, expectedUserUpdateDTO, expectedJwtToken));
+    }
+
+    @Test
+    void testUpdateUser_WithJwtEmailNotTheSameAsTheUserEmail_ShouldThrowInvalidUserCredentialsException() {
+        UserUpdateDTO expectedUserUpdateDTO = new UserUpdateDTO(
+                "test@gmail.com",
+                "Test",
+                "User"
+        );
+
+        UserEntity expectedUser = new UserEntity();
+        expectedUser.setFirstName("User");
+        expectedUser.setLastName("First");
+        expectedUser.setEmail("userfirst@gmail.com");
+        expectedUser.setId(1);
+
+        when(userRepositoryMock.findById(1L))
+                .thenReturn(Optional.of(expectedUser));
+
+        assertThrowsExactly(InvalidUserCredentialsException.class, () -> userService.updateUser(1, expectedUserUpdateDTO, mockToken));
+    }
+
+    @Test
+    void testUpdateUser_WithValidInformationAndValidPermissions_ShouldExecuteUserRepositorySaveAndGenerateJwtResponseWithExpectedUserData(){
+        UserUpdateDTO expectedUserUpdateDTO = new UserUpdateDTO(
+                "test@gmail.com",
+                "Test",
+                "User"
+        );
+
+        UserEntity expectedUser = new UserEntity();
+        expectedUser.setFirstName("User");
+        expectedUser.setLastName("First");
+        expectedUser.setEmail("userfirst@gmail.com");
+        expectedUser.setId(1);
+
+
+        when(jwtUtilsMock.getEmailFromJwtToken(mockToken))
+                .thenReturn(expectedUser.getEmail());
+
+        when(userRepositoryMock.findById(1L))
+                .thenReturn(Optional.of(expectedUser));
+
+        when(userRepositoryMock.save(expectedUser))
+                .thenReturn(expectedUser);
+
+        userService.updateUser(1, expectedUserUpdateDTO, mockToken);
+
+        expectedUser.setEmail(expectedUserUpdateDTO.email());
+        expectedUser.setFirstName(expectedUserUpdateDTO.firstName());
+        expectedUser.setLastName(expectedUserUpdateDTO.lastName());
+
+        verify(userRepositoryMock, times(1)).save(expectedUser);
+        verify(userConverterMock, times(1)).generateJwtResponse(expectedUser, jwtUtilsMock);
     }
 
     @Test
