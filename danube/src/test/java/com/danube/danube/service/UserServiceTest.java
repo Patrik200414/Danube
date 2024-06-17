@@ -7,6 +7,7 @@ import com.danube.danube.custom_exception.user.NotMatchingNewPasswordAndReenterP
 import com.danube.danube.model.dto.user.PasswordUpdateDTO;
 import com.danube.danube.model.dto.user.UserLoginDTO;
 import com.danube.danube.model.dto.user.UserRegistrationDTO;
+import com.danube.danube.model.dto.user.UserUpdateDTO;
 import com.danube.danube.model.user.Role;
 import com.danube.danube.model.user.UserEntity;
 import com.danube.danube.repository.user.UserRepository;
@@ -264,6 +265,45 @@ class UserServiceTest {
                 .thenReturn(false);
 
         assertThrowsExactly(NotMatchingCurrentPasswordException.class, () -> userService.updatePassword(1L, passwordUpdateDTO, mockToken));
+    }
+
+    @Test
+    void testUpdateUser_WithInvalidEmail_ShouldThrowInvalidEmailFormatException(){
+        UserUpdateDTO expectedUserUpdateDTO = new UserUpdateDTO(
+                "InvalidEmailAddress",
+                "Test",
+                "User"
+        );
+        String expectedJwtToken = anyString();
+        assertThrowsExactly(InvalidEmailFormatException.class, () -> userService.updateUser(1, expectedUserUpdateDTO, expectedJwtToken));
+    }
+
+    @Test
+    void testUpdateUser_WithFirstNameTooShort_ShouldThrowInputTooShortException(){
+        UserUpdateDTO expectedUserUpdateDTO = new UserUpdateDTO(
+                "test@gmail.com",
+                "T",
+                "User"
+        );
+        String expectedJwtToken = anyString();
+
+        assertThrowsExactly(InputTooShortException.class, () -> userService.updateUser(1, expectedUserUpdateDTO, expectedJwtToken));
+    }
+
+    @Test
+    void testUpdateUser_WithNonExistingUser_ShouldThrowNonExistingUserException(){
+        UserUpdateDTO expectedUserUpdateDTO = new UserUpdateDTO(
+                "test@gmail.com",
+                "Test",
+                "User"
+        );
+
+        when(userRepositoryMock.findById(1L))
+                .thenReturn(Optional.empty());
+
+        String expectedJwtToken = anyString();
+
+        assertThrowsExactly(NonExistingUserException.class, () -> userService.updateUser(1, expectedUserUpdateDTO, expectedJwtToken));
     }
 
     @Test
