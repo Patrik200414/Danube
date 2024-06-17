@@ -67,12 +67,15 @@ public class UserService {
         validateUserByThereRequestTokenInformation(token, user);
 
         Set<Role> userRoles = user.getRoles();
-        userRoles.add(Role.ROLE_SELLER);
 
-        user.setRoles(userRoles);
+        if(!userRoles.contains(Role.ROLE_SELLER)){
+            userRoles.add(Role.ROLE_SELLER);
+            user.setRoles(userRoles);
+            UserEntity savedUser = userRepository.save(user);
+            return userConverter.generateJwtResponse(savedUser, jwtUtils);
+        }
 
-        UserEntity savedUser = userRepository.save(user);
-        return userConverter.generateJwtResponse(savedUser, jwtUtils);
+        return userConverter.generateJwtResponse(user, jwtUtils);
     }
 
     @Transactional

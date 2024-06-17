@@ -7,6 +7,7 @@ import com.danube.danube.custom_exception.user.NotMatchingNewPasswordAndReenterP
 import com.danube.danube.model.dto.user.PasswordUpdateDTO;
 import com.danube.danube.model.dto.user.UserLoginDTO;
 import com.danube.danube.model.dto.user.UserRegistrationDTO;
+import com.danube.danube.model.user.Role;
 import com.danube.danube.model.user.UserEntity;
 import com.danube.danube.repository.user.UserRepository;
 import com.danube.danube.security.jwt.JwtUtils;
@@ -20,14 +21,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static  org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class UserServiceTest {
 
@@ -117,6 +115,35 @@ class UserServiceTest {
     }
 
     @Test
+    void testSaveUser_WithValidUserRegistrationDTO_ShouldExecuteUserRepositorySaveWithExpectedValues(){
+        UserRegistrationDTO expectedUserRegistration = new UserRegistrationDTO(
+                "Test",
+                "User",
+                "test@gmail.com",
+                "Password"
+        );
+        String expectedEncodedPassword = anyString();
+
+        UserEntity expectedUserEntity = new UserEntity();
+        expectedUserEntity.setFirstName(expectedUserRegistration.firstName());
+        expectedUserEntity.setLastName(expectedUserRegistration.lastName());
+        expectedUserEntity.setEmail(expectedUserRegistration.email());
+        expectedUserEntity.setPassword(expectedEncodedPassword);
+
+        when(passwordEncoderMock.encode(expectedUserRegistration.password()))
+                .thenReturn(expectedEncodedPassword);
+
+        when(userConverterMock.convertUserRegistrationDTOToUserEntity(expectedUserRegistration, expectedEncodedPassword))
+                .thenReturn(expectedUserEntity);
+
+        userService.saveUser(expectedUserRegistration);
+
+        verify(passwordEncoderMock, times(1)).encode(expectedUserRegistration.password());
+        verify(userConverterMock, times(1)).convertUserRegistrationDTOToUserEntity(expectedUserRegistration, expectedEncodedPassword);
+        verify(userRepositoryMock, times(1)).save(expectedUserEntity);
+    }
+
+    @Test
     void testAddSellerRoleToUser_WithNonExistingUserUserRepositoryReturnsEmptyOptional_ExpectedNonExistingUserException() {
         when(userRepositoryMock.findById(1L))
                 .thenReturn(Optional.empty());
@@ -141,6 +168,74 @@ class UserServiceTest {
         assertThrowsExactly(InvalidUserCredentialsException.class, () -> userService.addSellerRoleToUser(1L, mockToken));
     }
 
+    @Test
+    void testAddSellerRoleToUser_WithRoleOnlyContainsCustomer_ShouldExecuteUserRepositorySaveWithExpectedValues(){
+        Set<Role> expectedRolesAtStart = new HashSet<>();
+        expectedRolesAtStart.add(Role.ROLE_CUSTOMER);
+
+        UserEntity expectedUser = new UserEntity();
+        expectedUser.setFirstName("User");
+        expectedUser.setLastName("First");
+        expectedUser.setEmail("userfirst@gmail.com");
+        expectedUser.setId(1);
+        expectedUser.setRoles(expectedRolesAtStart);
+
+        String expectedToken = "FirstExpectedToken";
+        String newExpectedJwt = "SecondExpectedToken";
+
+        when(userRepositoryMock.findById(1L))
+                .thenReturn(Optional.of(expectedUser));
+
+        when(userRepositoryMock.save(expectedUser))
+                .thenReturn(expectedUser);
+
+        when(jwtUtilsMock.generateJwtToken(expectedUser.getEmail()))
+                .thenReturn(newExpectedJwt);
+
+        when(jwtUtilsMock.getEmailFromJwtToken(expectedToken))
+                .thenReturn(expectedUser.getEmail());
+
+        userService.addSellerRoleToUser(1, expectedToken);
+        expectedUser.setRoles(Set.of(Role.ROLE_CUSTOMER, Role.ROLE_SELLER));
+
+        verify(userRepositoryMock, times(1)).save(expectedUser);
+        verify(userConverterMock, times(1)).generateJwtResponse(expectedUser, jwtUtilsMock);
+    }
+
+    @Test
+    void testAddSellerRoleToUser_WithRoleContainsCustomerAndSeller_ShouldNotExecuteUserRepositorySaveWithExpectedValues(){
+        Set<Role> expectedRolesAtStart = new HashSet<>();
+        expectedRolesAtStart.add(Role.ROLE_CUSTOMER);
+        expectedRolesAtStart.add(Role.ROLE_SELLER);
+
+        UserEntity expectedUser = new UserEntity();
+        expectedUser.setFirstName("User");
+        expectedUser.setLastName("First");
+        expectedUser.setEmail("userfirst@gmail.com");
+        expectedUser.setId(1);
+        expectedUser.setRoles(expectedRolesAtStart);
+
+        String expectedToken = "FirstExpectedToken";
+        String newExpectedJwt = "SecondExpectedToken";
+
+        when(userRepositoryMock.findById(1L))
+                .thenReturn(Optional.of(expectedUser));
+
+        when(userRepositoryMock.save(expectedUser))
+                .thenReturn(expectedUser);
+
+        when(jwtUtilsMock.generateJwtToken(expectedUser.getEmail()))
+                .thenReturn(newExpectedJwt);
+
+        when(jwtUtilsMock.getEmailFromJwtToken(expectedToken))
+                .thenReturn(expectedUser.getEmail());
+
+        userService.addSellerRoleToUser(1, expectedToken);
+        expectedUser.setRoles(Set.of(Role.ROLE_CUSTOMER, Role.ROLE_SELLER));
+
+        verify(userRepositoryMock, never()).save(expectedUser);
+        verify(userConverterMock, times(1)).generateJwtResponse(expectedUser, jwtUtilsMock);
+    }
 
     @Test
     void testUpdatePassword_WithInCorrectCurrentPassword_ExpectedNotMatchingCurrentPasswordException() {

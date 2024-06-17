@@ -44,7 +44,7 @@ class CartServiceTest {
         imageUtilityMock = mock(ImageUtility.class);
 
 
-        cartService = new CartService(userRepositoryMock, productRepositoryMock, orderRepositoryMock);
+        cartService = new CartService(userRepositoryMock, productRepositoryMock, orderRepositoryMock, productViewConverterMock, imageUtilityMock);
     }
 
     @Test
@@ -116,7 +116,7 @@ class CartServiceTest {
     }
 
     @Test
-    void addToCart_WithExistingUserAndExistingProductAndEnoughQuantityAndFindByCustomerAndProductAndIsOrderedFalseReturnsEmptyOptional_ShouldSaveOrder(){
+    void addToCart_WithExistingUserAndExistingProductAndEnoughQuantityAndFindByCustomerAndProductAndIsOrderedFalseReturnsEmptyOptional_ShouldSaveOrder() throws DataFormatException, IOException {
         UserEntity expectedUser = new UserEntity();
         expectedUser.setEmail("test@gmail.com");
         expectedUser.setId(1);
@@ -157,7 +157,7 @@ class CartServiceTest {
     }
 
     @Test
-    void addToCart_WithExistingUserAndExistingProductAndEnoughQuantityAndFindByCustomerAndProductAndIsOrderedFalseReturns$_ShouldSaveOrder(){
+    void addToCart_WithExistingUserAndExistingProductAndEnoughQuantityAndFindByCustomerAndProductAndIsOrderedFalseReturns$_ShouldSaveOrder() throws DataFormatException, IOException {
         UserEntity expectedUser = new UserEntity();
         expectedUser.setEmail("test@gmail.com");
         expectedUser.setId(1);
@@ -216,7 +216,7 @@ class CartServiceTest {
     }
 
     @Test
-    void testIntegrateCartItemToUser_WithExistingUserAndExistingProductAndUserAlreadyHasItemsInThereCart_ShouldExecuteSaveAllOnProductAndOrderrepositoryWithExpectedValues(){
+    void testIntegrateCartItemToUser_WithExistingUserAndExistingProductAndUserAlreadyHasItemsInThereCart_ShouldExecuteSaveAllOnProductAndOrderrepositoryWithExpectedValues() throws DataFormatException, IOException {
         CartItemShowDTO firstExpectedIntegrityItem = new CartItemShowDTO(
                 1,
                 "Product 1",
@@ -293,7 +293,7 @@ class CartServiceTest {
     }
 
     @Test
-    void testIntegrateCartItemToUser_WithExistingUserAndExistingProductAndUserNotHaveItemsInThereCart_ShouldExecuteSaveAllOnProductAndOrderrepositoryWithExpectedValues(){
+    void testIntegrateCartItemToUser_WithExistingUserAndExistingProductAndUserNotHaveItemsInThereCart_ShouldExecuteSaveAllOnProductAndOrderrepositoryWithExpectedValues() throws DataFormatException, IOException {
         CartItemShowDTO firstExpectedIntegrityItem = new CartItemShowDTO(
                 1,
                 "Product 1",
@@ -377,7 +377,7 @@ class CartServiceTest {
     }
 
     @Test
-    void testGetCartItems_WithExistingUser_ShouldExecuteOrderRepositoryFindAllByCustomerIsOrderedFalse(){
+    void testGetCartItems_WithExistingUser_ShouldExecuteOrderRepositoryFindAllByCustomerIsOrderedFalse() throws DataFormatException, IOException {
         UserEntity expectedUser = new UserEntity();
         expectedUser.setEmail("test@gmail.com");
         expectedUser.setId(1);
