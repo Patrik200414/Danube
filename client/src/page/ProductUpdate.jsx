@@ -72,7 +72,7 @@ function ProductUpdate(){
         productCopy.images = productCopy.images.filter(image => !(image instanceof File));
 
 
-        const formData = appendFilesToFormData(new FormData(), 'newImages', newImages);
+        const formData = appendFilesToFormData('newImages', newImages);
         formData.append('updatedValues', JSON.stringify(productCopy));
         formData.append('seller', user.id);
         

@@ -127,12 +127,13 @@ function ProductUpload(){
     }
 
     function createFormData(product, details){
-            const formData = appendFilesToFormData(new FormData(), 'images', images);
-            formData.append('productDetail', JSON.stringify(product));
-            formData.append('productInformation', JSON.stringify(details));
-            formData.append('userId', user.id);
+        debugger;
+        const formData = appendFilesToFormData('images', images);
+        formData.append('productDetail', JSON.stringify(product));
+        formData.append('productInformation', JSON.stringify(details));
+        formData.append('userId', user.id);
 
-            return(formData)
+        return(formData)
     }
 
 
