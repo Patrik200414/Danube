@@ -127,7 +127,6 @@ function ProductUpload(){
     }
 
     function createFormData(product, details){
-        debugger;
         const formData = appendFilesToFormData('images', images);
         formData.append('productDetail', JSON.stringify(product));
         formData.append('productInformation', JSON.stringify(details));
