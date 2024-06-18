@@ -764,6 +764,8 @@ input[type="text"] {
     width: 100%;
     text-align: left;
     border-collapse: collapse;
+    margin-left: 50%;
+    transform: translateX(-50%);
     margin-top: 20px;
     width: 70%;
   }
@@ -800,6 +802,7 @@ input[type="text"] {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
   }
 
   .product-dashboard-container h2{
