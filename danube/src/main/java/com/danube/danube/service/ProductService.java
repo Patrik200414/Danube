@@ -40,8 +40,6 @@ import java.util.zip.DataFormatException;
 
 @Service
 public class ProductService {
-    @org.springframework.beans.factory.annotation.Value("${PRODUCT_IMAGE_DIRECTORY_PATH}")
-    public String BASE_IMAGE_PATH;
     public static final int SIMILAR_RECOMENDED_PRODUCTS_RESULT_COUNT = 15;
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
