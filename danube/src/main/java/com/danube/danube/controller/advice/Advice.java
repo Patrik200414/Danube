@@ -28,8 +28,8 @@ public class Advice {
     private final Logger logger = LoggerFactory.getLogger(Advice.class);
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<UserErrorMessage> handleDataIntegrityViolationException(DataIntegrityViolationException exception){
-        logger.error(exception.getMessage());
+    public ResponseEntity<UserErrorMessage> handleDataIntegrityViolationException(DataIntegrityViolationException e){
+        logger.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 new UserErrorMessage("Already existing email!")
         );
@@ -37,7 +37,7 @@ public class Advice {
 
     @ExceptionHandler(InternalAuthenticationServiceException.class)
     public ResponseEntity<UserErrorMessage> handleInternalAuthenticationServiceException(InternalAuthenticationServiceException e){
-        logger.error(e.getMessage());
+        logger.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 new UserErrorMessage("Authentication failed!")
         );
@@ -45,6 +45,7 @@ public class Advice {
 
     @ExceptionHandler(RegistrationFieldNullException.class)
     public ResponseEntity<UserErrorMessage> handleRegistrationFieldNullException(RegistrationFieldNullException e){
+        logger.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 new UserErrorMessage(
                         String.format("%s field is empty! Please enter correct value!", e.getMessage())
@@ -60,133 +61,149 @@ public class Advice {
     }
 
     @ExceptionHandler(InvalidEmailFormatException.class)
-    public ResponseEntity<UserErrorMessage> handleInvalidEmailFormatException(){
+    public ResponseEntity<UserErrorMessage> handleInvalidEmailFormatException(InvalidEmailFormatException e){
+        logger.error(e.getMessage(), e);
         return ResponseEntity.badRequest().body(
                 new UserErrorMessage("Email is invalid! Please enter a valid email address!")
         );
     }
 
     @ExceptionHandler({BadCredentialsException.class, InvalidUserCredentialsException.class})
-    public ResponseEntity<UserErrorMessage> handleBadCredentialsException(){
+    public ResponseEntity<UserErrorMessage> handleBadCredentialsException(Exception e){
+        logger.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                 new UserErrorMessage("Invalid password! This account has different password!")
         );
     }
 
     @ExceptionHandler(NonExistingUserException.class)
-    public ResponseEntity<UserErrorMessage> handleNonExistingUserException(){
+    public ResponseEntity<UserErrorMessage> handleNonExistingUserException(NonExistingUserException e){
+        logger.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 new UserErrorMessage("This user doesn't exists!")
         );
     }
 
     @ExceptionHandler(IncorrectProductObjectFormException.class)
-    public ResponseEntity<UserErrorMessage> handleIncorrectProductObjectFormException(){
+    public ResponseEntity<UserErrorMessage> handleIncorrectProductObjectFormException(IncorrectProductObjectFormException e){
+        logger.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 new UserErrorMessage("Incorrect data for the selected subcategory! Please correct the information!")
         );
     }
 
     @ExceptionHandler(UserEntityPasswordMissMatchException.class)
-    public ResponseEntity<UserErrorMessage> handleUserEntityPasswordMissMatchException(){
+    public ResponseEntity<UserErrorMessage> handleUserEntityPasswordMissMatchException(UserEntityPasswordMissMatchException e){
+        logger.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 new UserErrorMessage("Incorrect password for the logged in user!")
         );
     }
 
     @ExceptionHandler(NonExistingSubcategoryException.class)
-    public ResponseEntity<UserErrorMessage> handleNonExistingSubcategoryException(){
+    public ResponseEntity<UserErrorMessage> handleNonExistingSubcategoryException(NonExistingSubcategoryException e){
+        logger.error(e.getMessage(), e);
         return ResponseEntity.badRequest().body(
                 new UserErrorMessage("Non existing subcategory!")
         );
     }
 
     @ExceptionHandler(NotMatchingUserAndUpdateUserIdException.class)
-    public ResponseEntity<UserErrorMessage> handleNotMatchingUserAndUpdateUserIdException(){
+    public ResponseEntity<UserErrorMessage> handleNotMatchingUserAndUpdateUserIdException(NotMatchingUserAndUpdateUserIdException e){
+        logger.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                 new UserErrorMessage("You can't modify other user's information!")
         );
     }
 
     @ExceptionHandler(NotMatchingCurrentPasswordException.class)
-    public ResponseEntity<UserErrorMessage> handleNotMatchingCurrentPasswordException(){
+    public ResponseEntity<UserErrorMessage> handleNotMatchingCurrentPasswordException(NotMatchingCurrentPasswordException e){
+        logger.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 new UserErrorMessage("The given current password does not matches!")
         );
     }
 
     @ExceptionHandler(NotMatchingNewPasswordAndReenterPasswordException.class)
-    public ResponseEntity<UserErrorMessage> handleNotMatchingNewPasswordAndReenterPasswordException(){
+    public ResponseEntity<UserErrorMessage> handleNotMatchingNewPasswordAndReenterPasswordException(NotMatchingNewPasswordAndReenterPasswordException e){
+        logger.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 new UserErrorMessage("The reentered password does not matches the new password!")
         );
     }
 
     @ExceptionHandler({IOException.class, JsonProcessingException.class})
-    public ResponseEntity<UserErrorMessage> handleIOExceptionAndJsonProcessingException(Exception exception){
-        logger.error(exception.getMessage());
+    public ResponseEntity<UserErrorMessage> handleIOExceptionAndJsonProcessingException(Exception e){
+        logger.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                 new UserErrorMessage("Something went wrong! Couldn't save product! Please try again!")
         );
     }
 
     @ExceptionHandler(NonExistingProductException.class)
-    public ResponseEntity<UserErrorMessage> handleNonExistingProductException(){
+    public ResponseEntity<UserErrorMessage> handleNonExistingProductException(NonExistingProductException e){
+        logger.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 new UserErrorMessage("The selected item is not found!")
         );
     }
 
     @ExceptionHandler(UserNotSellerException.class)
-    public ResponseEntity<UserErrorMessage> handleUserNotSellerException(){
+    public ResponseEntity<UserErrorMessage> handleUserNotSellerException(UserNotSellerException e){
+        logger.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                 new UserErrorMessage("The current user don't have seller permission!")
         );
     }
 
     @ExceptionHandler(MissingImageException.class)
-    public ResponseEntity<UserErrorMessage> handleMissingImageException(){
+    public ResponseEntity<UserErrorMessage> handleMissingImageException(MissingImageException e){
+        logger.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(
                 new UserErrorMessage("Missing image parameter! At least one image required!")
         );
     }
 
     @ExceptionHandler(NonExistingValueException.class)
-    public ResponseEntity<UserErrorMessage> handleNonExistingValueException(){
+    public ResponseEntity<UserErrorMessage> handleNonExistingValueException(NonExistingValueException e){
+        logger.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 new UserErrorMessage("Unable to detect the mentioned value of the product!")
         );
     }
 
     @ExceptionHandler(IncorrectSellerException.class)
-    public ResponseEntity<UserErrorMessage> handleIncorrectSellerException(){
+    public ResponseEntity<UserErrorMessage> handleIncorrectSellerException(IncorrectSellerException e){
+        logger.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 new UserErrorMessage("You are not the seller of the updatable product! You can only update your products!")
         );
     }
 
     @ExceptionHandler(ExpiredVerificationTokenException.class)
-    public ResponseEntity<?> handleExpiredVerificationTokenException(ExpiredVerificationTokenException exception){
-        logger.error(exception.getMessage());
+    public ResponseEntity<?> handleExpiredVerificationTokenException(ExpiredVerificationTokenException e){
+        logger.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @ExceptionHandler(StripeException.class)
-    public ResponseEntity<?> handlePaymentException(StripeException exception){
-        logger.error(exception.getMessage());
+    public ResponseEntity<?> handlePaymentException(StripeException e){
+        logger.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(
                 new UserErrorMessage("Payment process failed! Please try it again!")
         );
     }
 
     @ExceptionHandler(OrderFailedException.class)
-    public ResponseEntity<?> handleOrderFailedException(){
+    public ResponseEntity<?> handleOrderFailedException(OrderFailedException e){
+        logger.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(
                 new UserErrorMessage("Order couldn't be fulfilled! Please try again!")
         );
     }
 
     private UserErrorMessage handleInputTooShortError(InputTooShortException e){
+        logger.error(e.getMessage(), e);
         String fieldName = e.getMessage().split("-")[0];
         String minLength = e.getMessage().split("-")[1];
         return new UserErrorMessage(String.format("Input at %s field is too short! Input should be at least %s character long!", fieldName, minLength));
