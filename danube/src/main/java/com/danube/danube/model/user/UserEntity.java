@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(
@@ -16,8 +17,8 @@ import java.util.Set;
 )
 public class UserEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
     @Column(nullable = false)
     private String firstName;
     @Column(nullable = false)
@@ -36,7 +37,7 @@ public class UserEntity {
     public UserEntity() {
     }
 
-    public UserEntity(long id, String firstName, String lastName, String email, String password, Set<Role> roles, List<Product> products, List<Order> orders) {
+    public UserEntity(UUID id, String firstName, String lastName, String email, String password, Set<Role> roles, List<Product> products, List<Order> orders) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -47,11 +48,11 @@ public class UserEntity {
         this.orders = orders;
     }
 
-    public long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

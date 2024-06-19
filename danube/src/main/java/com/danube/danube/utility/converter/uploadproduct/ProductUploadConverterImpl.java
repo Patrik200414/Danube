@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.zip.DataFormatException;
 
 @Component
@@ -54,7 +55,7 @@ public class ProductUploadConverterImpl implements ProductUploadConverter{
     }
 
     @Override
-    public ProductUploadDTO convertRequestParamToProductUploadDTO(String productDetail, String productInformation, long userId, MultipartFile[] image) throws JsonProcessingException {
+    public ProductUploadDTO convertRequestParamToProductUploadDTO(String productDetail, String productInformation, UUID userId, MultipartFile[] image) throws JsonProcessingException {
         ProductDetailUploadDTO convertedProductDetail = objectMapper.readValue(productDetail, ProductDetailUploadDTO.class);
         Map<String, String> convertedProductInformation = objectMapper.readValue(productInformation, new TypeReference<Map<String, String>>() {});
 

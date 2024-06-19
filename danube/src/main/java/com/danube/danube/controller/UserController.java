@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
@@ -33,19 +35,19 @@ public class UserController {
     }
 
     @PatchMapping("/{id}/role")
-    public JwtResponse updateUserRole(@PathVariable long id, HttpServletRequest request){
+    public JwtResponse updateUserRole(@PathVariable UUID id, HttpServletRequest request){
         String jwtToken = getJwtTokenFromBearerToken(request);
         return userService.addSellerRoleToUser(id, jwtToken);
     }
 
     @PutMapping("/{id}")
-    public JwtResponse updateUser(@PathVariable long id, @RequestBody UserUpdateDTO userUpdateDTO, HttpServletRequest request){
+    public JwtResponse updateUser(@PathVariable UUID id, @RequestBody UserUpdateDTO userUpdateDTO, HttpServletRequest request){
         String jwtToken = getJwtTokenFromBearerToken(request);
         return userService.updateUser(id, userUpdateDTO, jwtToken);
     }
 
     @PutMapping("/password/{id}")
-    public HttpStatus updatePassword(@PathVariable long id, @RequestBody PasswordUpdateDTO passwordUpdateDTO, HttpServletRequest request){
+    public HttpStatus updatePassword(@PathVariable UUID id, @RequestBody PasswordUpdateDTO passwordUpdateDTO, HttpServletRequest request){
         String jwtToken = getJwtTokenFromBearerToken(request);
         userService.updatePassword(id, passwordUpdateDTO, jwtToken);
         return HttpStatus.OK;

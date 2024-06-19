@@ -4,11 +4,12 @@ import com.danube.danube.model.dto.product.ProductDetailUploadDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
+import java.util.UUID;
 
 public record ProductUploadDTO(
         ProductDetailUploadDTO productDetail,
         Map<String, String> productInformation,
-        long userId,
+        UUID userId,
         MultipartFile[] images
 ) {
 }

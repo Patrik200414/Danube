@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Service
@@ -62,7 +63,7 @@ public class UserService {
         return userConverter.generateJwtResponse(user, jwtUtils);
     }
 
-    public JwtResponse addSellerRoleToUser(long id, String token){
+    public JwtResponse addSellerRoleToUser(UUID id, String token){
         UserEntity user = userRepository.findById(id).orElseThrow(NonExistingUserException::new);
         validateUserByThereRequestTokenInformation(token, user);
 
@@ -79,7 +80,7 @@ public class UserService {
     }
 
     @Transactional
-    public JwtResponse updateUser(long id, UserUpdateDTO userUpdateDTO, String token){
+    public JwtResponse updateUser(UUID id, UserUpdateDTO userUpdateDTO, String token){
         validateEmail(userUpdateDTO.email());
         validateFirstNameAndLastName(userUpdateDTO.firstName(), userUpdateDTO.lastName());
 
@@ -97,7 +98,7 @@ public class UserService {
     }
 
     @Transactional
-    public void updatePassword(long id, PasswordUpdateDTO passwordUpdateDTO, String token){
+    public void updatePassword(UUID id, PasswordUpdateDTO passwordUpdateDTO, String token){
         UserEntity user = userRepository.findById(id).orElseThrow(NonExistingUserException::new);
 
         validatePasswordUpdate(passwordUpdateDTO, user, token);

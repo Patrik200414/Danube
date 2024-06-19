@@ -15,6 +15,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -51,6 +52,7 @@ class OrderServiceTest {
 
     @Test
     void testSaveOrderInformation_WithOrderRepositoryReturnsEmptyList_ShouldThrowOrderFailedException(){
+        UUID expectedCustomerId = UUID.randomUUID();
         OrderInformationDTO expectedOrderInformation = new OrderInformationDTO(
                 "Street Address",
                 "Example City",
@@ -61,7 +63,7 @@ class OrderServiceTest {
         );
 
         UserEntity expectedUser = new UserEntity();
-        expectedUser.setId(1);
+        expectedUser.setId(expectedCustomerId);
         expectedUser.setEmail("test@gmail.com");
         expectedUser.setFirstName("Test");
         expectedUser.setLastName("User");
@@ -114,8 +116,9 @@ class OrderServiceTest {
 
     @Test
     void testSetIsOrdered_WithExistingUser_ShouldCallOnceOrderRepositorySaveAll(){
+        UUID expectedCustomerId = UUID.randomUUID();
         UserEntity expectedUser = new UserEntity();
-        expectedUser.setId(1);
+        expectedUser.setId(expectedCustomerId);
         expectedUser.setEmail("test@gmail.com");
         expectedUser.setFirstName("Test");
         expectedUser.setLastName("User");

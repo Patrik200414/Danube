@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 import java.util.zip.DataFormatException;
 
 @RestController
@@ -37,7 +38,7 @@ public class CartController {
     }
 
     @GetMapping("/{customerId}")
-    public CartItemResponseDTO getMyCart(@PathVariable long customerId) throws DataFormatException, IOException {
+    public CartItemResponseDTO getMyCart(@PathVariable UUID customerId) throws DataFormatException, IOException {
         return cartService.getCartItems(customerId);
     }
 
