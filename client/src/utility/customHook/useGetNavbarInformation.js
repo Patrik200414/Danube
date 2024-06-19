@@ -15,7 +15,7 @@ function useGetNavbarInformation(currUser){
         }
 
         const getCartItemNumber = async (currUser) => {
-            const cartItemData = await fetchGetAuthorization(`/api/cart/${Number(currUser.id)}`, currUser.jwt);
+            const cartItemData = await fetchGetAuthorization(`/api/cart/${currUser.id}`, currUser.jwt);
             const cartItemResponse = await cartItemData.json();
             const itemsCount = calculateItemNumbers(cartItemResponse.cartItems);
             setNavbarResponse(prev => ({...prev, cartItemNumber: itemsCount}))
