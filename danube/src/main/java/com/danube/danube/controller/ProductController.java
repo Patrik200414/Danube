@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.zip.DataFormatException;
 
 @RestController
@@ -75,7 +76,7 @@ public class ProductController {
 
 
     @GetMapping("/myProducts/{userId}")
-    public List<MyProductInformationDTO> getMyProducts(@PathVariable long userId) throws DataFormatException, IOException {
+    public List<MyProductInformationDTO> getMyProducts(@PathVariable UUID userId) throws DataFormatException, IOException {
         return productService.getMyProducts(userId);
     }
 
@@ -83,7 +84,7 @@ public class ProductController {
     public HttpStatus saveProduct(
             @RequestParam("productDetail") String productDetail,
             @RequestParam("productInformation") String productInformation,
-            @RequestParam("userId") long userId,
+            @RequestParam("userId") UUID userId,
             @RequestParam("images") MultipartFile[] images
     ) throws IOException {
         ProductUploadDTO productUploadDTO = productUploadConverter.convertRequestParamToProductUploadDTO(
@@ -103,7 +104,7 @@ public class ProductController {
             @PathVariable long productId,
             @RequestParam("updatedValues") String updatedValue,
             @RequestParam(value = "newImages", required = false) MultipartFile[] newImages,
-            @RequestParam("seller") long sellerId
+            @RequestParam("seller") UUID sellerId
     ) throws IOException {
         ProductUpdateDTO productUpdateDTO = productUploadConverter.convertUpdateDataToProductUpdateDTO(updatedValue);
         productService.updateProduct(productUpdateDTO, newImages, sellerId, productId);

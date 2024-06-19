@@ -159,7 +159,7 @@ public class ProductService {
     }
 
     @Transactional
-    public List<MyProductInformationDTO> getMyProducts(long userId) throws DataFormatException, IOException {
+    public List<MyProductInformationDTO> getMyProducts(UUID userId) throws DataFormatException, IOException {
         UserEntity seller = userRepository.findById(userId).orElseThrow(NonExistingUserException::new);
         if(!seller.getRoles().contains(Role.ROLE_SELLER)){
             throw new UserNotSellerException();
@@ -206,7 +206,7 @@ public class ProductService {
     }
 
     @Transactional
-    public void updateProduct(ProductUpdateDTO updatedProductDetails, MultipartFile[] newImages, long sellerId, long updatedProductId) throws IOException{
+    public void updateProduct(ProductUpdateDTO updatedProductDetails, MultipartFile[] newImages, UUID sellerId, long updatedProductId) throws IOException{
         UserEntity seller = sellerValidator(sellerId);
         Product updatedProduct = productRepository.findById(updatedProductId)
                 .orElseThrow(NonExistingProductException::new);
@@ -325,7 +325,7 @@ public class ProductService {
         productValueRepository.saveAll(savedProductValue);
     }
 
-    private UserEntity sellerValidator(long userId){
+    private UserEntity sellerValidator(UUID userId){
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(NonExistingUserException::new);
 
