@@ -75,10 +75,12 @@ public class ProductService {
     }
 
     @Transactional
-    public Set<ProductShowSmallDTO> getProducts(int pageNumber, int itemPerPage) throws DataFormatException, IOException {
+    public PageProductDTO getProducts(int pageNumber, int itemPerPage) throws DataFormatException, IOException {
         PageRequest pageRequest = PageRequest.of(pageNumber, itemPerPage);
         Page<Product> pagedProducts = productRepository.findAll(pageRequest);
-        return productViewConverter.convertProductToProductShowSmallDTORandomOrder(pagedProducts, imageUtility, converterHelper);
+
+        Set<ProductShowSmallDTO> productShowItems = productViewConverter.convertProductToProductShowSmallDTORandomOrder(pagedProducts, imageUtility, converterHelper);
+        return new PageProductDTO(productShowItems, pagedProducts.getTotalPages(), pagedProducts.getTotalElements());
     }
 
     public long getProductCount(){

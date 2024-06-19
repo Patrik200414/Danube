@@ -28,7 +28,7 @@ public class ProductController {
     }
 
     @GetMapping()
-    public Set<ProductShowSmallDTO> getProducts(@RequestParam(defaultValue = "0") int pageNumber, @RequestParam(defaultValue = "10") int itemPerPage) throws DataFormatException, IOException {
+    public PageProductDTO getProducts(@RequestParam(defaultValue = "0") int pageNumber, @RequestParam(defaultValue = "9") int itemPerPage) throws DataFormatException, IOException {
         return productService.getProducts(pageNumber, itemPerPage);
     }
 
