@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.zip.DataFormatException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -49,13 +50,14 @@ class CartServiceTest {
 
     @Test
     void testAddToCart_WithNonExistingUser_ShouldThrowNonExistingUserException(){
+        UUID expectedCustomerId = UUID.randomUUID();
         AddToCartDTO addToCartDTO = new AddToCartDTO(
-                1,
+                expectedCustomerId,
                 1,
                 10
         );
 
-        when(userRepositoryMock.findById(1L))
+        when(userRepositoryMock.findById(expectedCustomerId))
                 .thenReturn(Optional.empty());
 
         assertThrowsExactly(NonExistingUserException.class, () -> cartService.addToCart(addToCartDTO));
@@ -63,19 +65,20 @@ class CartServiceTest {
 
     @Test
     void testAddToCart_WithNotExistingProduct_ShouldThrowNonExistingProductException(){
+        UUID expectedCustomerId = UUID.randomUUID();
         UserEntity expectedUser = new UserEntity();
         expectedUser.setEmail("test@gmail.com");
-        expectedUser.setId(1);
+        expectedUser.setId(expectedCustomerId);
         expectedUser.setFirstName("Test");
         expectedUser.setLastName("User");
 
         AddToCartDTO addToCartDTO = new AddToCartDTO(
-                1,
+                expectedCustomerId,
                 1,
                 10
         );
 
-        when(userRepositoryMock.findById(1L))
+        when(userRepositoryMock.findById(expectedCustomerId))
                 .thenReturn(Optional.of(
                         expectedUser
                 ));
@@ -88,9 +91,10 @@ class CartServiceTest {
 
     @Test
     void testAddToCart_WithXQuantityInAddToCartDTOIsLargerThanProductQuantity_ShouldThrowNotEnoughQuantityToOrderException(){
+        UUID expectedCustomerId = UUID.randomUUID();
         UserEntity expectedUser = new UserEntity();
         expectedUser.setEmail("test@gmail.com");
-        expectedUser.setId(1);
+        expectedUser.setId(expectedCustomerId);
         expectedUser.setFirstName("Test");
         expectedUser.setLastName("User");
 
@@ -98,12 +102,12 @@ class CartServiceTest {
         expectedProduct.setQuantity(9);;
 
         AddToCartDTO addToCartDTO = new AddToCartDTO(
-                1,
+                expectedCustomerId,
                 1,
                 10
         );
 
-        when(userRepositoryMock.findById(1L))
+        when(userRepositoryMock.findById(expectedCustomerId))
                 .thenReturn(Optional.of(
                         expectedUser
                 ));
@@ -117,9 +121,10 @@ class CartServiceTest {
 
     @Test
     void addToCart_WithExistingUserAndExistingProductAndEnoughQuantityAndFindByCustomerAndProductAndIsOrderedFalseReturnsEmptyOptional_ShouldSaveOrder() throws DataFormatException, IOException {
+        UUID expectedCustomerId = UUID.randomUUID();
         UserEntity expectedUser = new UserEntity();
         expectedUser.setEmail("test@gmail.com");
-        expectedUser.setId(1);
+        expectedUser.setId(expectedCustomerId);
         expectedUser.setFirstName("Test");
         expectedUser.setLastName("User");
 
@@ -127,12 +132,12 @@ class CartServiceTest {
         expectedProduct.setQuantity(20);;
 
         AddToCartDTO addToCartDTO = new AddToCartDTO(
-                1,
+                expectedCustomerId,
                 1,
                 10
         );
 
-        when(userRepositoryMock.findById(1L))
+        when(userRepositoryMock.findById(expectedCustomerId))
                 .thenReturn(Optional.of(
                         expectedUser
                 ));
@@ -158,9 +163,10 @@ class CartServiceTest {
 
     @Test
     void addToCart_WithExistingUserAndExistingProductAndEnoughQuantityAndFindByCustomerAndProductAndIsOrderedFalseReturns$_ShouldSaveOrder() throws DataFormatException, IOException {
+        UUID expectedCustomerId = UUID.randomUUID();
         UserEntity expectedUser = new UserEntity();
         expectedUser.setEmail("test@gmail.com");
-        expectedUser.setId(1);
+        expectedUser.setId(expectedCustomerId);
         expectedUser.setFirstName("Test");
         expectedUser.setLastName("User");
 
@@ -168,7 +174,7 @@ class CartServiceTest {
         expectedProduct.setQuantity(20);;
 
         AddToCartDTO addToCartDTO = new AddToCartDTO(
-                1,
+                expectedCustomerId,
                 1,
                 10
         );
@@ -178,7 +184,7 @@ class CartServiceTest {
         expectedOrder.setProduct(expectedProduct);
         expectedOrder.setQuantity(5);
 
-        when(userRepositoryMock.findById(1L))
+        when(userRepositoryMock.findById(expectedCustomerId))
                 .thenReturn(Optional.of(
                         expectedUser
                 ));
@@ -204,12 +210,13 @@ class CartServiceTest {
 
     @Test
     void testIntegrateCartItemsToUser_WithNonExistingUser_ShouldThrowNonExistingUserException() throws DataFormatException, IOException {
+        UUID expectedCustomerId = UUID.randomUUID();
         ItemIntegrationDTO expectedIntegration = new ItemIntegrationDTO(
-                1,
+                expectedCustomerId,
                 List.of()
         );
 
-        when(userRepositoryMock.findById(1L))
+        when(userRepositoryMock.findById(expectedCustomerId))
                 .thenReturn(Optional.empty());
 
         assertThrowsExactly(NonExistingUserException.class, () -> cartService.integrateCartItemsToUser(expectedIntegration));
@@ -217,6 +224,7 @@ class CartServiceTest {
 
     @Test
     void testIntegrateCartItemToUser_WithExistingUserAndExistingProductAndUserAlreadyHasItemsInThereCart_ShouldExecuteSaveAllOnProductAndOrderrepositoryWithExpectedValues() throws DataFormatException, IOException {
+        UUID expectedCustomerId = UUID.randomUUID();
         CartItemShowDTO firstExpectedIntegrityItem = new CartItemShowDTO(
                 1,
                 "Product 1",
@@ -236,7 +244,7 @@ class CartServiceTest {
         );
 
         ItemIntegrationDTO expectedIntegration = new ItemIntegrationDTO(
-                1,
+                expectedCustomerId,
                 List.of(
                         firstExpectedIntegrityItem,
                         secondExpectedIntegrityItem
@@ -245,7 +253,7 @@ class CartServiceTest {
 
         UserEntity expectedUser = new UserEntity();
         expectedUser.setEmail("test@gmail.com");
-        expectedUser.setId(1);
+        expectedUser.setId(expectedCustomerId);
         expectedUser.setFirstName("Test");
         expectedUser.setLastName("User");
 
@@ -257,7 +265,7 @@ class CartServiceTest {
         secondProduct.setQuantity(40);
         secondProduct.setId(2);
 
-        when(userRepositoryMock.findById(1L))
+        when(userRepositoryMock.findById(expectedCustomerId))
                 .thenReturn(Optional.of(expectedUser));
 
         when(productRepositoryMock.findAllById(List.of(firstExpectedIntegrityItem.id(), secondExpectedIntegrityItem.id())))
@@ -294,6 +302,8 @@ class CartServiceTest {
 
     @Test
     void testIntegrateCartItemToUser_WithExistingUserAndExistingProductAndUserNotHaveItemsInThereCart_ShouldExecuteSaveAllOnProductAndOrderrepositoryWithExpectedValues() throws DataFormatException, IOException {
+        UUID expectedCustomerId = UUID.randomUUID();
+
         CartItemShowDTO firstExpectedIntegrityItem = new CartItemShowDTO(
                 1,
                 "Product 1",
@@ -313,7 +323,7 @@ class CartServiceTest {
         );
 
         ItemIntegrationDTO expectedIntegration = new ItemIntegrationDTO(
-                1,
+                expectedCustomerId,
                 List.of(
                         firstExpectedIntegrityItem,
                         secondExpectedIntegrityItem
@@ -322,7 +332,7 @@ class CartServiceTest {
 
         UserEntity expectedUser = new UserEntity();
         expectedUser.setEmail("test@gmail.com");
-        expectedUser.setId(1);
+        expectedUser.setId(expectedCustomerId);
         expectedUser.setFirstName("Test");
         expectedUser.setLastName("User");
 
@@ -334,7 +344,7 @@ class CartServiceTest {
         secondProduct.setQuantity(40);
         secondProduct.setId(2);
 
-        when(userRepositoryMock.findById(1L))
+        when(userRepositoryMock.findById(expectedCustomerId))
                 .thenReturn(Optional.of(expectedUser));
 
         when(productRepositoryMock.findAllById(List.of(firstExpectedIntegrityItem.id(), secondExpectedIntegrityItem.id())))
@@ -369,25 +379,30 @@ class CartServiceTest {
 
     @Test
     void testGetCartItems_WithNonExistingUser_ShouldThrowNonExistingUserException() {
-        when(userRepositoryMock.findById(1L))
+        UUID expectedCustomerId = UUID.randomUUID();
+
+        when(userRepositoryMock.findById(expectedCustomerId))
                 .thenReturn(Optional.empty());
 
 
-        assertThrowsExactly(NonExistingUserException.class, () -> cartService.getCartItems(1));
+        assertThrowsExactly(NonExistingUserException.class, () -> cartService.getCartItems(expectedCustomerId));
     }
 
     @Test
     void testGetCartItems_WithExistingUser_ShouldExecuteOrderRepositoryFindAllByCustomerIsOrderedFalse() throws DataFormatException, IOException {
         UserEntity expectedUser = new UserEntity();
+
+        UUID expectedCustomerId = UUID.randomUUID();
+
         expectedUser.setEmail("test@gmail.com");
-        expectedUser.setId(1);
+        expectedUser.setId(expectedCustomerId);
         expectedUser.setFirstName("Test");
         expectedUser.setLastName("User");
 
-        when(userRepositoryMock.findById(1L))
+        when(userRepositoryMock.findById(expectedCustomerId))
                 .thenReturn(Optional.of(expectedUser));
 
-        cartService.getCartItems(1);
+        cartService.getCartItems(expectedCustomerId);
         verify(orderRepositoryMock, times(1)).findAllByCustomerIsOrderedFalse(expectedUser);
     }
 

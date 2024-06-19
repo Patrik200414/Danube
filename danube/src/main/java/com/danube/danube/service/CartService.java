@@ -74,7 +74,7 @@ public class CartService {
     }
 
     @Transactional
-    public CartItemResponseDTO getCartItems(long customerId) throws DataFormatException, IOException {
+    public CartItemResponseDTO getCartItems(UUID customerId) throws DataFormatException, IOException {
         UserEntity customer = userRepository.findById(customerId)
                 .orElseThrow(NonExistingUserException::new);
 

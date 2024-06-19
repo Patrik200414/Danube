@@ -147,45 +147,49 @@ class UserServiceTest {
 
     @Test
     void testAddSellerRoleToUser_WithNonExistingUserUserRepositoryReturnsEmptyOptional_ExpectedNonExistingUserException() {
-        when(userRepositoryMock.findById(1L))
+        UUID expectedId = UUID.randomUUID();
+        when(userRepositoryMock.findById(expectedId))
                 .thenReturn(Optional.empty());
 
-        assertThrowsExactly(NonExistingUserException.class, () -> userService.addSellerRoleToUser(1L, mockToken));
+        assertThrowsExactly(NonExistingUserException.class, () -> userService.addSellerRoleToUser(expectedId, mockToken));
     }
 
     @Test
     void testAddSellerRoleToUser_WithInvalidRequestToken_ExpectedInvalidUserCredentialsException(){
+        UUID expectedId = UUID.randomUUID();
+
         UserEntity expectedUser = new UserEntity();
         expectedUser.setFirstName("User");
         expectedUser.setLastName("First");
         expectedUser.setEmail("userfirst@gmail.com");
-        expectedUser.setId(1);
+        expectedUser.setId(expectedId);
 
-        when(userRepositoryMock.findById(1L))
+        when(userRepositoryMock.findById(expectedId))
                 .thenReturn(Optional.of(expectedUser));
 
         when(jwtUtilsMock.getEmailFromJwtToken(mockToken))
                 .thenReturn("notthesame@gmail.com");
 
-        assertThrowsExactly(InvalidUserCredentialsException.class, () -> userService.addSellerRoleToUser(1L, mockToken));
+        assertThrowsExactly(InvalidUserCredentialsException.class, () -> userService.addSellerRoleToUser(expectedId, mockToken));
     }
 
     @Test
     void testAddSellerRoleToUser_WithRoleOnlyContainsCustomer_ShouldExecuteUserRepositorySaveWithExpectedValues(){
         Set<Role> expectedRolesAtStart = new HashSet<>();
         expectedRolesAtStart.add(Role.ROLE_CUSTOMER);
+        UUID expectedCustomerId = UUID.randomUUID();
 
         UserEntity expectedUser = new UserEntity();
         expectedUser.setFirstName("User");
         expectedUser.setLastName("First");
         expectedUser.setEmail("userfirst@gmail.com");
-        expectedUser.setId(1);
+        expectedUser.setId(expectedCustomerId);
         expectedUser.setRoles(expectedRolesAtStart);
 
         String expectedToken = "FirstExpectedToken";
         String newExpectedJwt = "SecondExpectedToken";
 
-        when(userRepositoryMock.findById(1L))
+        when(userRepositoryMock.findById(expectedCustomerId))
                 .thenReturn(Optional.of(expectedUser));
 
         when(userRepositoryMock.save(expectedUser))
@@ -197,7 +201,7 @@ class UserServiceTest {
         when(jwtUtilsMock.getEmailFromJwtToken(expectedToken))
                 .thenReturn(expectedUser.getEmail());
 
-        userService.addSellerRoleToUser(1, expectedToken);
+        userService.addSellerRoleToUser(expectedCustomerId, expectedToken);
         expectedUser.setRoles(Set.of(Role.ROLE_CUSTOMER, Role.ROLE_SELLER));
 
         verify(userRepositoryMock, times(1)).save(expectedUser);
@@ -209,18 +213,19 @@ class UserServiceTest {
         Set<Role> expectedRolesAtStart = new HashSet<>();
         expectedRolesAtStart.add(Role.ROLE_CUSTOMER);
         expectedRolesAtStart.add(Role.ROLE_SELLER);
+        UUID expectedCustomerId = UUID.randomUUID();
 
         UserEntity expectedUser = new UserEntity();
         expectedUser.setFirstName("User");
         expectedUser.setLastName("First");
         expectedUser.setEmail("userfirst@gmail.com");
-        expectedUser.setId(1);
+        expectedUser.setId(expectedCustomerId);
         expectedUser.setRoles(expectedRolesAtStart);
 
         String expectedToken = "FirstExpectedToken";
         String newExpectedJwt = "SecondExpectedToken";
 
-        when(userRepositoryMock.findById(1L))
+        when(userRepositoryMock.findById(expectedCustomerId))
                 .thenReturn(Optional.of(expectedUser));
 
         when(userRepositoryMock.save(expectedUser))
@@ -232,7 +237,7 @@ class UserServiceTest {
         when(jwtUtilsMock.getEmailFromJwtToken(expectedToken))
                 .thenReturn(expectedUser.getEmail());
 
-        userService.addSellerRoleToUser(1, expectedToken);
+        userService.addSellerRoleToUser(expectedCustomerId, expectedToken);
         expectedUser.setRoles(Set.of(Role.ROLE_CUSTOMER, Role.ROLE_SELLER));
 
         verify(userRepositoryMock, never()).save(expectedUser);
@@ -242,12 +247,13 @@ class UserServiceTest {
     @Test
     void testUpdatePassword_WithInCorrectCurrentPassword_ExpectedNotMatchingCurrentPasswordException() {
         String expectedEmail = "userfirst@gmail.com";
+        UUID expectedCustomerId = UUID.randomUUID();
 
         UserEntity expectedUser = new UserEntity();
         expectedUser.setFirstName("User");
         expectedUser.setLastName("First");
         expectedUser.setEmail(expectedEmail);
-        expectedUser.setId(1);
+        expectedUser.setId(expectedCustomerId);
         expectedUser.setPassword("Password");
 
         PasswordUpdateDTO passwordUpdateDTO = new PasswordUpdateDTO(
@@ -256,7 +262,7 @@ class UserServiceTest {
                 "NewPassword"
         );
 
-        when(userRepositoryMock.findById(1L))
+        when(userRepositoryMock.findById(expectedCustomerId))
                 .thenReturn(Optional.of(expectedUser));
 
         when(jwtUtilsMock.getEmailFromJwtToken(mockToken))
@@ -265,44 +271,50 @@ class UserServiceTest {
         when(passwordEncoderMock.matches(passwordUpdateDTO.currentPassword(), expectedUser.getPassword()))
                 .thenReturn(false);
 
-        assertThrowsExactly(NotMatchingCurrentPasswordException.class, () -> userService.updatePassword(1L, passwordUpdateDTO, mockToken));
+        assertThrowsExactly(NotMatchingCurrentPasswordException.class, () -> userService.updatePassword(expectedCustomerId, passwordUpdateDTO, mockToken));
     }
 
     @Test
     void testUpdateUser_WithInvalidEmail_ShouldThrowInvalidEmailFormatException(){
+        UUID expectedCustomerId = UUID.randomUUID();
+
         UserUpdateDTO expectedUserUpdateDTO = new UserUpdateDTO(
                 "InvalidEmailAddress",
                 "Test",
                 "User"
         );
-        assertThrowsExactly(InvalidEmailFormatException.class, () -> userService.updateUser(1, expectedUserUpdateDTO, mockToken));
+        assertThrowsExactly(InvalidEmailFormatException.class, () -> userService.updateUser(expectedCustomerId, expectedUserUpdateDTO, mockToken));
     }
 
     @Test
     void testUpdateUser_WithFirstNameTooShort_ShouldThrowInputTooShortException(){
+        UUID expectedCustomerId = UUID.randomUUID();
+
         UserUpdateDTO expectedUserUpdateDTO = new UserUpdateDTO(
                 "test@gmail.com",
                 "T",
                 "User"
         );
 
-        assertThrowsExactly(InputTooShortException.class, () -> userService.updateUser(1, expectedUserUpdateDTO, mockToken));
+        assertThrowsExactly(InputTooShortException.class, () -> userService.updateUser(expectedCustomerId, expectedUserUpdateDTO, mockToken));
     }
 
     @Test
     void testUpdateUser_WithNonExistingUser_ShouldThrowNonExistingUserException(){
+        UUID expectedCustomerId = UUID.randomUUID();
+
         UserUpdateDTO expectedUserUpdateDTO = new UserUpdateDTO(
                 "test@gmail.com",
                 "Test",
                 "User"
         );
 
-        when(userRepositoryMock.findById(1L))
+        when(userRepositoryMock.findById(expectedCustomerId))
                 .thenReturn(Optional.empty());
 
         String expectedJwtToken = anyString();
 
-        assertThrowsExactly(NonExistingUserException.class, () -> userService.updateUser(1, expectedUserUpdateDTO, expectedJwtToken));
+        assertThrowsExactly(NonExistingUserException.class, () -> userService.updateUser(expectedCustomerId, expectedUserUpdateDTO, expectedJwtToken));
     }
 
     @Test
@@ -312,17 +324,18 @@ class UserServiceTest {
                 "Test",
                 "User"
         );
+        UUID expectedCustomerId = UUID.randomUUID();
 
         UserEntity expectedUser = new UserEntity();
         expectedUser.setFirstName("User");
         expectedUser.setLastName("First");
         expectedUser.setEmail("userfirst@gmail.com");
-        expectedUser.setId(1);
+        expectedUser.setId(expectedCustomerId);
 
-        when(userRepositoryMock.findById(1L))
+        when(userRepositoryMock.findById(expectedCustomerId))
                 .thenReturn(Optional.of(expectedUser));
 
-        assertThrowsExactly(InvalidUserCredentialsException.class, () -> userService.updateUser(1, expectedUserUpdateDTO, mockToken));
+        assertThrowsExactly(InvalidUserCredentialsException.class, () -> userService.updateUser(expectedCustomerId, expectedUserUpdateDTO, mockToken));
     }
 
     @Test
@@ -332,24 +345,25 @@ class UserServiceTest {
                 "Test",
                 "User"
         );
+        UUID expectedCustomerId = UUID.randomUUID();
 
         UserEntity expectedUser = new UserEntity();
         expectedUser.setFirstName("User");
         expectedUser.setLastName("First");
         expectedUser.setEmail("userfirst@gmail.com");
-        expectedUser.setId(1);
+        expectedUser.setId(expectedCustomerId);
 
 
         when(jwtUtilsMock.getEmailFromJwtToken(mockToken))
                 .thenReturn(expectedUser.getEmail());
 
-        when(userRepositoryMock.findById(1L))
+        when(userRepositoryMock.findById(expectedCustomerId))
                 .thenReturn(Optional.of(expectedUser));
 
         when(userRepositoryMock.save(expectedUser))
                 .thenReturn(expectedUser);
 
-        userService.updateUser(1, expectedUserUpdateDTO, mockToken);
+        userService.updateUser(expectedCustomerId, expectedUserUpdateDTO, mockToken);
 
         expectedUser.setEmail(expectedUserUpdateDTO.email());
         expectedUser.setFirstName(expectedUserUpdateDTO.firstName());
@@ -362,12 +376,13 @@ class UserServiceTest {
     @Test
     void testUpdatePassword_WithUpdatedPasswordNotMatchingWithReenterPassword_ExpectedNotMatchingNewPasswordAndReenterPasswordException(){
         String expectedEmail = "userfirst@gmail.com";
+        UUID expectedCustomerId = UUID.randomUUID();
 
         UserEntity expectedUser = new UserEntity();
         expectedUser.setFirstName("User");
         expectedUser.setLastName("First");
         expectedUser.setEmail(expectedEmail);
-        expectedUser.setId(1);
+        expectedUser.setId(expectedCustomerId);
         expectedUser.setPassword("Password");
 
         PasswordUpdateDTO passwordUpdate = new PasswordUpdateDTO(
@@ -376,7 +391,7 @@ class UserServiceTest {
                 "NotNewPassword"
         );
 
-        when(userRepositoryMock.findById(1L))
+        when(userRepositoryMock.findById(expectedCustomerId))
                 .thenReturn(Optional.of(expectedUser));
 
         when(jwtUtilsMock.getEmailFromJwtToken(mockToken))
@@ -385,7 +400,7 @@ class UserServiceTest {
         when(passwordEncoderMock.matches(passwordUpdate.currentPassword(), expectedUser.getPassword()))
                 .thenReturn(true);
 
-        assertThrowsExactly(NotMatchingNewPasswordAndReenterPasswordException.class, () -> userService.updatePassword(1, passwordUpdate, mockToken));
+        assertThrowsExactly(NotMatchingNewPasswordAndReenterPasswordException.class, () -> userService.updatePassword(expectedCustomerId, passwordUpdate, mockToken));
     }
 
     @Test
