@@ -6,6 +6,7 @@ import com.danube.danube.model.dto.product.DetailDTO;
 import com.danube.danube.model.dto.product.MyProductInformationDTO;
 import com.danube.danube.model.dto.product.ProductItemDTO;
 import com.danube.danube.model.dto.product.ProductShowSmallDTO;
+import com.danube.danube.model.dto.search.ProductSearchNameDTO;
 import com.danube.danube.model.order.Order;
 import com.danube.danube.model.product.Product;
 import com.danube.danube.utility.converter.converterhelper.ConverterHelper;
@@ -115,4 +116,10 @@ public class ProductViewConverterImpl implements ProductViewConverter{
         }
     }
 
+    @Override
+    public List<ProductSearchNameDTO> convertProductEntityToProductSearchNameDTO(List<Product> products) {
+        return products.stream()
+                .map(product -> new ProductSearchNameDTO(product.getProductName()))
+                .toList();
+    }
 }
