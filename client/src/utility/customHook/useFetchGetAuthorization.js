@@ -26,7 +26,6 @@ function useFetchGetAuthorization(url, user){
         }
     }, [url, user]);
 
-
     return [data, setData, error];
 }
 
