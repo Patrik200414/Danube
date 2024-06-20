@@ -20,6 +20,7 @@ import java.util.zip.DataFormatException;
 
 public interface ProductViewConverter {
     Set<ProductShowSmallDTO> convertProductToProductShowSmallDTORandomOrder(Page<Product> products, ImageUtility imageUtility, ConverterHelper converterHelper) throws DataFormatException, IOException;
+    List<ProductShowSmallDTO> convertProductToProductShowSmallDTO(Page<Product> products, ImageUtility imageUtility, ConverterHelper converterHelper) throws DataFormatException, IOException;
     ProductItemDTO convertProductToProductItemDTO(Product product, ImageUtility imageUtility, ConverterHelper converterHelper) throws DataFormatException, IOException;
 
     List<ProductShowSmallDTO> convertProductsToProductShowSmallDTO(Collection<Product> products, ImageUtility imageUtility, ConverterHelper converterHelper) throws DataFormatException, IOException;

@@ -30,7 +30,13 @@ public class ProductViewConverterImpl implements ProductViewConverter{
         return productShowSmallDTOs;
     }
 
+    @Override
+    public List<ProductShowSmallDTO> convertProductToProductShowSmallDTO(Page<Product> products, ImageUtility imageUtility, ConverterHelper converterHelper) throws DataFormatException, IOException {
+        List<ProductShowSmallDTO> productShowSmallDTOs = new ArrayList<>();
 
+        convertProductToSpecificCollection(products.stream().toList(), imageUtility, productShowSmallDTOs, converterHelper);
+        return productShowSmallDTOs;
+    }
 
     @Override
     public ProductItemDTO convertProductToProductItemDTO(Product product, ImageUtility imageUtility, ConverterHelper converterHelper) throws DataFormatException, IOException {

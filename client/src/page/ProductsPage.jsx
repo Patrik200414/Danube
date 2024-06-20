@@ -1,15 +1,13 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ProductContainer from "../component/product/ProductContainer";
 import useFetch from "../utility/customHook/useFetch";
 
-function Home(){
+function ProductsPage(){
     const itemPerPage = 9;
     const [pageNumber, setPageNumber] = useState(0);
     const [pageProducts, , error] = useFetch(`/api/product?pageNumber=${pageNumber}&itemPerPage=${itemPerPage}`);
+    console.log(pageProducts);
 
-    useEffect(() => {
-        console.log(pageNumber);
-    }, [pageNumber]);
 
     return(
         <div className="home">
@@ -19,4 +17,4 @@ function Home(){
     )
 }
 
-export default Home;
+export default ProductsPage;

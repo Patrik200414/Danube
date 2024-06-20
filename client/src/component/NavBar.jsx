@@ -54,11 +54,14 @@ function NavBar(){
                             <input type="text" name="search" id="search" placeholder="Search Danube..." value={search} onChange={e => setSearch(e.target.value)}/>
                             {searchResults.length > 0 && 
                                 <ul className="search-result-container">
-                                    {searchResults.map((searchResult, i) => <li onClick={() => console.log(searchResult.subcategoryName)} key={`${searchResult.productName}-${i}`} className="searchResult">{searchResult.subcategoryName}</li>)}
+                                    {searchResults.map((searchResult, i) => <li onClick={() => setSearch(searchResult.subcategoryName)} key={`${searchResult.productName}-${i}`} className="searchResult">{searchResult.subcategoryName}</li>)}
                                 </ul>
                             }
                         </div>
-                        <button>Search</button>
+                        <Link to={`/product/${search}`}>
+                            <button>Search</button>
+                        </Link>
+                        
                     </div>
                     <div className="additional-information">
                         {navbarInfo.userFirstName ? 

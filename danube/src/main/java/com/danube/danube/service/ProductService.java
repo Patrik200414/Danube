@@ -84,6 +84,18 @@ public class ProductService {
         return new PageProductDTO(productShowItems, pagedProducts.getTotalPages(), pagedProducts.getTotalElements());
     }
 
+    @Transactional
+    public PageProductDTO getProductsBySubcategory(int pageNumber, int itemPerPage, String subcategoryName) throws DataFormatException, IOException {
+        Subcategory searchedSubcategory = subcategoryRepository.findByName(subcategoryName).orElseThrow(
+                NonExistingSubcategoryException::new
+        );
+        PageRequest pageRequest = PageRequest.of(pageNumber, itemPerPage);
+        Page<Product> pagedProducts = productRepository.findBySubcategoryOrderByVisitNumber(searchedSubcategory, pageRequest);
+
+        List<ProductShowSmallDTO> productShowSmallDTOs = productViewConverter.convertProductToProductShowSmallDTO(pagedProducts, imageUtility, converterHelper);
+        return new PageProductDTO(productShowSmallDTOs, pagedProducts.getTotalPages(), pagedProducts.getTotalElements());
+    }
+
     public long getProductCount(){
         return productRepository.count();
     }
