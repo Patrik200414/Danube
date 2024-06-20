@@ -230,7 +230,8 @@ public class ProductService {
     }
 
     public List<ProductSearchNameDTO> getProductsByNameLike(String searchedProductName){
-        List<Product> searchedProducts = productRepository.findByProductNameLikeOrderByProductNameAsc(searchedProductName, Limit.of(5));
+        Pageable pageRequest = PageRequest.of(0, SIMILAR_RECOMENDED_PRODUCTS_RESULT_COUNT);
+        List<Product> searchedProducts = productRepository.findByProductNameContainingOrderByProductName(searchedProductName, pageRequest);
         return productViewConverter.convertProductEntityToProductSearchNameDTO(searchedProducts);
     }
 

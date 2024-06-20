@@ -19,7 +19,7 @@ public class SearchController {
     }
 
     @GetMapping("/product")
-    public List<ProductSearchNameDTO> getSearchRecomendationForProducts(@RequestParam String searchedProductName){
+    public List<ProductSearchNameDTO> getSearchRecomendationForProducts(@RequestParam("searchedProductName") String searchedProductName){
         return productService.getProductsByNameLike(searchedProductName);
     }
 }

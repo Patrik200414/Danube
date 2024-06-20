@@ -7,6 +7,7 @@ import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Set;
@@ -14,5 +15,5 @@ import java.util.Set;
 public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findBySeller(UserEntity seller);
     List<Product> findBySubcategoryAndIdNotOrderBySoldDescRatingDesc(Subcategory subcategory, long id, Pageable pageable);
-    List<Product> findByProductNameLikeOrderByProductNameAsc(String productName, Limit limit);
+    List<Product> findByProductNameContainingOrderByProductName(String productName, Pageable pageable);
 }
