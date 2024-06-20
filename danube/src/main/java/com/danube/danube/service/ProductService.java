@@ -198,6 +198,9 @@ public class ProductService {
     @Transactional
     public ProductItemDTO getProductItem(long id) throws DataFormatException, IOException {
         Product product = productRepository.findById(id).orElseThrow(NonExistingProductException::new);
+        product.setVisitNumber(product.getVisitNumber() + 1);
+        productRepository.save(product);
+        System.out.println("\n" + product.getVisitNumber());
         return productViewConverter.convertProductToProductItemDTO(product, imageUtility, converterHelper);
     }
 

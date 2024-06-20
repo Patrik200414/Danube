@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import fetchGet from "../utility/fetchGet";
 import ItemImageViewer from "../component/item/ItemImageViewer";
 import ItemTableRow from '../component/item/ItemTableRow';
@@ -17,16 +17,10 @@ function Item({onNavbarInformationChange}){
 
 
     const {id} = useParams();
-    const navigate = useNavigate();
 
     
     
     useEffect(() => {
-        if(isNaN(id)){
-            navigate('/');
-            return;
-        }
-
         const getProduct = async () => {
             const itemsAndSimilarItems = await Promise.all([
                 fetchGet(`/api/product/item/${id}`),
@@ -39,10 +33,18 @@ function Item({onNavbarInformationChange}){
                 setSimularProducts(await itemsAndSimilarItems[1].json());
             }
         }
+        let isFetchSent = false; 
         
-        getProduct();
+        if(!isFetchSent){
+            getProduct();
+            isFetchSent = true;
+        }
         
-    }, [id, navigate])
+
+        return () => {
+            isFetchSent
+        }
+    }, [id])
     
     function renderProductDetails(detailValues){
         return detailValues.map(detailValue => <ItemTableRow key={detailValue.id} productPropertyName={detailValue.detailName} productPropertyValue={detailValue.value}/>);
