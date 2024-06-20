@@ -41,11 +41,12 @@ public class Product {
     public Subcategory subcategory;
     @OneToMany(mappedBy = "product")
     private List<Order> orders;
+    private long visitNumber;
 
     public Product() {
     }
 
-    public Product(long id, List<ProductValue> productValues, String productName, double price, String brand, int quantity, String description, double shippingPrice, int deliveryTimeInDay, int rating, int sold, UserEntity seller, List<Image> images, Subcategory subcategory, List<Order> orders) {
+    public Product(long id, List<ProductValue> productValues, String productName, double price, String brand, int quantity, String description, double shippingPrice, int deliveryTimeInDay, int rating, int sold, UserEntity seller, List<Image> images, Subcategory subcategory, List<Order> orders, long visitNumber) {
         this.id = id;
         this.productValues = productValues;
         this.productName = productName;
@@ -61,6 +62,7 @@ public class Product {
         this.images = images;
         this.subcategory = subcategory;
         this.orders = orders;
+        this.visitNumber = visitNumber;
     }
 
     public long getId() {
@@ -187,6 +189,14 @@ public class Product {
 
     public void setOrders(List<Order> orders) {
         this.orders = orders;
+    }
+
+    public long getVisitNumber() {
+        return visitNumber;
+    }
+
+    public void setVisitNumber(long visitNumber) {
+        this.visitNumber = visitNumber;
     }
 
     @Override

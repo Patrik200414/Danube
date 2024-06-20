@@ -5,7 +5,7 @@ import './index.css'
 import { createBrowserRouter } from 'react-router-dom';
 import Login from './page/Login';
 import Registration from './page/Registration';
-import Home from './page/Home';
+import ProductsPage from './page/ProductsPage';
 import Profile from './page/Profile';
 import SellerAgreement from './page/SellerAgreement';
 import Verification from './page/Verification';
@@ -21,6 +21,7 @@ import useGetNavbarInformation from './utility/customHook/useGetNavbarInformatio
 import MyCart from "./page/MyCart";
 import Checkout from "./page/Checkout";
 import PaymentSuccess from "./page/PaymentSuccess";
+import SearchProductPage from "./page/SearchProductPage";
 
 function App() {
   const [navbarInformation, setNavbarInformation] = useGetNavbarInformation(JSON.parse(sessionStorage.getItem('USER_JWT')));
@@ -35,7 +36,7 @@ const router = createBrowserRouter([
       children: [
         {
           path: '',
-          element: <Home />
+          element: <ProductsPage />
         },
         {
           path: 'profile',
@@ -85,6 +86,10 @@ const router = createBrowserRouter([
         {
           path: '/payment/success',
           element: <PaymentSuccess onNavbarInformationChange={(information) => setNavbarInformation(information)}/>
+        },
+        {
+          path: '/product/:subcategoryName',
+          element: <SearchProductPage />
         }
       ]
     },

@@ -3,6 +3,7 @@ import { Link, Outlet } from "react-router-dom";
 import UserProfileImage from "./user/UserProfileImage";
 import ShoppingCart from "./ShoppingCart";
 import {NavbarContext} from "../NavbarContext";
+import fetchGet from "../utility/fetchGet";
 
 
 
@@ -10,6 +11,7 @@ import {NavbarContext} from "../NavbarContext";
 function NavBar(){
     const [search, setSearch] = useState('');
     const [categories, setCategories] = useState([]);
+    const [searchResults, setSearchResults] = useState([]);
     const navbarInfo = useContext(NavbarContext);
 
     useEffect(() => {
@@ -23,6 +25,21 @@ function NavBar(){
         getCategories();
     }, []);
 
+    useEffect(() => {
+        const getSearchResult = async () => {
+            const searchResultsData = await fetchGet(`/api/search/product?searchedProductName=${search}`);
+            const searchResultData = await searchResultsData.json();
+            setSearchResults(searchResultData);
+        }
+
+        if(search.length > 0){
+            getSearchResult();
+        } else{
+            setSearchResults([]);
+        }
+
+    }, [search])
+
     return(
         <>
         {navbarInfo && 
@@ -33,8 +50,18 @@ function NavBar(){
                         <Link to='/'>Danube</Link>    
                     </h1>
                     <div className="input-container">
-                        <input type="text" name="search" id="search" placeholder="Search Danube..." value={search} onChange={e => setSearch(e.target.value)}/>
-                        <button>Search</button>
+                        <div className="search-holder">
+                            <input type="text" name="search" id="search" placeholder="Search Danube..." value={search} onChange={e => setSearch(e.target.value)}/>
+                            {searchResults.length > 0 && 
+                                <ul className="search-result-container">
+                                    {searchResults.map((searchResult, i) => <li onClick={() => setSearch(searchResult.subcategoryName)} key={`${searchResult.productName}-${i}`} className="searchResult">{searchResult.subcategoryName}</li>)}
+                                </ul>
+                            }
+                        </div>
+                        <Link to={`/product/${search}`}>
+                            <button>Search</button>
+                        </Link>
+                        
                     </div>
                     <div className="additional-information">
                         {navbarInfo.userFirstName ? 
@@ -46,6 +73,7 @@ function NavBar(){
                     </div>
                     
                 </div>
+                
                 <div className="bottom-part">
                     <ul className="categories">
                         <li>Categories: </li>

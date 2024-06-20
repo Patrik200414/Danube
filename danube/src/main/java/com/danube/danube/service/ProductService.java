@@ -6,6 +6,7 @@ import com.danube.danube.custom_exception.user.InvalidUserCredentialsException;
 import com.danube.danube.custom_exception.user.UserNotSellerException;
 import com.danube.danube.model.dto.image.ImageShow;
 import com.danube.danube.model.dto.product.*;
+import com.danube.danube.model.dto.search.SubcategorySearchNameDTO;
 import com.danube.danube.model.product.Product;
 import com.danube.danube.model.product.category.Category;
 import com.danube.danube.model.product.connection.ProductValue;
@@ -81,6 +82,18 @@ public class ProductService {
 
         Set<ProductShowSmallDTO> productShowItems = productViewConverter.convertProductToProductShowSmallDTORandomOrder(pagedProducts, imageUtility, converterHelper);
         return new PageProductDTO(productShowItems, pagedProducts.getTotalPages(), pagedProducts.getTotalElements());
+    }
+
+    @Transactional
+    public PageProductDTO getProductsBySubcategory(int pageNumber, int itemPerPage, String subcategoryName) throws DataFormatException, IOException {
+        Subcategory searchedSubcategory = subcategoryRepository.findByName(subcategoryName).orElseThrow(
+                NonExistingSubcategoryException::new
+        );
+        PageRequest pageRequest = PageRequest.of(pageNumber, itemPerPage);
+        Page<Product> pagedProducts = productRepository.findBySubcategoryOrderByVisitNumber(searchedSubcategory, pageRequest);
+
+        List<ProductShowSmallDTO> productShowSmallDTOs = productViewConverter.convertProductToProductShowSmallDTO(pagedProducts, imageUtility, converterHelper);
+        return new PageProductDTO(productShowSmallDTOs, pagedProducts.getTotalPages(), pagedProducts.getTotalElements());
     }
 
     public long getProductCount(){
@@ -198,6 +211,8 @@ public class ProductService {
     @Transactional
     public ProductItemDTO getProductItem(long id) throws DataFormatException, IOException {
         Product product = productRepository.findById(id).orElseThrow(NonExistingProductException::new);
+        product.setVisitNumber(product.getVisitNumber() + 1);
+        productRepository.save(product);
         return productViewConverter.convertProductToProductItemDTO(product, imageUtility, converterHelper);
     }
 
@@ -223,6 +238,11 @@ public class ProductService {
 
         List<Value> updatedValues = updateProductDetailValues(updatedProductDetails);
         valueRepository.saveAll(updatedValues);
+    }
+
+    public List<SubcategorySearchNameDTO> getSearchSubCategoryNames(String searchedProductName){
+        List<Subcategory> searchedProducts = subcategoryRepository.findByNameContainingIgnoreCaseOrderByNameAsc(searchedProductName);
+        return productViewConverter.convertProductEntityToProductSearchNameDTO(searchedProducts);
     }
 
     private void productSellerValidation(Product product, UserEntity seller) {

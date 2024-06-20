@@ -6,8 +6,10 @@ import com.danube.danube.model.dto.product.DetailDTO;
 import com.danube.danube.model.dto.product.MyProductInformationDTO;
 import com.danube.danube.model.dto.product.ProductItemDTO;
 import com.danube.danube.model.dto.product.ProductShowSmallDTO;
+import com.danube.danube.model.dto.search.SubcategorySearchNameDTO;
 import com.danube.danube.model.order.Order;
 import com.danube.danube.model.product.Product;
+import com.danube.danube.model.product.subcategory.Subcategory;
 import com.danube.danube.utility.converter.converterhelper.ConverterHelper;
 import com.danube.danube.utility.imageutility.ImageUtility;
 import org.springframework.data.domain.Page;
@@ -28,7 +30,13 @@ public class ProductViewConverterImpl implements ProductViewConverter{
         return productShowSmallDTOs;
     }
 
+    @Override
+    public List<ProductShowSmallDTO> convertProductToProductShowSmallDTO(Page<Product> products, ImageUtility imageUtility, ConverterHelper converterHelper) throws DataFormatException, IOException {
+        List<ProductShowSmallDTO> productShowSmallDTOs = new ArrayList<>();
 
+        convertProductToSpecificCollection(products.stream().toList(), imageUtility, productShowSmallDTOs, converterHelper);
+        return productShowSmallDTOs;
+    }
 
     @Override
     public ProductItemDTO convertProductToProductItemDTO(Product product, ImageUtility imageUtility, ConverterHelper converterHelper) throws DataFormatException, IOException {
@@ -115,4 +123,10 @@ public class ProductViewConverterImpl implements ProductViewConverter{
         }
     }
 
+    @Override
+    public List<SubcategorySearchNameDTO> convertProductEntityToProductSearchNameDTO(List<Subcategory> products) {
+        return products.stream()
+                .map(subcategory -> new SubcategorySearchNameDTO(subcategory.getName()))
+                .toList();
+    }
 }
