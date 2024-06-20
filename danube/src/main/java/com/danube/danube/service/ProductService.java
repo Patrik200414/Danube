@@ -200,7 +200,6 @@ public class ProductService {
         Product product = productRepository.findById(id).orElseThrow(NonExistingProductException::new);
         product.setVisitNumber(product.getVisitNumber() + 1);
         productRepository.save(product);
-        System.out.println("\n" + product.getVisitNumber());
         return productViewConverter.convertProductToProductItemDTO(product, imageUtility, converterHelper);
     }
 

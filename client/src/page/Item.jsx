@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import fetchGet from "../utility/fetchGet";
 import ItemImageViewer from "../component/item/ItemImageViewer";
 import ItemTableRow from '../component/item/ItemTableRow';
@@ -14,14 +14,21 @@ function Item({onNavbarInformationChange}){
     const [product, setProduct] = useState();
     const [simularProducts, setSimularProducts] = useState();
     const [errors, setErrors] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
 
     const {id} = useParams();
-
+    const navigate = useNavigate();
     
     
     useEffect(() => {
+        if(isNaN(id)){
+            navigate('/');
+            return;
+        }
+
         const getProduct = async () => {
+            setIsLoading(true);
             const itemsAndSimilarItems = await Promise.all([
                 fetchGet(`/api/product/item/${id}`),
                 fetchGet(`/api/product/similar/${id}`)
@@ -32,6 +39,7 @@ function Item({onNavbarInformationChange}){
                 setProduct(await itemsAndSimilarItems[0].json());
                 setSimularProducts(await itemsAndSimilarItems[1].json());
             }
+            setIsLoading(false);
         }
         let isFetchSent = false; 
         
@@ -57,28 +65,32 @@ function Item({onNavbarInformationChange}){
     return(
         <div className="product-info-container">
             {errors.length ? 
-            <div className="multiple-error-container">
-                {errors.map(error => <h1 key={error} className="item-not-found-error">{error}</h1>)}
-            </div> : 
-            (product && simularProducts) &&
-            <div>
-                <div className="item-container">
-                    <ItemImageViewer images={product.images}/>
-                    <div className="item-information-container">
-                        <ItemTableContainer tableName="Product Information" renderElement={() => renderProductInformation(product.productInformation)}/>
-                        <ItemTableContainer tableName="Product Details" renderElement={() => renderProductDetails(product.detailValues)}/>
-                    </div>
-                </div>
-                <AddToCart
-                    onError={(errorMessage) => setErrors(errorMessage)}
-                    maxQuantity={product.productInformation.quantity} 
-                    productId={Number(id)} 
-                    onNavbarInformationChange={(information) => onNavbarInformationChange(information)}
-                    product={product}
-                />
-                <ItemSimilarContainer similarProducts={simularProducts}/>
-            </div>
+                <div className="multiple-error-container">
+                    {errors.map(error => <h1 key={error} className="item-not-found-error">{error}</h1>)}
+                </div> : null
             }
+            {(!isLoading && product && simularProducts) ? 
+                <div>
+                    <div className="item-container">
+                        <ItemImageViewer images={product.images}/>
+                        <div className="item-information-container">
+                            <ItemTableContainer tableName="Product Information" renderElement={() => renderProductInformation(product.productInformation)}/>
+                            <ItemTableContainer tableName="Product Details" renderElement={() => renderProductDetails(product.detailValues)}/>
+                        </div>
+                    </div>
+                    <AddToCart
+                        onError={(errorMessage) => setErrors(errorMessage)}
+                        maxQuantity={product.productInformation.quantity} 
+                        productId={Number(id)} 
+                        onNavbarInformationChange={(information) => onNavbarInformationChange(information)}
+                        product={product}
+                    />
+                    <ItemSimilarContainer similarProducts={simularProducts}/>
+                </div>
+                :
+                <p className="loading-text">Loading...</p>
+            }
+            
         </div>
     )
 }
