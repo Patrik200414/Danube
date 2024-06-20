@@ -32,7 +32,7 @@ function NavBar(){
             setSearchResults(searchResultData);
         }
 
-        if(search.length > 2){
+        if(search.length > 0){
             getSearchResult();
         } else{
             setSearchResults([]);
@@ -54,7 +54,7 @@ function NavBar(){
                             <input type="text" name="search" id="search" placeholder="Search Danube..." value={search} onChange={e => setSearch(e.target.value)}/>
                             {searchResults.length > 0 && 
                                 <ul className="search-result-container">
-                                    {searchResults.map((searchResult, i) => <li key={`${searchResult.productName}-${i}`} className="searchResult">{searchResult.productName}</li>)}
+                                    {searchResults.map((searchResult, i) => <li onClick={() => console.log(searchResult.subcategoryName)} key={`${searchResult.productName}-${i}`} className="searchResult">{searchResult.subcategoryName}</li>)}
                                 </ul>
                             }
                         </div>

@@ -1,6 +1,6 @@
 package com.danube.danube.controller;
 
-import com.danube.danube.model.dto.search.ProductSearchNameDTO;
+import com.danube.danube.model.dto.search.SubcategorySearchNameDTO;
 import com.danube.danube.service.ProductService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +19,7 @@ public class SearchController {
     }
 
     @GetMapping("/product")
-    public List<ProductSearchNameDTO> getSearchRecomendationForProducts(@RequestParam("searchedProductName") String searchedProductName){
-        return productService.getProductsByNameLike(searchedProductName);
+    public List<SubcategorySearchNameDTO> getSearchSubCategoryNames(@RequestParam("searchedProductName") String searchedProductName){
+        return productService.getSearchSubCategoryNames(searchedProductName);
     }
 }

@@ -6,7 +6,7 @@ import com.danube.danube.custom_exception.user.InvalidUserCredentialsException;
 import com.danube.danube.custom_exception.user.UserNotSellerException;
 import com.danube.danube.model.dto.image.ImageShow;
 import com.danube.danube.model.dto.product.*;
-import com.danube.danube.model.dto.search.ProductSearchNameDTO;
+import com.danube.danube.model.dto.search.SubcategorySearchNameDTO;
 import com.danube.danube.model.product.Product;
 import com.danube.danube.model.product.category.Category;
 import com.danube.danube.model.product.connection.ProductValue;
@@ -28,7 +28,6 @@ import com.danube.danube.utility.converter.uploadproduct.ProductUploadConverter;
 import com.danube.danube.utility.imageutility.ImageUtility;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -229,9 +228,8 @@ public class ProductService {
         valueRepository.saveAll(updatedValues);
     }
 
-    public List<ProductSearchNameDTO> getProductsByNameLike(String searchedProductName){
-        Pageable pageRequest = PageRequest.of(0, SIMILAR_RECOMENDED_PRODUCTS_RESULT_COUNT);
-        List<Product> searchedProducts = productRepository.findByProductNameContainingOrderByProductName(searchedProductName, pageRequest);
+    public List<SubcategorySearchNameDTO> getSearchSubCategoryNames(String searchedProductName){
+        List<Subcategory> searchedProducts = subcategoryRepository.findByNameContainingIgnoreCaseOrderByNameAsc(searchedProductName);
         return productViewConverter.convertProductEntityToProductSearchNameDTO(searchedProducts);
     }
 
