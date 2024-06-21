@@ -79,7 +79,7 @@ function Checkout(){
         }
         const paymentData = await fetchPostAuthorizationFetch(`/api/payment`, user.jwt, JSON.stringify({userId: user.id}), true);
         const paymentResponse = await paymentData.json();
-        
+        debugger;
         if(paymentData.ok){
             const orderInformationDetails = await fetchPatchAuthorizationFetch('/api/order', user.jwt, userShippingInformation);
             if(orderInformationDetails.ok){

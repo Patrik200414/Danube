@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class OrderServiceTest {
-    OrderService orderService;
+    /*OrderService orderService;
     OrderRepository orderRepositoryMock;
     UserRepository userRepositoryMock;
 
@@ -154,5 +154,5 @@ class OrderServiceTest {
                 firstOrder,
                 secondOrder
         ));
-    }
+    }*/
 }

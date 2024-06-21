@@ -99,7 +99,7 @@ public class PaymentService {
         return Session.create(params);
     }
 
-    public Session createPaymentSession(long customerId) throws StripeException {
+    public Session createPaymentSession(UUID customerId) throws StripeException {
         Stripe.apiKey = PAYMENT_SECRET;
         UserEntity customer = userRepository.findById(customerId)
                 .orElseThrow(NonExistingUserException::new);

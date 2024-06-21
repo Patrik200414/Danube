@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class OrderService {
@@ -45,7 +46,7 @@ public class OrderService {
         }
     }
 
-    public void setIsOrdered(long userId, LocalDateTime orderTime){
+    public void setIsOrdered(UUID userId, LocalDateTime orderTime){
         UserEntity customer = userRepository.findById(userId)
                 .orElseThrow(NonExistingUserException::new);
 
