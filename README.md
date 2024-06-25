@@ -65,16 +65,20 @@ If not here are some links where you can download from :
 <!-- - Docker: https://www.docker.com/products/docker-desktop/ -->
 
 ### Prerequisites
+If you would like to try out the payment system, please create a test account on Stripe
+- https://stripe.com/en-hu
 
 #### Backend: 
 For manual setup add the following environment variables (If you use a shell to set the environment you should insert the values between quotes ("VALUE")):
   - `DB_PASSWORD`: [Your database password]
   - `DB_URL`: [Your database URL]
   - `DB_USERNAME`: [Your database username]
-  - `JWT_SECRET`: [Your JWT key]
+  - `FILE_LOG_PATH_ERROR`: [The file path where to create the log file, e.g: C:\Users\example\logs\error.txt]
+  - `JWT_SECRET`: [Your JWT secret key]
   - `JWT_EXPIRATION`: [JWT token expiration time in millisecond]
-  - JWT_VERIFICATION_TIME_IN_MINUTES: [If the user want to modify there data the server will ask to authorize after verification time expires, the recomandation is 5 minutes]
-  - PRODUCT_IMAGE_DIRECTORY_PATH: [The directory where you want to save the uploaded images. Create a direactoy where you want to save the directory, in the created directory create an images directory (If you don't do it, it will doesn't work!)]
+  - `JWT_VERIFICATION_TIME_IN_MINUTES`: [If the user want to modify there data the server will ask to authorize after verification time expires, the recomandation is 5 minutes]
+  - `PAYMENT_REDIRECTION_PAGE`: [The location of the website where to redirect after successfull payment]
+  - `PAYMENT_SECRET`: [Your Stripe secret key (If you try this project in your local environment you can set this value to `http://localhost:5173`)]
 
 
 <!-- For Docker setup add the following environment variables:
