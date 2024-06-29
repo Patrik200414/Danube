@@ -123,18 +123,18 @@ public class ProductService {
         }
 
         Category category = searchedCategory.get();
-        List<Subcategory> subcategories = subcategoryRepository.findAllByCategory(category);
+        List<Subcategory> subcategories = category.getSubcategories();
         return productCategoriesAndDetailsConverter.convertSubcategoriesToSubcategoryDTOs(subcategories);
     }
 
     public List<DetailDTO> getDetailsBySubcategory(long id){
         Optional<Subcategory> searchedSubcategory = subcategoryRepository.findById(id);
         if(searchedSubcategory.isEmpty()){
-            throw new NonExistingSubcategoryException();
+                throw new NonExistingSubcategoryException();
         }
 
         Subcategory subcategory = searchedSubcategory.get();
-        List<Detail> detailsBySubCategory = subcategoryDetailRepository.findAllBySubcategory(subcategory).stream()
+        List<Detail> detailsBySubCategory = subcategory.getSubcategoryDetails().stream()
                 .map(SubcategoryDetail::getDetail)
                 .toList();
         return productCategoriesAndDetailsConverter.convertDetailsToDetailsDTO(detailsBySubCategory);
