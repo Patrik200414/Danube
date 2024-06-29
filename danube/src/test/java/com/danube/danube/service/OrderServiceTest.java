@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class OrderServiceTest {
-    /*OrderService orderService;
+    OrderService orderService;
     OrderRepository orderRepositoryMock;
     UserRepository userRepositoryMock;
 
@@ -35,16 +35,17 @@ class OrderServiceTest {
 
     @Test
     void testSaveOrderInformation_WithNonExistingUser_ShouldThrowNonExistingUserException() {
+        UUID expectedCustomerId = UUID.randomUUID();
         OrderInformationDTO expectedOrderInformation = new OrderInformationDTO(
                 "Street Address",
                 "Example City",
                 "Example State",
                 "Example Country",
                 1234,
-                1
+                expectedCustomerId
         );
 
-        when(userRepositoryMock.findById(1L))
+        when(userRepositoryMock.findById(expectedCustomerId))
                 .thenReturn(Optional.empty());
 
         assertThrowsExactly(NonExistingUserException.class, () -> orderService.saveOrderInformation(expectedOrderInformation));
@@ -59,7 +60,7 @@ class OrderServiceTest {
                 "Example State",
                 "Example Country",
                 1234,
-                1
+                expectedCustomerId
         );
 
         UserEntity expectedUser = new UserEntity();
@@ -79,7 +80,7 @@ class OrderServiceTest {
         order.setProduct(expectedProduct);
 
 
-        when(userRepositoryMock.findById(1L))
+        when(userRepositoryMock.findById(expectedCustomerId))
                 .thenReturn(Optional.of(expectedUser));
 
         when(orderRepositoryMock.findAllByCustomer(expectedUser))
@@ -107,11 +108,12 @@ class OrderServiceTest {
 
     @Test
     void testSetIsOrdered_WithNonExistingUser_ShouldThrowNonExistingUserException() {
+        UUID expectedUserId = UUID.randomUUID();
         LocalDateTime expectedDateTime = LocalDateTime.now();
-        when(userRepositoryMock.findById(1L))
+        when(userRepositoryMock.findById(expectedUserId))
                 .thenReturn(Optional.empty());
 
-        assertThrowsExactly(NonExistingUserException.class, () -> orderService.setIsOrdered(1L, expectedDateTime));
+        assertThrowsExactly(NonExistingUserException.class, () -> orderService.setIsOrdered(expectedUserId, expectedDateTime));
     }
 
     @Test
@@ -131,7 +133,7 @@ class OrderServiceTest {
         Order secondOrder = new Order();
         firstOrder.setOrdered(false);
 
-        when(userRepositoryMock.findById(1L))
+        when(userRepositoryMock.findById(expectedCustomerId))
                 .thenReturn(Optional.of(expectedUser));
 
         when(orderRepositoryMock.findAllByCustomer(expectedUser))
@@ -142,7 +144,7 @@ class OrderServiceTest {
 
 
 
-        orderService.setIsOrdered(1, expectedDateTime);
+        orderService.setIsOrdered(expectedCustomerId, expectedDateTime);
 
         firstOrder.setOrdered(true);
         firstOrder.setOrderTime(Timestamp.valueOf(expectedDateTime));
@@ -154,5 +156,5 @@ class OrderServiceTest {
                 firstOrder,
                 secondOrder
         ));
-    }*/
+    }
 }
