@@ -1,7 +1,9 @@
 package com.danube.danube.service;
 
 import com.danube.danube.custom_exception.product.NonExistingProductCategoryException;
+import com.danube.danube.custom_exception.product.NonExistingProductException;
 import com.danube.danube.custom_exception.product.NonExistingSubcategoryException;
+import com.danube.danube.model.product.Product;
 import com.danube.danube.model.product.category.Category;
 import com.danube.danube.model.product.connection.SubcategoryDetail;
 import com.danube.danube.model.product.detail.Detail;
@@ -17,9 +19,12 @@ import com.danube.danube.utility.converter.uploadproduct.ProductUploadConverter;
 import com.danube.danube.utility.imageutility.ImageUtility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.PageRequest;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.zip.DataFormatException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -40,6 +45,7 @@ class ProductServiceTest {
     ProductUploadConverter productUploadConverterMock;
     ImageUtility imageUtilityMock;
     ConverterHelper converterHelperMock;
+    int SIMILAR_RECOMENDED_PRODUCTS_RESULT_COUNT = 15;
 
     @BeforeEach
     void setup(){
@@ -229,11 +235,116 @@ class ProductServiceTest {
         );
     }
 
-    /*@Test
-    void getSimilarProducts() {
+    @Test
+    void testGetSimilarProducts_WithNonExistingProductFromId_ThrowsNonExistingProductException(){
+        long expectedProductFromId = 1;
+        when(productRepositoryMock.findById(expectedProductFromId))
+                .thenReturn(Optional.empty());
+
+        assertThrowsExactly(NonExistingProductException.class, () -> productService.getSimilarProducts(expectedProductFromId));
     }
 
     @Test
+    void testGetSimilarProducts_WithExpectedSubcategoryAndExpectedSimilarProducts_ShouldCallProductRepositoryMockFindBySubcategoryAndIdNotOrderBySoldDescRatingDescAndProductViewConverterMockConvertProductsToProductShowSmallDTO() throws DataFormatException, IOException {
+        long expectedProductFromId = 1;
+        long expectedSubcategoryId = 1;
+        PageRequest expectedPageRequest = PageRequest.of(0, SIMILAR_RECOMENDED_PRODUCTS_RESULT_COUNT);
+
+
+        Subcategory expectedSubcategory = new Subcategory();
+        expectedSubcategory.setId(expectedSubcategoryId);
+        expectedSubcategory.setName("Test subcategory");
+
+        Product expectedProduct = new Product();
+        expectedProduct.setId(expectedProductFromId);
+        expectedProduct.setProductName("Test product");
+        expectedProduct.setSubcategory(expectedSubcategory);
+
+        Product expectedSimilarProduct1 = new Product();
+        expectedProduct.setId(2);
+        expectedProduct.setProductName("Test similar product 1");
+        expectedProduct.setSubcategory(expectedSubcategory);
+
+        Product expectedSimilarProduct2 = new Product();
+        expectedProduct.setId(3);
+        expectedProduct.setProductName("Test similar product 2");
+        expectedProduct.setSubcategory(expectedSubcategory);
+
+        when(productRepositoryMock.findById(expectedProductFromId))
+                .thenReturn(Optional.of(expectedProduct));
+
+        when(productRepositoryMock.findBySubcategoryAndIdNotOrderBySoldDescRatingDesc(
+                expectedSubcategory,
+                expectedProductFromId,
+                expectedPageRequest
+        )).thenReturn(
+                List.of(
+                        expectedSimilarProduct1,
+                        expectedSimilarProduct2
+                )
+        );
+
+        productService.getSimilarProducts(expectedProductFromId);
+
+        verify(productViewConverterMock, times(1)).convertProductsToProductShowSmallDTO(
+                List.of(
+                        expectedSimilarProduct1,
+                        expectedSimilarProduct2
+                ),
+                imageUtilityMock,
+                converterHelperMock
+        );
+
+        verify(productRepositoryMock, times(1)).findBySubcategoryAndIdNotOrderBySoldDescRatingDesc(
+                expectedSubcategory,
+                expectedProductFromId,
+                expectedPageRequest
+        );
+    }
+
+    @Test
+    void testGetSimilarProducts_WithExpectedSubcategoryAndEmptyListOfSimilarProducts_ShouldCallProductRepositoryMockFindBySubcategoryAndIdNotOrderBySoldDescRatingDescAndProductViewConverterMockConvertProductsToProductShowSmallDTO() throws DataFormatException, IOException {
+        long expectedProductFromId = 1;
+        long expectedSubcategoryId = 1;
+        PageRequest expectedPageRequest = PageRequest.of(0, SIMILAR_RECOMENDED_PRODUCTS_RESULT_COUNT);
+
+
+        Subcategory expectedSubcategory = new Subcategory();
+        expectedSubcategory.setId(expectedSubcategoryId);
+        expectedSubcategory.setName("Test subcategory");
+
+        Product expectedProduct = new Product();
+        expectedProduct.setId(expectedProductFromId);
+        expectedProduct.setProductName("Test product");
+        expectedProduct.setSubcategory(expectedSubcategory);
+
+        when(productRepositoryMock.findById(expectedProductFromId))
+                .thenReturn(Optional.of(expectedProduct));
+
+        when(productRepositoryMock.findBySubcategoryAndIdNotOrderBySoldDescRatingDesc(
+                expectedSubcategory,
+                expectedProductFromId,
+                expectedPageRequest
+        )).thenReturn(
+                List.of()
+        );
+
+        productService.getSimilarProducts(expectedProductFromId);
+
+        verify(productViewConverterMock, times(1)).convertProductsToProductShowSmallDTO(
+                List.of(),
+                imageUtilityMock,
+                converterHelperMock
+        );
+
+        verify(productRepositoryMock, times(1)).findBySubcategoryAndIdNotOrderBySoldDescRatingDesc(
+                expectedSubcategory,
+                expectedProductFromId,
+                expectedPageRequest
+        );
+    }
+
+    /*@Test
     void saveProduct() {
     }
 
