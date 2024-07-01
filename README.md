@@ -77,8 +77,8 @@ For manual setup add the following environment variables (If you use a shell to 
   - `JWT_SECRET`: [Your JWT secret key]
   - `JWT_EXPIRATION`: [JWT token expiration time in millisecond]
   - `JWT_VERIFICATION_TIME_IN_MINUTES`: [If the user want to modify there data the server will ask to authorize after verification time expires, the recomandation is 5 minutes]
-  - `PAYMENT_REDIRECTION_PAGE`: [The location of the website where to redirect after successfull payment]
-  - `PAYMENT_SECRET`: [Your Stripe secret key (If you try this project in your local environment you can set this value to `http://localhost:5173`)]
+  - `PAYMENT_REDIRECTION_PAGE`: [The location of the website where to redirect after successfull payment](If you try this project in your local environment you can set this value to `http://localhost:5173`)
+  - `PAYMENT_SECRET`: [Your Stripe secret key]
 
 
 <!-- For Docker setup add the following environment variables:
