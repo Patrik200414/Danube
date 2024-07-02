@@ -26,5 +26,4 @@ public interface ProductUploadConverter {
     ) throws JsonProcessingException;
     List<Image> convertMultiPartFilesToListOfImages(MultipartFile[] images, Product product, ImageUtility imageUtility) throws IOException;
     ProductUpdateDTO convertProductToProductUpdateDTO(Product product, ImageUtility imageUtility) throws DataFormatException, IOException;
-    ProductUpdateDTO convertUpdateDataToProductUpdateDTO(String updatedValue) throws JsonProcessingException;
 }

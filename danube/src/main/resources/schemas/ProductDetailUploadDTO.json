@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ProductDetailUploadDTO",
+  "type": "object",
+  "properties": {
+    "deliveryTimeInDay": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 365
+    },
+    "price": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "quantity": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000
+    },
+    "shippingPrice": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1000
+    },
+    "brand": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 255
+    },
+    "description": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 1000
+    },
+    "productName": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 255
+    },
+    "subcategoryId": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "required": ["deliveryTimeInDay", "price", "quantity", "shippingPrice", "brand", "description", "productName", "subcategoryId"]
+}

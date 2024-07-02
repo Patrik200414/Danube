@@ -100,9 +100,4 @@ public class ProductUploadConverterImpl implements ProductUploadConverter{
                 detailValues
         );
     }
-
-    @Override
-    public ProductUpdateDTO convertUpdateDataToProductUpdateDTO(String updatedValue) throws JsonProcessingException {
-        return objectMapper.readValue(updatedValue, ProductUpdateDTO.class);
-    }
 }

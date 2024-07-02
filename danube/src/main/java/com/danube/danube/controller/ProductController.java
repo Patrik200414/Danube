@@ -3,6 +3,8 @@ package com.danube.danube.controller;
 import com.danube.danube.model.dto.product.*;
 import com.danube.danube.service.ProductService;
 import com.danube.danube.utility.converter.uploadproduct.ProductUploadConverter;
+import com.danube.danube.utility.json.JsonUtility;
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.zip.DataFormatException;
@@ -20,11 +23,13 @@ public class ProductController {
 
     private final ProductService productService;
     private final ProductUploadConverter productUploadConverter;
+    private final JsonUtility jsonUtility;
 
     @Autowired
-    public ProductController(ProductService productService, ProductUploadConverter productUploadConverter) {
+    public ProductController(ProductService productService, ProductUploadConverter productUploadConverter, JsonUtility jsonUtility) {
         this.productService = productService;
         this.productUploadConverter = productUploadConverter;
+        this.jsonUtility = jsonUtility;
     }
 
     @GetMapping()
@@ -87,9 +92,12 @@ public class ProductController {
             @RequestParam("userId") UUID userId,
             @RequestParam("images") MultipartFile[] images
     ) throws IOException {
-        ProductUploadDTO productUploadDTO = productUploadConverter.convertRequestParamToProductUploadDTO(
-                productDetail,
-                productInformation,
+        ProductDetailUploadDTO productDetailUploadDTO = jsonUtility.validateJson(productDetail, ProductDetailUploadDTO.class);
+        Map<String, String> convertedProductInformation = jsonUtility.validateJson(productInformation, new TypeReference<Map<String, String>>() {});
+
+        ProductUploadDTO productUploadDTO = new ProductUploadDTO(
+                productDetailUploadDTO,
+                convertedProductInformation,
                 userId,
                 images
         );
@@ -106,7 +114,8 @@ public class ProductController {
             @RequestParam(value = "newImages", required = false) MultipartFile[] newImages,
             @RequestParam("seller") UUID sellerId
     ) throws IOException {
-        ProductUpdateDTO productUpdateDTO = productUploadConverter.convertUpdateDataToProductUpdateDTO(updatedValue);
+        //jsonUtility.validateJson(updatedValue, ProductUpdateDTO.class.getName());
+        ProductUpdateDTO productUpdateDTO = jsonUtility.mapJsonToObject(updatedValue, ProductUpdateDTO.class);
         productService.updateProduct(productUpdateDTO, newImages, sellerId, productId);
         return HttpStatus.CREATED;
     }
