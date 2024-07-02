@@ -10,6 +10,7 @@ import com.danube.danube.custom_exception.user.*;
 import com.danube.danube.model.error.UserErrorMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.stripe.exception.StripeException;
+import org.everit.json.schema.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -21,6 +22,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.zip.DataFormatException;
 
 
@@ -213,6 +217,18 @@ public class Advice {
         logger.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                 new UserErrorMessage("Something went wrong! Couldn't save product! Please try again!")
+        );
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<UserErrorMessage> handleJsonValidationException(ValidationException e){
+        logger.error(e.getErrorMessage(), e);
+        String errorMessages = e.getCausingExceptions().stream()
+                .map(violatedSchema ->violatedSchema.getPointerToViolation().substring(2))
+                .collect(Collectors.joining(", "));
+
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(
+                new UserErrorMessage("Incorrect inputs: " + errorMessages)
         );
     }
 
