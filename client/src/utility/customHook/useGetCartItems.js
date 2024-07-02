@@ -25,7 +25,6 @@ function useGetCartItems(){
         const locallyStoredItems = JSON.parse(localStorage.getItem('CART_ITEMS'));
         if(currUser){
             getCartElementForRegisteredUser(currUser);
-            /* addLocallyStoredItemsToUser(currUser, locallyStoredItems); */
         } else if(locallyStoredItems){
             setCartItems(locallyStoredItems);
         } else {
