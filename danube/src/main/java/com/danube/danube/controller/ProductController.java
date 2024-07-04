@@ -115,7 +115,7 @@ public class ProductController {
             @RequestParam("seller") UUID sellerId
     ) throws IOException {
         //jsonUtility.validateJson(updatedValue, ProductUpdateDTO.class.getName());
-        ProductUpdateDTO productUpdateDTO = jsonUtility.mapJsonToObject(updatedValue, ProductUpdateDTO.class);
+        ProductUpdateDTO productUpdateDTO = jsonUtility.validateJson(updatedValue, ProductUpdateDTO.class);
         productService.updateProduct(productUpdateDTO, newImages, sellerId, productId);
         return HttpStatus.CREATED;
     }

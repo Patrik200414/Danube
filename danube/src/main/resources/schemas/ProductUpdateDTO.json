@@ -1,0 +1,107 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "productInformation": {
+      "type": "object",
+      "properties": {
+        "productName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 255,
+          "description": "Product name should contain at least 2 characters and up most 255 characters!"
+        },
+        "price": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10000,
+          "description": "Price should be between 0 and 10 000!"
+        },
+        "deliveryTimeInDay": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 365,
+          "description": "Delivery time should be between 1 and 365!"
+        },
+        "quantity": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000,
+          "description": "Quantity should be between 0 and 100 000!"
+        },
+        "rating": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5,
+          "description": "Rating should be between 0 and 5!"
+        },
+        "shippingPrice": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000,
+          "description": "Shipping price should be between 0 and 1000!"
+        },
+        "sold": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Sold amount should be greater or equal than 0!"
+        },
+        "brand": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 255,
+          "description": "Brand name should contain at least 2 and upmost 255 characters!"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 1000,
+          "description": "Description should contain at least 3 and upmost 1000 characters!"
+        },
+        "seller": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 255,
+          "description": "Seller name should contain at least 2 and upmost 255 characters!"
+        },
+        "subcategoryId": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Subcategory should be selected!"
+        }
+      },
+      "required": ["productName", "price", "deliveryTimeInDay", "quantity", "rating", "shippingPrice", "sold", "brand", "description", "seller", "subcategoryId"]
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "imageName": {
+            "type": "string"
+          },
+          "imageFile": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Image about the product should be provided!"
+    },
+    "detailValues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "detailKey": {
+            "type": "string"
+          },
+          "detailValue": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Product details should be provided!"
+    }
+  },
+  "required": ["productInformation", "images", "detailValues"]
+}

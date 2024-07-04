@@ -224,7 +224,7 @@ public class Advice {
     public ResponseEntity<UserErrorMessage> handleJsonValidationException(ValidationException e){
         logger.error(e.getErrorMessage(), e);
         String errorMessages = e.getCausingExceptions().stream()
-                .map(violatedSchema ->violatedSchema.getPointerToViolation().substring(2))
+                .map(violatedSchema ->violatedSchema.getViolatedSchema().getDescription())
                 .collect(Collectors.joining(", "));
 
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(
