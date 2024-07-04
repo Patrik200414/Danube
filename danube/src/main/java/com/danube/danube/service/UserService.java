@@ -50,14 +50,12 @@ public class UserService {
     }
 
     public void saveUser(UserRegistrationDTO userRegistrationDTO){
-        registrationValidator(userRegistrationDTO);
         String encodedPassword = passwordEncoder.encode(userRegistrationDTO.password());
         UserEntity user = userConverter.convertUserRegistrationDTOToUserEntity(userRegistrationDTO, encodedPassword);
         userRepository.save(user);
     }
 
     public JwtResponse loginUser(UserLoginDTO userLoginDTO){
-        validateEmail(userLoginDTO.email());
         verifyUserCredentials(userLoginDTO.email(), userLoginDTO.password());
         UserEntity user = userRepository.findByEmail(userLoginDTO.email()).orElseThrow(() -> new EmailNotFoundException(userLoginDTO.email()));
         return userConverter.generateJwtResponse(user, jwtUtils);
@@ -81,9 +79,6 @@ public class UserService {
 
     @Transactional
     public JwtResponse updateUser(UUID id, UserUpdateDTO userUpdateDTO, String token){
-        validateEmail(userUpdateDTO.email());
-        validateFirstNameAndLastName(userUpdateDTO.firstName(), userUpdateDTO.lastName());
-
         UserEntity user = userRepository.findById(id).orElseThrow(NonExistingUserException::new);
 
         validateUserByThereRequestTokenInformation(token, user);
@@ -145,48 +140,6 @@ public class UserService {
 
         if(!passwordUpdateDTO.newPassword().equals(passwordUpdateDTO.reenterPassword())){
             throw new NotMatchingNewPasswordAndReenterPasswordException();
-        }
-    }
-
-
-    private void registrationValidator(UserRegistrationDTO userRegistrationDTO){
-        validateFieldNotEmpty(userRegistrationDTO);
-        validateFirstNameAndLastName(userRegistrationDTO.firstName(), userRegistrationDTO.lastName());
-        validatePasswordLength(userRegistrationDTO.password());
-
-        validateEmail(userRegistrationDTO.email());
-    }
-
-    private static void validatePasswordLength(String password) {
-        if (password.length() < MIN_LENGTH_PASSWORD) {
-            throw new InputTooShortException("password", MIN_LENGTH_PASSWORD);
-        }
-    }
-
-    private void validateFieldNotEmpty(UserRegistrationDTO userRegistrationDTO) {
-        if(userRegistrationDTO.email() == null || userRegistrationDTO.email().isEmpty()){
-            throw new RegistrationFieldNullException("email");
-        } else if(userRegistrationDTO.firstName() == null || userRegistrationDTO.firstName().isEmpty()){
-            throw new RegistrationFieldNullException("first name");
-        } else if(userRegistrationDTO.lastName() == null || userRegistrationDTO.lastName().isEmpty()){
-            throw new RegistrationFieldNullException("last name");
-        } else if(userRegistrationDTO.password() == null || userRegistrationDTO.password().isEmpty()){
-            throw new RegistrationFieldNullException("password");
-        }
-    }
-
-
-    private void validateFirstNameAndLastName(String firstName, String lastName){
-        if(firstName.length() < MIN_LENGTH_NAME){
-            throw new InputTooShortException("first name", MIN_LENGTH_NAME);
-        } else if(lastName.length() < MIN_LENGTH_NAME){
-            throw new InputTooShortException("last name", MIN_LENGTH_NAME);
-        }
-    }
-
-    private void validateEmail(String email){
-        if(!Pattern.compile(".+\\@.+\\..+").matcher(email).matches()){
-            throw new InvalidEmailFormatException();
         }
     }
 

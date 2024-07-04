@@ -4,12 +4,14 @@ import com.danube.danube.custom_exception.user.ExpiredVerificationTokenException
 import com.danube.danube.model.dto.jwt.JwtResponse;
 import com.danube.danube.model.dto.user.*;
 import com.danube.danube.service.UserService;
+import com.danube.danube.utility.json.JsonUtility;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @RestController
@@ -17,21 +19,25 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
+    public final JsonUtility jsonUtility;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, JsonUtility jsonUtility) {
         this.userService = userService;
+        this.jsonUtility = jsonUtility;
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<?> registration(@RequestBody UserRegistrationDTO userRegistrationDTO){
+    public ResponseEntity<?> registration(@RequestBody String registrationInformation) throws IOException {
+        UserRegistrationDTO userRegistrationDTO = jsonUtility.validateJson(registrationInformation, UserRegistrationDTO.class);
         userService.saveUser(userRegistrationDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/login")
-    public JwtResponse login(@RequestBody UserLoginDTO userLoginDTO){
-        return userService.loginUser(userLoginDTO);
+    public JwtResponse login(@RequestBody String loginInformation) throws IOException {
+        UserLoginDTO userLoginDTO1 = jsonUtility.validateJson(loginInformation, UserLoginDTO.class);
+        return userService.loginUser(userLoginDTO1);
     }
 
     @PatchMapping("/{id}/role")
@@ -41,13 +47,15 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public JwtResponse updateUser(@PathVariable UUID id, @RequestBody UserUpdateDTO userUpdateDTO, HttpServletRequest request){
+    public JwtResponse updateUser(@PathVariable UUID id, @RequestBody String userUpdateInformation, HttpServletRequest request) throws IOException {
+        UserUpdateDTO userUpdateDTO = jsonUtility.validateJson(userUpdateInformation, UserUpdateDTO.class);
         String jwtToken = getJwtTokenFromBearerToken(request);
         return userService.updateUser(id, userUpdateDTO, jwtToken);
     }
 
     @PutMapping("/password/{id}")
-    public HttpStatus updatePassword(@PathVariable UUID id, @RequestBody PasswordUpdateDTO passwordUpdateDTO, HttpServletRequest request){
+    public HttpStatus updatePassword(@PathVariable UUID id, @RequestBody String passwordUpdateInformation, HttpServletRequest request) throws IOException {
+        PasswordUpdateDTO passwordUpdateDTO = jsonUtility.validateJson(passwordUpdateInformation, PasswordUpdateDTO.class);
         String jwtToken = getJwtTokenFromBearerToken(request);
         userService.updatePassword(id, passwordUpdateDTO, jwtToken);
         return HttpStatus.OK;
@@ -64,7 +72,8 @@ public class UserController {
     }
 
     @PostMapping("/authenticate")
-    public JwtResponse verifyProfile(@RequestBody UserLoginDTO userAuthentication){
+    public JwtResponse verifyProfile(@RequestBody String userAuthenticationInformation) throws IOException {
+        UserLoginDTO userAuthentication = jsonUtility.validateJson(userAuthenticationInformation, UserLoginDTO.class);
         return userService.authenticateUser(userAuthentication.email(), userAuthentication.password());
     }
 

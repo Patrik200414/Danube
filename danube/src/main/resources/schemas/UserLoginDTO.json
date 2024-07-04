@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "pattern": ".+\\@.+\\..+",
+      "errorMessage": "Invalid email format!"
+    },
+    "password": {
+      "type": "string",
+      "minLength": 6,
+      "maxLength": 255,
+      "errorMessage": "Password should at least be 6 character long!"
+    }
+  },
+  "required": ["email", "password"]
+}

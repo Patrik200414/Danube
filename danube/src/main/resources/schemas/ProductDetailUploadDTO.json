@@ -6,41 +6,49 @@
     "deliveryTimeInDay": {
       "type": "integer",
       "minimum": 1,
-      "maximum": 365
+      "maximum": 365,
+      "errorMessage": "Deliver time should be between 1 and 365 days!"
     },
     "price": {
       "type": "number",
       "minimum": 0,
-      "maximum": 10000
+      "maximum": 10000,
+      "errorMessage": "Price should be between $0 and $10 000!"
     },
     "quantity": {
       "type": "integer",
       "minimum": 0,
-      "maximum": 100000
+      "maximum": 100000,
+      "errorMessage": "Quantity should be between 0 and 100 000!"
     },
     "shippingPrice": {
       "type": "number",
       "minimum": 0,
-      "maximum": 1000
+      "maximum": 1000,
+      "errorMessage": "Shipping price should be between $0 and $1 000!"
     },
     "brand": {
       "type": "string",
       "minLength": 2,
-      "maxLength": 255
+      "maxLength": 255,
+      "errorMessage": "Brand name should contain at least 2 and upmost 255 characters!"
     },
     "description": {
       "type": "string",
       "minLength": 3,
-      "maxLength": 1000
+      "maxLength": 1000,
+      "errorMessage": "Description should contain at least 3 and upmost 255 characters!"
     },
     "productName": {
       "type": "string",
       "minLength": 2,
-      "maxLength": 255
+      "maxLength": 255,
+      "errorMessage": "Product name should contain at least 2 and upmost 255 characters!"
     },
     "subcategoryId": {
       "type": "integer",
-      "minimum": 1
+      "minimum": 1,
+      "errorMessage": "Subcategory should be selected!"
     }
   },
   "required": ["deliveryTimeInDay", "price", "quantity", "shippingPrice", "brand", "description", "productName", "subcategoryId"]
