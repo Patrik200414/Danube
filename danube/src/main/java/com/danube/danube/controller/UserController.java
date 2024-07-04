@@ -54,7 +54,8 @@ public class UserController {
     }
 
     @PutMapping("/password/{id}")
-    public HttpStatus updatePassword(@PathVariable UUID id, @RequestBody PasswordUpdateDTO passwordUpdateDTO, HttpServletRequest request){
+    public HttpStatus updatePassword(@PathVariable UUID id, @RequestBody String passwordUpdateInformation, HttpServletRequest request) throws IOException {
+        PasswordUpdateDTO passwordUpdateDTO = jsonUtility.validateJson(passwordUpdateInformation, PasswordUpdateDTO.class);
         String jwtToken = getJwtTokenFromBearerToken(request);
         userService.updatePassword(id, passwordUpdateDTO, jwtToken);
         return HttpStatus.OK;
