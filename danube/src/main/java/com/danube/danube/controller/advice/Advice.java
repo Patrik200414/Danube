@@ -11,6 +11,7 @@ import com.danube.danube.model.error.UserErrorMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.stripe.exception.StripeException;
 import org.everit.json.schema.ValidationException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -223,12 +224,18 @@ public class Advice {
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<UserErrorMessage> handleJsonValidationException(ValidationException e){
         logger.error(e.getErrorMessage(), e);
-        String errorMessages = e.getCausingExceptions().stream()
-                .map(violatedSchema ->violatedSchema.getViolatedSchema().getDescription())
-                .collect(Collectors.joining(", "));
+        String errorMessage;
+        if(!e.getCausingExceptions().isEmpty()){
+            errorMessage = e.getCausingExceptions().stream()
+                    .map(violatedSchema -> (String) violatedSchema.getViolatedSchema().getUnprocessedProperties().get("errorMessage"))
+                    .collect(Collectors.joining(", "));
+        } else{
+            errorMessage = (String) e.getViolatedSchema().getUnprocessedProperties().get("errorMessage");
+        }
+
 
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(
-                new UserErrorMessage("Incorrect inputs: " + errorMessages)
+                new UserErrorMessage("Incorrect inputs: " + errorMessage)
         );
     }
 

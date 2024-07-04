@@ -9,7 +9,7 @@
           "type": "string",
           "minLength": 2,
           "maxLength": 255,
-          "description": "Product name should contain at least 2 characters and up most 255 characters!"
+          "errorMessage": "Product name should contain at least 2 characters and up most 255 characters!"
         },
         "price": {
           "type": "number",
