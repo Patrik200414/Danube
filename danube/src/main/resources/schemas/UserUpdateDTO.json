@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "pattern": ".+\\@.+\\..+",
+      "errorMessage": "Invalid email format!"
+    },
+    "firstName": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 255,
+      "errorMessage": "Firstname should contain at least 2 and upmost 255 characters!"
+    },
+    "lastName": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 255,
+      "errorMessage": "Lastname should contain at least 2 and upmost 255 characters!"
+    }
+  },
+  "required": ["email", "firstName", "lastName"]
+}

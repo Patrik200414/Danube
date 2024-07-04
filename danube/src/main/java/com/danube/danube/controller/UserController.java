@@ -36,7 +36,6 @@ public class UserController {
 
     @PostMapping("/login")
     public JwtResponse login(@RequestBody String loginInformation) throws IOException {
-        //UserLoginDTO
         UserLoginDTO userLoginDTO1 = jsonUtility.validateJson(loginInformation, UserLoginDTO.class);
         return userService.loginUser(userLoginDTO1);
     }
@@ -48,7 +47,8 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public JwtResponse updateUser(@PathVariable UUID id, @RequestBody UserUpdateDTO userUpdateDTO, HttpServletRequest request){
+    public JwtResponse updateUser(@PathVariable UUID id, @RequestBody String userUpdateInformation, HttpServletRequest request) throws IOException {
+        UserUpdateDTO userUpdateDTO = jsonUtility.validateJson(userUpdateInformation, UserUpdateDTO.class);
         String jwtToken = getJwtTokenFromBearerToken(request);
         return userService.updateUser(id, userUpdateDTO, jwtToken);
     }
@@ -71,7 +71,8 @@ public class UserController {
     }
 
     @PostMapping("/authenticate")
-    public JwtResponse verifyProfile(@RequestBody UserLoginDTO userAuthentication){
+    public JwtResponse verifyProfile(@RequestBody String userAuthenticationInformation) throws IOException {
+        UserLoginDTO userAuthentication = jsonUtility.validateJson(userAuthenticationInformation, UserLoginDTO.class);
         return userService.authenticateUser(userAuthentication.email(), userAuthentication.password());
     }
 

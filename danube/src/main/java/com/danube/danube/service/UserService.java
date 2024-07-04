@@ -79,9 +79,6 @@ public class UserService {
 
     @Transactional
     public JwtResponse updateUser(UUID id, UserUpdateDTO userUpdateDTO, String token){
-        validateEmail(userUpdateDTO.email());
-        validateFirstNameAndLastName(userUpdateDTO.firstName(), userUpdateDTO.lastName());
-
         UserEntity user = userRepository.findById(id).orElseThrow(NonExistingUserException::new);
 
         validateUserByThereRequestTokenInformation(token, user);
@@ -143,21 +140,6 @@ public class UserService {
 
         if(!passwordUpdateDTO.newPassword().equals(passwordUpdateDTO.reenterPassword())){
             throw new NotMatchingNewPasswordAndReenterPasswordException();
-        }
-    }
-
-
-    private void validateFirstNameAndLastName(String firstName, String lastName){
-        if(firstName.length() < MIN_LENGTH_NAME){
-            throw new InputTooShortException("first name", MIN_LENGTH_NAME);
-        } else if(lastName.length() < MIN_LENGTH_NAME){
-            throw new InputTooShortException("last name", MIN_LENGTH_NAME);
-        }
-    }
-
-    private void validateEmail(String email){
-        if(!Pattern.compile(".+\\@.+\\..+").matcher(email).matches()){
-            throw new InvalidEmailFormatException();
         }
     }
 
