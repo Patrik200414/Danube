@@ -50,7 +50,6 @@ public class UserService {
     }
 
     public void saveUser(UserRegistrationDTO userRegistrationDTO){
-        registrationValidator(userRegistrationDTO);
         String encodedPassword = passwordEncoder.encode(userRegistrationDTO.password());
         UserEntity user = userConverter.convertUserRegistrationDTOToUserEntity(userRegistrationDTO, encodedPassword);
         userRepository.save(user);
@@ -144,33 +143,6 @@ public class UserService {
 
         if(!passwordUpdateDTO.newPassword().equals(passwordUpdateDTO.reenterPassword())){
             throw new NotMatchingNewPasswordAndReenterPasswordException();
-        }
-    }
-
-
-    private void registrationValidator(UserRegistrationDTO userRegistrationDTO){
-        validateFieldNotEmpty(userRegistrationDTO);
-        validateFirstNameAndLastName(userRegistrationDTO.firstName(), userRegistrationDTO.lastName());
-        validatePasswordLength(userRegistrationDTO.password());
-
-        validateEmail(userRegistrationDTO.email());
-    }
-
-    private static void validatePasswordLength(String password) {
-        if (password.length() < MIN_LENGTH_PASSWORD) {
-            throw new InputTooShortException("password", MIN_LENGTH_PASSWORD);
-        }
-    }
-
-    private void validateFieldNotEmpty(UserRegistrationDTO userRegistrationDTO) {
-        if(userRegistrationDTO.email() == null || userRegistrationDTO.email().isEmpty()){
-            throw new RegistrationFieldNullException("email");
-        } else if(userRegistrationDTO.firstName() == null || userRegistrationDTO.firstName().isEmpty()){
-            throw new RegistrationFieldNullException("first name");
-        } else if(userRegistrationDTO.lastName() == null || userRegistrationDTO.lastName().isEmpty()){
-            throw new RegistrationFieldNullException("last name");
-        } else if(userRegistrationDTO.password() == null || userRegistrationDTO.password().isEmpty()){
-            throw new RegistrationFieldNullException("password");
         }
     }
 

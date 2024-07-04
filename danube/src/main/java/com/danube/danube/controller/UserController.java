@@ -28,7 +28,8 @@ public class UserController {
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<?> registration(@RequestBody UserRegistrationDTO userRegistrationDTO){
+    public ResponseEntity<?> registration(@RequestBody String registrationInformation) throws IOException {
+        UserRegistrationDTO userRegistrationDTO = jsonUtility.validateJson(registrationInformation, UserRegistrationDTO.class);
         userService.saveUser(userRegistrationDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
