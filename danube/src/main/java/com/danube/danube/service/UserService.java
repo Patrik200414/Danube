@@ -57,7 +57,6 @@ public class UserService {
     }
 
     public JwtResponse loginUser(UserLoginDTO userLoginDTO){
-        validateEmail(userLoginDTO.email());
         verifyUserCredentials(userLoginDTO.email(), userLoginDTO.password());
         UserEntity user = userRepository.findByEmail(userLoginDTO.email()).orElseThrow(() -> new EmailNotFoundException(userLoginDTO.email()));
         return userConverter.generateJwtResponse(user, jwtUtils);

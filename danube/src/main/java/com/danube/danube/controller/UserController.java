@@ -4,12 +4,14 @@ import com.danube.danube.custom_exception.user.ExpiredVerificationTokenException
 import com.danube.danube.model.dto.jwt.JwtResponse;
 import com.danube.danube.model.dto.user.*;
 import com.danube.danube.service.UserService;
+import com.danube.danube.utility.json.JsonUtility;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @RestController
@@ -17,10 +19,12 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
+    public final JsonUtility jsonUtility;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, JsonUtility jsonUtility) {
         this.userService = userService;
+        this.jsonUtility = jsonUtility;
     }
 
     @PostMapping("/registration")
@@ -30,8 +34,10 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public JwtResponse login(@RequestBody UserLoginDTO userLoginDTO){
-        return userService.loginUser(userLoginDTO);
+    public JwtResponse login(@RequestBody String loginInformation) throws IOException {
+        //UserLoginDTO
+        UserLoginDTO userLoginDTO1 = jsonUtility.validateJson(loginInformation, UserLoginDTO.class);
+        return userService.loginUser(userLoginDTO1);
     }
 
     @PatchMapping("/{id}/role")
