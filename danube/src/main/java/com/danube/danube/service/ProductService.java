@@ -50,7 +50,6 @@ public class ProductService {
     private final ValueRepository valueRepository;
     private final ProductValueRepository productValueRepository;
     private final ImageRepository imageRepository;
-    private final SubcategoryDetailRepository subcategoryDetailRepository;
     private final ProductViewConverter productViewConverter;
     private final ProductCategoriesAndDetailsConverter productCategoriesAndDetailsConverter;
     private final ProductUploadConverter productUploadConverter;
@@ -58,7 +57,7 @@ public class ProductService {
     private final ConverterHelper converterHelper;
 
     @Autowired
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, SubcategoryRepository subcategoryRepository, DetailRepository detailRepository, UserRepository userRepository, ValueRepository valueRepository, ProductValueRepository productValueRepository, ImageRepository imageRepository, SubcategoryDetailRepository subcategoryDetailRepository, ProductViewConverter productViewConverter, ProductCategoriesAndDetailsConverter productCategoriesAndDetailsConverter, ProductUploadConverter productUploadConverter, ImageUtility imageUtility, ConverterHelper converterHelper) {
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, SubcategoryRepository subcategoryRepository, DetailRepository detailRepository, UserRepository userRepository, ValueRepository valueRepository, ProductValueRepository productValueRepository, ImageRepository imageRepository, ProductViewConverter productViewConverter, ProductCategoriesAndDetailsConverter productCategoriesAndDetailsConverter, ProductUploadConverter productUploadConverter, ImageUtility imageUtility, ConverterHelper converterHelper) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.subcategoryRepository = subcategoryRepository;
@@ -67,7 +66,6 @@ public class ProductService {
         this.valueRepository = valueRepository;
         this.productValueRepository = productValueRepository;
         this.imageRepository = imageRepository;
-        this.subcategoryDetailRepository = subcategoryDetailRepository;
         this.productViewConverter = productViewConverter;
         this.productCategoriesAndDetailsConverter = productCategoriesAndDetailsConverter;
         this.productUploadConverter = productUploadConverter;

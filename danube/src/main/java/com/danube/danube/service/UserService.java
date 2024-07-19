@@ -25,12 +25,9 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 @Service
 public class UserService {
-    private static final int MIN_LENGTH_NAME = 2;
-    private static final int MIN_LENGTH_PASSWORD = 6;
     public static final int MINUTE_TO_MILLISECONDS = 60000;
     @Value("${danube.app.jwtVerificationTimeInMinutes}")
     private int JWT_VERIFICATION_TIME_IN_MINUTES;

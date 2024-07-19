@@ -72,7 +72,6 @@ class ProductServiceTest {
                 valueRepositoryMock,
                 productValueRepositoryMock,
                 imageRepositoryMock,
-                subcategoryDetailRepositoryMock,
                 productViewConverterMock,
                 productCategoriesAndDetailsConverterMock,
                 productUploadConverterMock,
@@ -80,26 +79,6 @@ class ProductServiceTest {
                 converterHelperMock
         );
     }
-
-    /*@Test
-    void getProducts() {
-
-    }*/
-
-    /*@Test
-    void getProductCount() {
-
-    }*/
-
-    /*@Test
-    void getCategoriesAndSubCategories() {
-
-    }*/
-
-    /*@Test
-    void getCategories() {
-        productService.getCategories()
-    }*/
 
     @Test
     void testGetSubCategoriesByCategory_WithNonExistingProduct_ThrowNonExistingProductCategoryException() {
@@ -343,24 +322,4 @@ class ProductServiceTest {
                 expectedPageRequest
         );
     }
-
-    /*@Test
-    void saveProduct() {
-    }
-
-    @Test
-    void getMyProducts() {
-    }
-
-    @Test
-    void getProductItem() {
-    }
-
-    @Test
-    void getUpdatableProductItem() {
-    }
-
-    @Test
-    void updateProduct() {
-    }*/
 }
