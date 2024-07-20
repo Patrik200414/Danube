@@ -1,5 +1,6 @@
 package com.danube.danube.controller.advice;
 
+import com.danube.danube.custom_exception.input.InvalidInputException;
 import com.danube.danube.custom_exception.login_registration.NonExistingUserException;
 import com.danube.danube.custom_exception.order.OrderFailedException;
 import com.danube.danube.custom_exception.product.*;
@@ -213,6 +214,14 @@ public class Advice {
         logger.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(
                 new UserErrorMessage("Payment process failed! Please try it again!")
+        );
+    }
+
+    @ExceptionHandler(InvalidInputException.class)
+    public ResponseEntity<?> handleInvalidInputException(InvalidInputException e){
+        logger.error(e.getMessage(), e);
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(
+                new UserErrorMessage(e.getMessage())
         );
     }
 }

@@ -26,6 +26,7 @@ import com.danube.danube.utility.converter.converterhelper.ConverterHelper;
 import com.danube.danube.utility.converter.productview.ProductViewConverter;
 import com.danube.danube.utility.converter.uploadproduct.ProductUploadConverter;
 import com.danube.danube.utility.imageutility.ImageUtility;
+import com.danube.danube.utility.validation.Validator;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -55,9 +56,10 @@ public class ProductService {
     private final ProductUploadConverter productUploadConverter;
     private final ImageUtility imageUtility;
     private final ConverterHelper converterHelper;
+    private final Validator validator;
 
     @Autowired
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, SubcategoryRepository subcategoryRepository, DetailRepository detailRepository, UserRepository userRepository, ValueRepository valueRepository, ProductValueRepository productValueRepository, ImageRepository imageRepository, ProductViewConverter productViewConverter, ProductCategoriesAndDetailsConverter productCategoriesAndDetailsConverter, ProductUploadConverter productUploadConverter, ImageUtility imageUtility, ConverterHelper converterHelper) {
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, SubcategoryRepository subcategoryRepository, DetailRepository detailRepository, UserRepository userRepository, ValueRepository valueRepository, ProductValueRepository productValueRepository, ImageRepository imageRepository, ProductViewConverter productViewConverter, ProductCategoriesAndDetailsConverter productCategoriesAndDetailsConverter, ProductUploadConverter productUploadConverter, ImageUtility imageUtility, ConverterHelper converterHelper, Validator validator, Validator validator1) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.subcategoryRepository = subcategoryRepository;
@@ -71,6 +73,7 @@ public class ProductService {
         this.productUploadConverter = productUploadConverter;
         this.imageUtility = imageUtility;
         this.converterHelper = converterHelper;
+        this.validator = validator1;
     }
 
     @Transactional
@@ -150,7 +153,7 @@ public class ProductService {
 
     @Transactional
     public void saveProduct(ProductUploadDTO productUploadDTO) throws IOException {
-
+        validateProductDetail(productUploadDTO.productDetail());
         UserEntity seller = sellerValidator(productUploadDTO.userId());
         Subcategory subcategory = subcategoryRepository.findById(productUploadDTO.productDetail().subcategoryId())
                         .orElseThrow(NonExistingSubcategoryException::new);
@@ -222,6 +225,7 @@ public class ProductService {
 
     @Transactional
     public void updateProduct(ProductUpdateDTO updatedProductDetails, MultipartFile[] newImages, UUID sellerId, long updatedProductId) throws IOException{
+        validateProductInformation(updatedProductDetails.productInformation());
         UserEntity seller = sellerValidator(sellerId);
         Product updatedProduct = productRepository.findById(updatedProductId)
                 .orElseThrow(NonExistingProductException::new);
@@ -354,5 +358,30 @@ public class ProductService {
         }
 
         return user;
+    }
+
+
+    private void validateProductDetail(ProductDetailUploadDTO productDetailUploadDTO){
+        validator.validateNumericValue(1, 365, productDetailUploadDTO.deliveryTimeInDay());
+        validator.validateNumericValue(0, 10000, productDetailUploadDTO.price());
+        validator.validateNumericValue(0, 100000, productDetailUploadDTO.quantity());
+        validator.validateNumericValue(0, 1000, productDetailUploadDTO.shippingPrice());
+        validator.validateTextInputIsNotEmpty(productDetailUploadDTO.brand());
+        validator.validateTextInputIsNotEmpty(productDetailUploadDTO.description());
+        validator.validateTextInputIsNotEmpty(productDetailUploadDTO.productName());
+
+    }
+
+    private void validateProductInformation(ProductInformation productInformation){
+        validator.validateTextInputIsNotEmpty(productInformation.productName());
+        validator.validateNumericValue(0, 10000, productInformation.price());
+        validator.validateNumericValue(1, 365, productInformation.deliveryTimeInDay());
+        validator.validateNumericValue(0, 100000, productInformation.quantity());
+        validator.validateNumericValue(0, 5, productInformation.rating());
+        validator.validateNumericValue(0, 1000, productInformation.shippingPrice());
+        validator.validateNumericValue(0, productInformation.sold());
+        validator.validateTextInputIsNotEmpty(productInformation.brand());
+        validator.validateTextInputIsNotEmpty(productInformation.description());
+        validator.validateTextInputIsNotEmpty(productInformation.seller());
     }
 }

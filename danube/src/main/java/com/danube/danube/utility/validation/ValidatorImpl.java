@@ -17,4 +17,25 @@ public class ValidatorImpl implements Validator{
             throw new InvalidInputException("Invalid email format!");
         }
     }
+
+    @Override
+    public void validateNumericValue(int minValue, int maxValue, int value) {
+        if(value < minValue || value > maxValue){
+            throw new InvalidInputException(String.format("The value is not between %s and %s", minValue, maxValue));
+        }
+    }
+
+    @Override
+    public void validateNumericValue(double minValue, double maxValue, double value) {
+        if(value < minValue || value > maxValue){
+            throw new InvalidInputException(String.format("The value is not between %s and %s", minValue, maxValue));
+        }
+    }
+
+    @Override
+    public void validateNumericValue(double minValue, double value) {
+        if(value < minValue){
+            throw new InvalidInputException(String.format("The value is smaller than %s", minValue));
+        }
+    }
 }
