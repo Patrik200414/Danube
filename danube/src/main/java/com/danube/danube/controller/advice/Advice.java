@@ -1,9 +1,6 @@
 package com.danube.danube.controller.advice;
 
-import com.danube.danube.custom_exception.login_registration.InputTooShortException;
-import com.danube.danube.custom_exception.login_registration.InvalidEmailFormatException;
 import com.danube.danube.custom_exception.login_registration.NonExistingUserException;
-import com.danube.danube.custom_exception.login_registration.RegistrationFieldNullException;
 import com.danube.danube.custom_exception.order.OrderFailedException;
 import com.danube.danube.custom_exception.product.*;
 import com.danube.danube.custom_exception.user.*;
@@ -11,7 +8,6 @@ import com.danube.danube.model.error.UserErrorMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.stripe.exception.StripeException;
 import org.everit.json.schema.ValidationException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -23,8 +19,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.DataFormatException;
 
@@ -43,31 +37,6 @@ public class Advice {
         );
     }
 
-    @ExceptionHandler(RegistrationFieldNullException.class)
-    public ResponseEntity<UserErrorMessage> handleRegistrationFieldNullException(RegistrationFieldNullException e){
-        logger.warn(e.getMessage(), e);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                new UserErrorMessage(
-                        String.format("%s field is empty! Please enter correct value!", e.getMessage())
-                )
-        );
-    }
-
-    @ExceptionHandler(InputTooShortException.class)
-    public ResponseEntity<UserErrorMessage> handleInputTooShortException(InputTooShortException e){
-        logger.warn(e.getMessage(), e);
-        return ResponseEntity.badRequest().body(
-                        handleInputTooShortError(e)
-        );
-    }
-
-    @ExceptionHandler(InvalidEmailFormatException.class)
-    public ResponseEntity<UserErrorMessage> handleInvalidEmailFormatException(InvalidEmailFormatException e){
-        logger.warn(e.getMessage(), e);
-        return ResponseEntity.badRequest().body(
-                new UserErrorMessage("Email is invalid! Please enter a valid email address!")
-        );
-    }
 
     @ExceptionHandler({BadCredentialsException.class, InvalidUserCredentialsException.class})
     public ResponseEntity<UserErrorMessage> handleBadCredentialsException(Exception e){
@@ -245,12 +214,5 @@ public class Advice {
         return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(
                 new UserErrorMessage("Payment process failed! Please try it again!")
         );
-    }
-
-    private UserErrorMessage handleInputTooShortError(InputTooShortException e){
-        logger.warn(e.getMessage(), e);
-        String fieldName = e.getMessage().split("-")[0];
-        String minLength = e.getMessage().split("-")[1];
-        return new UserErrorMessage(String.format("Input at %s field is too short! Input should be at least %s character long!", fieldName, minLength));
     }
 }

@@ -56,12 +56,6 @@ class UserServiceTest {
         );
     }
 
-    @Test
-    void testLoginUser_WithInvalidEmail_ThrowsInvalidEmailFormatException() {
-        UserLoginDTO registration = new UserLoginDTO("ThisIsInvalidEmail", "Password");
-
-        assertThrowsExactly(InvalidEmailFormatException.class, () -> userService.loginUser(registration));
-    }
 
     @Test
     void testLoginUser_WithNotExistingEmail_ThrowsEmailNotFoundException(){
@@ -69,51 +63,6 @@ class UserServiceTest {
         when(userRepositoryMock.findByEmail(registration.email())).thenReturn(Optional.empty());
 
         assertThrowsExactly(EmailNotFoundException.class, () -> userService.loginUser(registration));
-    }
-
-    @Test
-    void testSaveUser_WithEmptyValue_ThrowsRegistrationFieldNullException(){
-        UserRegistrationDTO registration = new UserRegistrationDTO(
-                "",
-                "Last",
-                "email@gmail.com",
-                "Password"
-        );
-        assertThrowsExactly(RegistrationFieldNullException.class, () -> userService.saveUser(registration));
-    }
-
-    @Test
-    void testSaveUser_WithTooShortNameFirstNameConsistOfOneLetter_ThrowsInputTooShortException(){
-        UserRegistrationDTO registration = new UserRegistrationDTO(
-                "A",
-                "User",
-                "auser@gmaile.com",
-                "Password"
-        );
-        assertThrowsExactly(InputTooShortException.class, () -> userService.saveUser(registration));
-    }
-
-    @Test
-    void testSaveUser_WithTooShortPasswordPasswordConsistsOfFiveCharacters_ExpectedInputTooShortException(){
-        UserRegistrationDTO registration = new UserRegistrationDTO(
-                "First",
-                "User",
-                "firstuser@gmail.com",
-                "Test"
-        );
-
-        assertThrowsExactly(InputTooShortException.class, () -> userService.saveUser(registration));
-    }
-
-    @Test
-    void testSaveUser_WithInvalidEmailFormat_ExpectedInvalidEmailFormatException(){
-        UserRegistrationDTO registration = new UserRegistrationDTO(
-                "First",
-                "User",
-                "NotValidEmail",
-                "Password"
-        );
-        assertThrowsExactly(InvalidEmailFormatException.class, () -> userService.saveUser(registration));
     }
 
     @Test
@@ -272,31 +221,6 @@ class UserServiceTest {
                 .thenReturn(false);
 
         assertThrowsExactly(NotMatchingCurrentPasswordException.class, () -> userService.updatePassword(expectedCustomerId, passwordUpdateDTO, mockToken));
-    }
-
-    @Test
-    void testUpdateUser_WithInvalidEmail_ShouldThrowInvalidEmailFormatException(){
-        UUID expectedCustomerId = UUID.randomUUID();
-
-        UserUpdateDTO expectedUserUpdateDTO = new UserUpdateDTO(
-                "InvalidEmailAddress",
-                "Test",
-                "User"
-        );
-        assertThrowsExactly(InvalidEmailFormatException.class, () -> userService.updateUser(expectedCustomerId, expectedUserUpdateDTO, mockToken));
-    }
-
-    @Test
-    void testUpdateUser_WithFirstNameTooShort_ShouldThrowInputTooShortException(){
-        UUID expectedCustomerId = UUID.randomUUID();
-
-        UserUpdateDTO expectedUserUpdateDTO = new UserUpdateDTO(
-                "test@gmail.com",
-                "T",
-                "User"
-        );
-
-        assertThrowsExactly(InputTooShortException.class, () -> userService.updateUser(expectedCustomerId, expectedUserUpdateDTO, mockToken));
     }
 
     @Test
