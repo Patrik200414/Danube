@@ -1,13 +1,22 @@
 package com.danube.danube.service;
 
+import com.danube.danube.custom_exception.login_registration.NonExistingUserException;
 import com.danube.danube.custom_exception.product.NonExistingProductCategoryException;
 import com.danube.danube.custom_exception.product.NonExistingProductException;
 import com.danube.danube.custom_exception.product.NonExistingSubcategoryException;
+import com.danube.danube.custom_exception.user.InvalidUserCredentialsException;
+import com.danube.danube.model.dto.product.ProductDetailUploadDTO;
+import com.danube.danube.model.dto.product.ProductInformation;
+import com.danube.danube.model.dto.product.ProductUpdateDTO;
+import com.danube.danube.model.dto.product.ProductUploadDTO;
 import com.danube.danube.model.product.Product;
 import com.danube.danube.model.product.category.Category;
 import com.danube.danube.model.product.connection.SubcategoryDetail;
 import com.danube.danube.model.product.detail.Detail;
+import com.danube.danube.model.product.image.Image;
 import com.danube.danube.model.product.subcategory.Subcategory;
+import com.danube.danube.model.user.Role;
+import com.danube.danube.model.user.UserEntity;
 import com.danube.danube.repository.product.*;
 import com.danube.danube.repository.product.connection.ProductValueRepository;
 import com.danube.danube.repository.product.connection.SubcategoryDetailRepository;
@@ -19,11 +28,18 @@ import com.danube.danube.utility.converter.uploadproduct.ProductUploadConverter;
 import com.danube.danube.utility.imageutility.ImageUtility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Stream;
 import java.util.zip.DataFormatException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -91,7 +107,7 @@ class ProductServiceTest {
     }
 
     @Test
-    void testGetSubCategoriesByCategory_(){
+    void testGetSubCategoriesByCategory_WithExistingCategoryId_ShouldCallConvertSubcategoriesToSubcategoryDTOs(){
         long expectedCategoryId = 1;
 
         Category expectedCategory = new Category();
@@ -322,4 +338,204 @@ class ProductServiceTest {
                 expectedPageRequest
         );
     }
+
+    @Test
+    void testGetProductsBySubcategory_WithSubcategoryRepositoryMockReturnsEmptyOptional_ShouldThrowNonExistingSubcategoryException() throws DataFormatException, IOException {
+        String searchedSubcategoryName = "Test subcategory";
+        when(subcategoryRepositoryMock.findByName(searchedSubcategoryName))
+                .thenReturn(Optional.empty());
+
+        assertThrowsExactly(NonExistingSubcategoryException.class,
+                () -> productService.getProductsBySubcategory(0, 9, searchedSubcategoryName)
+        );
+    }
+
+    @Test
+    void testGetProductsBySubcategory_() throws DataFormatException, IOException {
+        String searchedSubcategoryName = "Test subcategory";
+        int expectedPageNumber = 1;
+        int expectedPageSize = 5;
+
+        Subcategory expectedSubcategory = new Subcategory();
+        expectedSubcategory.setId(1);
+        expectedSubcategory.setName("Test category");
+
+        when(subcategoryRepositoryMock.findByName(searchedSubcategoryName))
+                .thenReturn(Optional.of(expectedSubcategory));
+
+        List<Product> expectedProducts = createProductList(expectedSubcategory);
+
+
+        PageImpl<Product> expectedPage = new PageImpl<>(expectedProducts);
+        when(productRepositoryMock.findBySubcategoryOrderByVisitNumber(expectedSubcategory, PageRequest.of(expectedPageNumber, expectedPageSize)))
+                .thenReturn(expectedPage);
+
+        productService.getProductsBySubcategory(expectedPageNumber, expectedPageSize, searchedSubcategoryName);
+        verify(productViewConverterMock).convertProductToProductShowSmallDTO(expectedPage, imageUtilityMock, converterHelperMock);
+    }
+
+    @Test
+    void testSaveProduct_WithUserRepositoryReturnsEmptyOptional_ShouldThrowNonExistingUserException() {
+        UUID expectedUserUUID = UUID.randomUUID();
+
+        ProductUploadDTO expectedProductUpdateDTO = getProductUploadDTO(expectedUserUUID);
+
+        when(userRepositoryMock.findById(expectedUserUUID))
+                .thenReturn(Optional.empty());
+
+        assertThrowsExactly(NonExistingUserException.class, () -> productService.saveProduct(expectedProductUpdateDTO));
+    }
+
+    @Test
+    void testSaveProduct_WithUserRepositoryReturnsUserWithInvalidRole_ShouldThrowInvalidUserCredentialsException() throws IOException {
+        UUID expectedUserUUID = UUID.randomUUID();
+
+        ProductUploadDTO expectedProductUpdateDTO = getProductUploadDTO(expectedUserUUID);
+
+        UserEntity expectedUser = new UserEntity();
+        expectedUser.setId(expectedUserUUID);
+        expectedUser.setFirstName("Test");
+        expectedUser.setLastName("User");
+        expectedUser.setRoles(
+                Set.of(Role.ROLE_CUSTOMER)
+        );
+
+        when(userRepositoryMock.findById(expectedUserUUID))
+                .thenReturn(Optional.of(expectedUser));
+
+        assertThrowsExactly(InvalidUserCredentialsException.class, () -> productService.saveProduct(expectedProductUpdateDTO));
+    }
+
+    @Test
+    void testSaveProduct_WithSubcategoryRepositoryReturnsEmptyOptional_ShouldThrowNonExistingSubcategoryException() throws IOException {
+        UUID expectedUserUUID = UUID.randomUUID();
+        long expectedSubcategoryId = 1;
+
+        ProductUploadDTO expectedProductUpdateDTO = getProductUploadDTO(expectedUserUUID);
+
+        UserEntity expectedUser = new UserEntity();
+        expectedUser.setId(expectedUserUUID);
+        expectedUser.setFirstName("Test");
+        expectedUser.setLastName("User");
+        expectedUser.setRoles(
+                Set.of(
+                        Role.ROLE_CUSTOMER,
+                        Role.ROLE_SELLER
+                )
+        );
+
+        when(userRepositoryMock.findById(expectedUserUUID))
+                .thenReturn(Optional.of(expectedUser));
+
+        when(subcategoryRepositoryMock.findById(expectedSubcategoryId))
+                .thenReturn(Optional.empty());
+
+        assertThrowsExactly(NonExistingSubcategoryException.class, () -> productService.saveProduct(expectedProductUpdateDTO));
+    }
+
+    @Test
+    void testSaveProduct_With() throws IOException {
+        UUID expectedUserUUID = UUID.randomUUID();
+        long expectedSubcategoryId = 1;
+
+        ProductUploadDTO expectedProductUpdateDTO = getProductUploadDTO(expectedUserUUID);
+
+        UserEntity expectedUser = new UserEntity();
+        expectedUser.setId(expectedUserUUID);
+        expectedUser.setFirstName("Test");
+        expectedUser.setLastName("User");
+        expectedUser.setRoles(
+                Set.of(
+                        Role.ROLE_CUSTOMER,
+                        Role.ROLE_SELLER
+                )
+        );
+
+        Subcategory expectedSubcategory = createBasicSubcategory(1, "Test subcategory");
+
+        when(userRepositoryMock.findById(expectedUserUUID))
+                .thenReturn(Optional.of(expectedUser));
+
+        when(subcategoryRepositoryMock.findById(expectedSubcategoryId))
+                .thenReturn(Optional.of(expectedSubcategory));
+
+        Product expectedProduct = new Product();
+
+        when(productUploadConverterMock.convertProductDetailUploadDTOToProduct(expectedProductUpdateDTO.productDetail(), expectedUser, expectedSubcategory))
+                .thenReturn(expectedProduct);
+
+        Image expectedImage = new Image();
+        List<Image> expectedImages = List.of(expectedImage);
+
+        when(productUploadConverterMock.convertMultiPartFilesToListOfImages(expectedProductUpdateDTO.images(), expectedProduct, imageUtilityMock))
+                .thenReturn(
+                        expectedImages
+                );
+
+        expectedProduct.setImages(expectedImages);
+
+        productService.saveProduct(expectedProductUpdateDTO);
+
+        verify(productUploadConverterMock).convertProductDetailUploadDTOToProduct(
+                expectedProductUpdateDTO.productDetail(),
+                expectedUser,
+                expectedSubcategory
+        );
+
+        verify(productUploadConverterMock).convertMultiPartFilesToListOfImages(
+                expectedProductUpdateDTO.images(),
+                expectedProduct,
+                imageUtilityMock
+        );
+
+        verify(imageRepositoryMock).saveAll(expectedImages);
+
+        verify(productRepositoryMock).save(expectedProduct);
+
+        verify(valueRepositoryMock).saveAll(List.of());
+
+        verify(productValueRepositoryMock).saveAll(List.of());
+    }
+
+    private Subcategory createBasicSubcategory(long subcategoryId, String subcategoryName){
+        Subcategory subcategory = new Subcategory();
+        subcategory.setId(subcategoryId);
+        subcategory.setName(subcategoryName);
+
+        return subcategory;
+    }
+
+    private ProductUploadDTO getProductUploadDTO(UUID expectedUserUUID) {
+        ProductDetailUploadDTO expectedProductDetailUploadDTO = new ProductDetailUploadDTO(
+                2,
+                2,
+                100,
+                3,
+                "Test brand",
+                "Test description",
+                "Test product",
+                1
+        );
+        return new ProductUploadDTO(
+                expectedProductDetailUploadDTO,
+                Map.of(),
+                expectedUserUUID,
+                new MultipartFile[10]
+        );
+    }
+
+    private List<Product> createProductList(Subcategory expectedSubcategory) {
+        List<Product> expectedProducts = new ArrayList<>();
+
+        for(int i = 1; i < 4; i++){
+            Product expectedProduct1 = new Product();
+            expectedProduct1.setSubcategory(expectedSubcategory);
+            expectedProduct1.setId(1);
+            expectedProduct1.setProductName("Test product" + i);
+
+            expectedProducts.add(expectedProduct1);
+        }
+        return expectedProducts;
+    }
+
 }
