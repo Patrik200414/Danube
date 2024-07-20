@@ -13,6 +13,8 @@ import com.danube.danube.model.user.UserEntity;
 import com.danube.danube.repository.user.UserRepository;
 import com.danube.danube.security.jwt.JwtUtils;
 import com.danube.danube.utility.converter.user.UserConverter;
+import com.danube.danube.utility.validation.Validator;
+import com.danube.danube.utility.validation.ValidatorImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,6 +38,7 @@ class UserServiceTest {
     AuthenticationManager authenticationManagerMock;
     JwtUtils jwtUtilsMock;
     UserConverter userConverterMock;
+    Validator validator;
     String mockToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ5b3VyLWFwcCIsInN1YiI6InRlc3R1c2VyIiwiaWF0IjoxNjI1MjU2MDAwLCJleHAiOjE2MjUyNTY2MDB9.2FhwBLVhsn4M3G3x5h6-1Z09ZogUIr9EHz1dxYaCe0Y";
 
 
@@ -46,13 +49,15 @@ class UserServiceTest {
         authenticationManagerMock = mock(AuthenticationManager.class);
         jwtUtilsMock = mock(JwtUtils.class);
         userConverterMock = mock(UserConverter.class);
+        validator = mock(Validator.class);
 
         userService = new UserService(
                 userRepositoryMock,
                 passwordEncoderMock,
                 authenticationManagerMock,
                 jwtUtilsMock,
-                userConverterMock
+                userConverterMock,
+                validator
         );
     }
 

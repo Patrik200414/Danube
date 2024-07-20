@@ -4,16 +4,12 @@ import com.danube.danube.model.dto.order.AddToCartDTO;
 import com.danube.danube.model.dto.order.CartItemResponseDTO;
 import com.danube.danube.model.dto.order.CartItemShowDTO;
 import com.danube.danube.model.dto.order.ItemIntegrationDTO;
-import com.danube.danube.model.order.Order;
 import com.danube.danube.service.CartService;
-import com.danube.danube.utility.converter.productview.ProductViewConverter;
-import com.danube.danube.utility.imageutility.ImageUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.UUID;
 import java.util.zip.DataFormatException;
 
