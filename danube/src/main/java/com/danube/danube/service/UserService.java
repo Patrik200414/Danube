@@ -1,6 +1,5 @@
 package com.danube.danube.service;
 
-import com.danube.danube.custom_exception.input.InvalidInputException;
 import com.danube.danube.custom_exception.login_registration.*;
 import com.danube.danube.custom_exception.user.InvalidUserCredentialsException;
 import com.danube.danube.custom_exception.user.NotMatchingCurrentPasswordException;
@@ -12,7 +11,7 @@ import com.danube.danube.model.user.UserEntity;
 import com.danube.danube.repository.user.UserRepository;
 import com.danube.danube.security.jwt.JwtUtils;
 import com.danube.danube.utility.converter.user.UserConverter;
-import com.danube.danube.utility.validation.Validator;
+import com.danube.danube.utility.validation.request.user.UserRequestValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,27 +37,27 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final UserConverter userConverter;
-    private final Validator validator;
+    private final UserRequestValidator userRequestValidator;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtUtils jwtUtils, UserConverter userConverter, Validator validator) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtUtils jwtUtils, UserConverter userConverter, UserRequestValidator userRequestValidator) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
         this.userConverter = userConverter;
-        this.validator = validator;
+        this.userRequestValidator = userRequestValidator;
     }
 
     public void saveUser(UserRegistrationDTO userRegistrationDTO){
-        validateUserRegistrationDTO(userRegistrationDTO);
+        userRequestValidator.validateUserRegistrationDTO(userRegistrationDTO);
         String encodedPassword = passwordEncoder.encode(userRegistrationDTO.password());
         UserEntity user = userConverter.convertUserRegistrationDTOToUserEntity(userRegistrationDTO, encodedPassword);
         userRepository.save(user);
     }
 
     public JwtResponse loginUser(UserLoginDTO userLoginDTO){
-        validateUserLoginDTO(userLoginDTO);
+        userRequestValidator.validateUserLoginDTO(userLoginDTO);
         verifyUserCredentials(userLoginDTO.email(), userLoginDTO.password());
         UserEntity user = userRepository.findByEmail(userLoginDTO.email()).orElseThrow(() -> new EmailNotFoundException(userLoginDTO.email()));
         return userConverter.generateJwtResponse(user, jwtUtils);
@@ -82,7 +81,7 @@ public class UserService {
 
     @Transactional
     public JwtResponse updateUser(UUID id, UserUpdateDTO userUpdateDTO, String token){
-        validateUserUpdateDTO(userUpdateDTO);
+        userRequestValidator.validateUserUpdateDTO(userUpdateDTO);
         UserEntity user = userRepository.findById(id).orElseThrow(NonExistingUserException::new);
 
         validateUserByThereRequestTokenInformation(token, user);
@@ -98,7 +97,7 @@ public class UserService {
 
     @Transactional
     public void updatePassword(UUID id, PasswordUpdateDTO passwordUpdateDTO, String token){
-        validatePasswordUpdateDTO(passwordUpdateDTO);
+        userRequestValidator.validatePasswordUpdateDTO(passwordUpdateDTO);
         UserEntity user = userRepository.findById(id).orElseThrow(NonExistingUserException::new);
 
         validatePasswordUpdate(passwordUpdateDTO, user, token);
@@ -137,7 +136,7 @@ public class UserService {
     }
 
     private void validatePasswordUpdate(PasswordUpdateDTO passwordUpdateDTO, UserEntity user, String toke) {
-        validatePasswordUpdateDTO(passwordUpdateDTO);
+        userRequestValidator.validatePasswordUpdateDTO(passwordUpdateDTO);
         validateUserByThereRequestTokenInformation(toke, user);
 
         if(!passwordEncoder.matches(passwordUpdateDTO.currentPassword(), user.getPassword())){
@@ -157,34 +156,5 @@ public class UserService {
         }
     }
 
-    private void validateUserRegistrationDTO(UserRegistrationDTO userRegistrationDTO){
-        validator.validateTextInputIsNotEmpty(userRegistrationDTO.password());
-        validator.validateTextInputIsNotEmpty(userRegistrationDTO.email());
-        validator.validateTextInputIsNotEmpty(userRegistrationDTO.firstName());
-        validator.validateTextInputIsNotEmpty(userRegistrationDTO.lastName());
-        validator.validateEmailFormat(userRegistrationDTO.email());
-    }
 
-    private void validateUserUpdateDTO(UserUpdateDTO userUpdateDTO){
-        validator.validateTextInputIsNotEmpty(userUpdateDTO.email());
-        validator.validateTextInputIsNotEmpty(userUpdateDTO.firstName());
-        validator.validateTextInputIsNotEmpty(userUpdateDTO.lastName());
-        validator.validateEmailFormat(userUpdateDTO.email());
-    }
-
-    private void validateUserLoginDTO(UserLoginDTO userLoginDTO){
-        validator.validateTextInputIsNotEmpty(userLoginDTO.email());
-        validator.validateTextInputIsNotEmpty(userLoginDTO.email());
-        validator.validateEmailFormat(userLoginDTO.email());
-    }
-
-    private void validatePasswordUpdateDTO(PasswordUpdateDTO passwordUpdateDTO){
-        validator.validateTextInputIsNotEmpty(passwordUpdateDTO.newPassword());
-        validator.validateTextInputIsNotEmpty(passwordUpdateDTO.reenterPassword());
-        validator.validateTextInputIsNotEmpty(passwordUpdateDTO.currentPassword());
-
-        if(!passwordUpdateDTO.newPassword().equals(passwordUpdateDTO.reenterPassword())){
-            throw new InvalidInputException("New password and re-enter password doesn't match!");
-        }
-    }
 }
