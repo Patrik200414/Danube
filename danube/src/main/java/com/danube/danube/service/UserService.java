@@ -11,6 +11,7 @@ import com.danube.danube.model.user.UserEntity;
 import com.danube.danube.repository.user.UserRepository;
 import com.danube.danube.security.jwt.JwtUtils;
 import com.danube.danube.utility.converter.user.UserConverter;
+import com.danube.danube.utility.validation.request.user.UserRequestValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,23 +37,27 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final UserConverter userConverter;
+    private final UserRequestValidator userRequestValidator;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtUtils jwtUtils, UserConverter userConverter) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtUtils jwtUtils, UserConverter userConverter, UserRequestValidator userRequestValidator) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
         this.userConverter = userConverter;
+        this.userRequestValidator = userRequestValidator;
     }
 
     public void saveUser(UserRegistrationDTO userRegistrationDTO){
+        userRequestValidator.validateUserRegistrationDTO(userRegistrationDTO);
         String encodedPassword = passwordEncoder.encode(userRegistrationDTO.password());
         UserEntity user = userConverter.convertUserRegistrationDTOToUserEntity(userRegistrationDTO, encodedPassword);
         userRepository.save(user);
     }
 
     public JwtResponse loginUser(UserLoginDTO userLoginDTO){
+        userRequestValidator.validateUserLoginDTO(userLoginDTO);
         verifyUserCredentials(userLoginDTO.email(), userLoginDTO.password());
         UserEntity user = userRepository.findByEmail(userLoginDTO.email()).orElseThrow(() -> new EmailNotFoundException(userLoginDTO.email()));
         return userConverter.generateJwtResponse(user, jwtUtils);
@@ -76,6 +81,7 @@ public class UserService {
 
     @Transactional
     public JwtResponse updateUser(UUID id, UserUpdateDTO userUpdateDTO, String token){
+        userRequestValidator.validateUserUpdateDTO(userUpdateDTO);
         UserEntity user = userRepository.findById(id).orElseThrow(NonExistingUserException::new);
 
         validateUserByThereRequestTokenInformation(token, user);
@@ -91,6 +97,7 @@ public class UserService {
 
     @Transactional
     public void updatePassword(UUID id, PasswordUpdateDTO passwordUpdateDTO, String token){
+        userRequestValidator.validatePasswordUpdateDTO(passwordUpdateDTO);
         UserEntity user = userRepository.findById(id).orElseThrow(NonExistingUserException::new);
 
         validatePasswordUpdate(passwordUpdateDTO, user, token);
@@ -129,6 +136,7 @@ public class UserService {
     }
 
     private void validatePasswordUpdate(PasswordUpdateDTO passwordUpdateDTO, UserEntity user, String toke) {
+        userRequestValidator.validatePasswordUpdateDTO(passwordUpdateDTO);
         validateUserByThereRequestTokenInformation(toke, user);
 
         if(!passwordEncoder.matches(passwordUpdateDTO.currentPassword(), user.getPassword())){
@@ -147,4 +155,6 @@ public class UserService {
             throw new InvalidUserCredentialsException();
         }
     }
+
+
 }

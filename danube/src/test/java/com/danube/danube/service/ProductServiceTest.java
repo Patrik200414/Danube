@@ -26,6 +26,8 @@ import com.danube.danube.utility.converter.converterhelper.ConverterHelper;
 import com.danube.danube.utility.converter.productview.ProductViewConverter;
 import com.danube.danube.utility.converter.uploadproduct.ProductUploadConverter;
 import com.danube.danube.utility.imageutility.ImageUtility;
+import com.danube.danube.utility.validation.Validator;
+import com.danube.danube.utility.validation.request.product.ProductRequestValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -61,6 +63,7 @@ class ProductServiceTest {
     ProductUploadConverter productUploadConverterMock;
     ImageUtility imageUtilityMock;
     ConverterHelper converterHelperMock;
+    ProductRequestValidator productRequestValidatorMock;
     int SIMILAR_RECOMENDED_PRODUCTS_RESULT_COUNT = 15;
 
     @BeforeEach
@@ -79,6 +82,7 @@ class ProductServiceTest {
         productUploadConverterMock = mock(ProductUploadConverter.class);
         imageUtilityMock = mock(ImageUtility.class);
         converterHelperMock = mock(ConverterHelper.class);
+        productRequestValidatorMock = mock(ProductRequestValidator.class);
         productService = new ProductService(
                 productRepositoryMock,
                 categoryRepositoryMock,
@@ -92,7 +96,8 @@ class ProductServiceTest {
                 productCategoriesAndDetailsConverterMock,
                 productUploadConverterMock,
                 imageUtilityMock,
-                converterHelperMock
+                converterHelperMock,
+                productRequestValidatorMock
         );
     }
 

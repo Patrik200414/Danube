@@ -22,13 +22,11 @@ import java.util.zip.DataFormatException;
 public class ProductController {
 
     private final ProductService productService;
-    private final ProductUploadConverter productUploadConverter;
     private final JsonUtility jsonUtility;
 
     @Autowired
-    public ProductController(ProductService productService, ProductUploadConverter productUploadConverter, JsonUtility jsonUtility) {
+    public ProductController(ProductService productService, JsonUtility jsonUtility) {
         this.productService = productService;
-        this.productUploadConverter = productUploadConverter;
         this.jsonUtility = jsonUtility;
     }
 
@@ -114,7 +112,6 @@ public class ProductController {
             @RequestParam(value = "newImages", required = false) MultipartFile[] newImages,
             @RequestParam("seller") UUID sellerId
     ) throws IOException {
-        //jsonUtility.validateJson(updatedValue, ProductUpdateDTO.class.getName());
         ProductUpdateDTO productUpdateDTO = jsonUtility.validateJson(updatedValue, ProductUpdateDTO.class);
         productService.updateProduct(productUpdateDTO, newImages, sellerId, productId);
         return HttpStatus.CREATED;

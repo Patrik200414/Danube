@@ -28,10 +28,10 @@ public class UserController {
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<?> registration(@RequestBody String registrationInformation) throws IOException {
+    public HttpStatus registration(@RequestBody String registrationInformation) throws IOException {
         UserRegistrationDTO userRegistrationDTO = jsonUtility.validateJson(registrationInformation, UserRegistrationDTO.class);
         userService.saveUser(userRegistrationDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return HttpStatus.CREATED;
     }
 
     @PostMapping("/login")

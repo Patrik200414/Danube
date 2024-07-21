@@ -26,6 +26,8 @@ import com.danube.danube.utility.converter.converterhelper.ConverterHelper;
 import com.danube.danube.utility.converter.productview.ProductViewConverter;
 import com.danube.danube.utility.converter.uploadproduct.ProductUploadConverter;
 import com.danube.danube.utility.imageutility.ImageUtility;
+import com.danube.danube.utility.validation.Validator;
+import com.danube.danube.utility.validation.request.product.ProductRequestValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -55,9 +57,10 @@ public class ProductService {
     private final ProductUploadConverter productUploadConverter;
     private final ImageUtility imageUtility;
     private final ConverterHelper converterHelper;
+    private final ProductRequestValidator productRequestValidator;
 
     @Autowired
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, SubcategoryRepository subcategoryRepository, DetailRepository detailRepository, UserRepository userRepository, ValueRepository valueRepository, ProductValueRepository productValueRepository, ImageRepository imageRepository, ProductViewConverter productViewConverter, ProductCategoriesAndDetailsConverter productCategoriesAndDetailsConverter, ProductUploadConverter productUploadConverter, ImageUtility imageUtility, ConverterHelper converterHelper) {
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, SubcategoryRepository subcategoryRepository, DetailRepository detailRepository, UserRepository userRepository, ValueRepository valueRepository, ProductValueRepository productValueRepository, ImageRepository imageRepository, ProductViewConverter productViewConverter, ProductCategoriesAndDetailsConverter productCategoriesAndDetailsConverter, ProductUploadConverter productUploadConverter, ImageUtility imageUtility, ConverterHelper converterHelper, ProductRequestValidator productRequestValidator) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.subcategoryRepository = subcategoryRepository;
@@ -71,6 +74,7 @@ public class ProductService {
         this.productUploadConverter = productUploadConverter;
         this.imageUtility = imageUtility;
         this.converterHelper = converterHelper;
+        this.productRequestValidator = productRequestValidator;
     }
 
     @Transactional
@@ -150,7 +154,7 @@ public class ProductService {
 
     @Transactional
     public void saveProduct(ProductUploadDTO productUploadDTO) throws IOException {
-
+        productRequestValidator.validateProductDetail(productUploadDTO.productDetail());
         UserEntity seller = sellerValidator(productUploadDTO.userId());
         Subcategory subcategory = subcategoryRepository.findById(productUploadDTO.productDetail().subcategoryId())
                         .orElseThrow(NonExistingSubcategoryException::new);
@@ -222,6 +226,7 @@ public class ProductService {
 
     @Transactional
     public void updateProduct(ProductUpdateDTO updatedProductDetails, MultipartFile[] newImages, UUID sellerId, long updatedProductId) throws IOException{
+        productRequestValidator.validateProductInformation(updatedProductDetails.productInformation());
         UserEntity seller = sellerValidator(sellerId);
         Product updatedProduct = productRepository.findById(updatedProductId)
                 .orElseThrow(NonExistingProductException::new);

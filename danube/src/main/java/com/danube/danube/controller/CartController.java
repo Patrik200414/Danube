@@ -4,16 +4,13 @@ import com.danube.danube.model.dto.order.AddToCartDTO;
 import com.danube.danube.model.dto.order.CartItemResponseDTO;
 import com.danube.danube.model.dto.order.CartItemShowDTO;
 import com.danube.danube.model.dto.order.ItemIntegrationDTO;
-import com.danube.danube.model.order.Order;
 import com.danube.danube.service.CartService;
-import com.danube.danube.utility.converter.productview.ProductViewConverter;
-import com.danube.danube.utility.imageutility.ImageUtility;
+import com.danube.danube.utility.json.JsonUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.UUID;
 import java.util.zip.DataFormatException;
 
@@ -21,20 +18,24 @@ import java.util.zip.DataFormatException;
 @RequestMapping("/api/cart")
 public class CartController {
     private final CartService cartService;
+    private final JsonUtility jsonUtility;
 
     @Autowired
-    public CartController(CartService cartService) {
+    public CartController(CartService cartService, JsonUtility jsonUtility) {
         this.cartService = cartService;
+        this.jsonUtility = jsonUtility;
     }
 
     @PostMapping("")
-    public CartItemShowDTO addToCart(@RequestBody AddToCartDTO cartItem) throws DataFormatException, IOException {
-        return cartService.addToCart(cartItem);
+    public CartItemShowDTO addToCart(@RequestBody String cartItem) throws DataFormatException, IOException {
+        AddToCartDTO addToCartDTO =  jsonUtility.validateJson(cartItem, AddToCartDTO.class);
+        return cartService.addToCart(addToCartDTO);
     }
 
     @PostMapping("/integrate")
-    public CartItemResponseDTO integrateItemsToUser(@RequestBody ItemIntegrationDTO cartItems) throws DataFormatException, IOException {
-        return cartService.integrateCartItemsToUser(cartItems);
+    public CartItemResponseDTO integrateItemsToUser(@RequestBody String cartItems) throws DataFormatException, IOException {
+        ItemIntegrationDTO itemIntegrationDTO = jsonUtility.validateJson(cartItems, ItemIntegrationDTO.class);
+        return cartService.integrateCartItemsToUser(itemIntegrationDTO);
     }
 
     @GetMapping("/{customerId}")
