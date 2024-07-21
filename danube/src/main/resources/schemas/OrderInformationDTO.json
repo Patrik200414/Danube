@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PasswordUpdateDTO",
+  "type": "object",
+  "properties": {
+    "streetAddress": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 255,
+      "errorMessage": "Street address should contain at least 2 and upmost 255 characters!"
+    },
+    "city": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 255,
+      "errorMessage": "City should contain at least 2 and upmost 255 characters!"
+    },
+    "state": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 255,
+      "errorMessage": "State/region should contain at least 2 and upmost 255 characters!"
+    },
+    "country": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 255,
+      "errorMessage": "Country should contain at least 2 and upmost 255 characters!"
+    },
+    "zip": {
+      "type": "integer",
+      "minimum": 1000,
+      "maximum": 9999999999,
+      "errorMessage": "The zip code should contain at least 4 and upmost 10 digits!"
+    }
+  },
+  "required": ["streetAddress", "city", "state", "country", "zip", "customerId"]
+}

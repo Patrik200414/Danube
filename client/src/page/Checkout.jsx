@@ -61,6 +61,7 @@ function Checkout(){
         if(addressInformation.zip.length < 4){
             return 'Invalid Zip/Postal code!';
         }
+
     }
 
     async function handleProceedPayout(e){
@@ -75,11 +76,11 @@ function Checkout(){
 
         const userShippingInformation = {
             ...shippingInformation,
+            zip: Number(shippingInformation.zip),
             customerId: user.id
         }
         const paymentData = await fetchPostAuthorizationFetch(`/api/payment`, user.jwt, JSON.stringify({userId: user.id}), true);
         const paymentResponse = await paymentData.json();
-        debugger;
         if(paymentData.ok){
             const orderInformationDetails = await fetchPatchAuthorizationFetch('/api/order', user.jwt, userShippingInformation);
             if(orderInformationDetails.ok){
