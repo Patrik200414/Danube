@@ -9,6 +9,10 @@ import com.danube.danube.utility.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class UserRequestValidatorImpl implements UserRequestValidator{
+    public static final int MIN_LENGTH_PASSWORD = 6;
+    public static final int MAX_LENGTH_PASSWORD = 255;
+    public static final int MIN_LENGTH_NAME_INPUT = 2;
+    public static final int MAX_LENGTH_NAME_INPUT = 255;
     private final Validator validator;
 
     @Autowired
@@ -18,33 +22,29 @@ public class UserRequestValidatorImpl implements UserRequestValidator{
 
     @Override
     public void validateUserRegistrationDTO(UserRegistrationDTO userRegistrationDTO){
-        validator.validateTextInputIsNotEmpty(userRegistrationDTO.password());
-        validator.validateTextInputIsNotEmpty(userRegistrationDTO.email());
-        validator.validateTextInputIsNotEmpty(userRegistrationDTO.firstName());
-        validator.validateTextInputIsNotEmpty(userRegistrationDTO.lastName());
+        validator.validateTextInput(userRegistrationDTO.password(), MIN_LENGTH_PASSWORD, MAX_LENGTH_PASSWORD);
+        validator.validateTextInput(userRegistrationDTO.firstName(), MIN_LENGTH_NAME_INPUT, MAX_LENGTH_NAME_INPUT);
+        validator.validateTextInput(userRegistrationDTO.lastName(), MIN_LENGTH_NAME_INPUT, MAX_LENGTH_NAME_INPUT);
         validator.validateEmailFormat(userRegistrationDTO.email());
     }
 
     @Override
     public void validateUserUpdateDTO(UserUpdateDTO userUpdateDTO){
-        validator.validateTextInputIsNotEmpty(userUpdateDTO.email());
-        validator.validateTextInputIsNotEmpty(userUpdateDTO.firstName());
-        validator.validateTextInputIsNotEmpty(userUpdateDTO.lastName());
+        validator.validateTextInput(userUpdateDTO.firstName(), MIN_LENGTH_NAME_INPUT, MAX_LENGTH_NAME_INPUT);
+        validator.validateTextInput(userUpdateDTO.lastName(), MIN_LENGTH_NAME_INPUT, MAX_LENGTH_NAME_INPUT);
         validator.validateEmailFormat(userUpdateDTO.email());
     }
 
     @Override
     public void validateUserLoginDTO(UserLoginDTO userLoginDTO){
-        validator.validateTextInputIsNotEmpty(userLoginDTO.email());
-        validator.validateTextInputIsNotEmpty(userLoginDTO.email());
         validator.validateEmailFormat(userLoginDTO.email());
     }
 
     @Override
     public void validatePasswordUpdateDTO(PasswordUpdateDTO passwordUpdateDTO){
-        validator.validateTextInputIsNotEmpty(passwordUpdateDTO.newPassword());
-        validator.validateTextInputIsNotEmpty(passwordUpdateDTO.reenterPassword());
-        validator.validateTextInputIsNotEmpty(passwordUpdateDTO.currentPassword());
+        validator.validateTextInput(passwordUpdateDTO.newPassword(), MIN_LENGTH_PASSWORD, MAX_LENGTH_PASSWORD);
+        validator.validateTextInput(passwordUpdateDTO.reenterPassword(), MIN_LENGTH_PASSWORD, MAX_LENGTH_PASSWORD);
+        validator.validateTextInput(passwordUpdateDTO.currentPassword(), MIN_LENGTH_PASSWORD, MAX_LENGTH_PASSWORD);
 
         if(!passwordUpdateDTO.newPassword().equals(passwordUpdateDTO.reenterPassword())){
             throw new InvalidInputException("New password and re-enter password doesn't match!");
