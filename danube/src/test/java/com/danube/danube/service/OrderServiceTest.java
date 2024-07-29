@@ -63,21 +63,17 @@ class OrderServiceTest {
                 expectedCustomerId
         );
 
-        UserEntity expectedUser = new UserEntity();
-        expectedUser.setId(expectedCustomerId);
-        expectedUser.setEmail("test@gmail.com");
-        expectedUser.setFirstName("Test");
-        expectedUser.setLastName("User");
+        UserEntity expectedUser = getExpectedUser(expectedCustomerId);
 
         Product expectedProduct = new Product();
 
-        Order order = new Order();
-        order.setOrdered(false);
-        order.setOrderTime(Timestamp.valueOf(LocalDateTime.now()));
-        order.setQuantity(3);
-        order.setSent(false);
-        order.setCustomer(expectedUser);
-        order.setProduct(expectedProduct);
+        Order order = getOrder(
+                false,
+                3,
+                false,
+                expectedUser,
+                expectedProduct
+        );
 
 
         when(userRepositoryMock.findById(expectedCustomerId))
@@ -86,18 +82,18 @@ class OrderServiceTest {
         when(orderRepositoryMock.findAllByCustomer(expectedUser))
                 .thenReturn(List.of(order));
 
-        Order savedOrder = new Order();
-        savedOrder.setOrdered(false);
-        savedOrder.setOrderTime(Timestamp.valueOf(LocalDateTime.now()));
-        savedOrder.setQuantity(3);
-        savedOrder.setSent(false);
-        savedOrder.setCustomer(expectedUser);
-        savedOrder.setProduct(expectedProduct);
-        savedOrder.setStreetAddress(expectedOrderInformation.streetAddress());
-        savedOrder.setCity(expectedOrderInformation.city());
-        savedOrder.setState(expectedOrderInformation.state());
-        savedOrder.setCountry(expectedOrderInformation.country());
-        savedOrder.setZip(expectedOrderInformation.zip());
+        Order savedOrder = getOrder(
+                false,
+                3,
+                false,
+                expectedUser,
+                expectedProduct,
+                expectedOrderInformation.streetAddress(),
+                expectedOrderInformation.city(),
+                expectedOrderInformation.state(),
+                expectedOrderInformation.country(),
+                expectedOrderInformation.zip()
+        );
 
         when(orderRepositoryMock.saveAll(List.of(savedOrder)))
                 .thenReturn(List.of());
@@ -119,19 +115,25 @@ class OrderServiceTest {
     @Test
     void testSetIsOrdered_WithExistingUser_ShouldCallOnceOrderRepositorySaveAll(){
         UUID expectedCustomerId = UUID.randomUUID();
-        UserEntity expectedUser = new UserEntity();
-        expectedUser.setId(expectedCustomerId);
-        expectedUser.setEmail("test@gmail.com");
-        expectedUser.setFirstName("Test");
-        expectedUser.setLastName("User");
+        UserEntity expectedUser = getExpectedUser(expectedCustomerId);
 
         LocalDateTime expectedDateTime = LocalDateTime.now();
 
-        Order firstOrder = new Order();
-        firstOrder.setOrdered(false);
+        Order firstOrder = getOrder(
+                true,
+                3,
+                false,
+                expectedUser,
+                new Product()
+        );
 
-        Order secondOrder = new Order();
-        firstOrder.setOrdered(false);
+        Order secondOrder = getOrder(
+                true,
+                5,
+                false,
+                expectedUser,
+                new Product()
+        );
 
         when(userRepositoryMock.findById(expectedCustomerId))
                 .thenReturn(Optional.of(expectedUser));
@@ -142,19 +144,82 @@ class OrderServiceTest {
                         secondOrder
                 ));
 
-
-
         orderService.setIsOrdered(expectedCustomerId, expectedDateTime);
-
-        firstOrder.setOrdered(true);
-        firstOrder.setOrderTime(Timestamp.valueOf(expectedDateTime));
-
-        secondOrder.setOrdered(true);
-        secondOrder.setOrderTime(Timestamp.valueOf(expectedDateTime));
 
         verify(orderRepositoryMock, times(1)).saveAll(List.of(
                 firstOrder,
                 secondOrder
         ));
+    }
+
+    private UserEntity getExpectedUser(UUID expectedCustomerId){
+        UserEntity expectedUser = new UserEntity();
+        expectedUser.setId(expectedCustomerId);
+        expectedUser.setEmail("test@gmail.com");
+        expectedUser.setFirstName("Test");
+        expectedUser.setLastName("User");
+
+        return expectedUser;
+    }
+
+    private UserEntity getExpectedUser(
+            UUID expectedCustomerId,
+            String email,
+            String firstName,
+            String lastName
+    ){
+        UserEntity expectedUser = new UserEntity();
+        expectedUser.setId(expectedCustomerId);
+        expectedUser.setEmail(email);
+        expectedUser.setFirstName(firstName);
+        expectedUser.setLastName(lastName);
+
+        return expectedUser;
+    }
+
+    private Order getOrder(
+            boolean isOrdered,
+            int quantity,
+            boolean isSent,
+            UserEntity expectedUser,
+            Product expectedProduct
+    ){
+        Order order = new Order();
+        order.setOrdered(isOrdered);
+        order.setOrderTime(Timestamp.valueOf(LocalDateTime.now()));
+        order.setQuantity(quantity);
+        order.setSent(isSent);
+        order.setCustomer(expectedUser);
+        order.setProduct(expectedProduct);
+
+        return order;
+    }
+
+    private  Order getOrder(
+            boolean isOrdered,
+            int quantity,
+            boolean isSent,
+            UserEntity expectedUser,
+            Product expectedProduct,
+            String streetAddress,
+            String city,
+            String state,
+            String country,
+            int zip
+    ){
+        Order savedOrder = new Order();
+        savedOrder.setOrdered(isOrdered);
+        savedOrder.setOrderTime(Timestamp.valueOf(LocalDateTime.now()));
+        savedOrder.setQuantity(quantity);
+        savedOrder.setSent(isSent);
+        savedOrder.setCustomer(expectedUser);
+        savedOrder.setProduct(expectedProduct);
+        savedOrder.setStreetAddress(streetAddress);
+        savedOrder.setCity(city);
+        savedOrder.setState(state);
+        savedOrder.setCountry(country);
+        savedOrder.setZip(zip);
+
+        return savedOrder;
     }
 }
