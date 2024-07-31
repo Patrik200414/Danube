@@ -6,8 +6,6 @@ import com.danube.danube.custom_exception.product.NonExistingProductException;
 import com.danube.danube.custom_exception.product.NonExistingSubcategoryException;
 import com.danube.danube.custom_exception.user.InvalidUserCredentialsException;
 import com.danube.danube.model.dto.product.ProductDetailUploadDTO;
-import com.danube.danube.model.dto.product.ProductInformation;
-import com.danube.danube.model.dto.product.ProductUpdateDTO;
 import com.danube.danube.model.dto.product.ProductUploadDTO;
 import com.danube.danube.model.product.Product;
 import com.danube.danube.model.product.category.Category;
@@ -26,22 +24,15 @@ import com.danube.danube.utility.converter.converterhelper.ConverterHelper;
 import com.danube.danube.utility.converter.productview.ProductViewConverter;
 import com.danube.danube.utility.converter.uploadproduct.ProductUploadConverter;
 import com.danube.danube.utility.imageutility.ImageUtility;
-import com.danube.danube.utility.validation.Validator;
 import com.danube.danube.utility.validation.request.product.ProductRequestValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Stream;
 import java.util.zip.DataFormatException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -114,12 +105,7 @@ class ProductServiceTest {
     @Test
     void testGetSubCategoriesByCategory_WithExistingCategoryId_ShouldCallConvertSubcategoriesToSubcategoryDTOs(){
         long expectedCategoryId = 1;
-
-        Category expectedCategory = new Category();
-        expectedCategory.setId(expectedCategoryId);
-        expectedCategory.setName("Electronics");
-        expectedCategory.setSubcategories(List.of());
-
+        Category expectedCategory = getCategory(expectedCategoryId, "Electronics", List.of());
 
         when(categoryRepositoryMock.findById(expectedCategoryId))
                 .thenReturn(Optional.of(expectedCategory));
@@ -130,23 +116,19 @@ class ProductServiceTest {
                 .convertSubcategoriesToSubcategoryDTOs(List.of());
     }
 
+
+
     @Test
     void testGetSubCategoriesByCategory_WithElectronicsCategory_ShouldCallProductCategoriesAndDetailsConverterMockConvertSubcategoriesToSubcategoryDTOs(){
         long expectedSubcategoryId = 1;
         long expectedCategoryId = 1;
 
-        Subcategory expectedSubcategory = new Subcategory();
-        expectedSubcategory.setId(expectedSubcategoryId);
-        expectedSubcategory.setName("Laptop");
-
+        Subcategory expectedSubcategory = getSubcategory(expectedSubcategoryId, "Laptop");
         List<Subcategory> expectedSubcategories = List.of(
                 expectedSubcategory
         );
 
-        Category expectedCategory = new Category();
-        expectedCategory.setId(expectedCategoryId);
-        expectedCategory.setName("Electronics");
-        expectedCategory.setSubcategories(expectedSubcategories);
+        Category expectedCategory = getCategory(expectedCategoryId, "Electronics", expectedSubcategories);
 
 
         when(categoryRepositoryMock.findById(expectedCategoryId))
@@ -156,6 +138,8 @@ class ProductServiceTest {
 
         verify(productCategoriesAndDetailsConverterMock, times(1)).convertSubcategoriesToSubcategoryDTOs(expectedSubcategories);
     }
+
+
 
     @Test
     void testGetDetailsBySubcategory_WithNonExistingSubcategory_ThrowsNonExistingSubcategoryException() {
@@ -171,9 +155,7 @@ class ProductServiceTest {
     void testGetDetailsBySubcategory_WithExpectedSubcategoryAndEmptyListOfSubcategoryDetails_ShouldCallProductCategoriesAndDetailsConverterMockConvertDetailsToDetailsDTOWithEmptyList(){
         long expectedSubcategoryId = 1;
 
-        Subcategory expectedSubcategory = new Subcategory();
-        expectedSubcategory.setId(expectedSubcategoryId);
-        expectedSubcategory.setName("Laptop");
+        Subcategory expectedSubcategory = getSubcategory(expectedSubcategoryId, "Laptop");
         expectedSubcategory.setSubcategoryDetails(
                 List.of()
         );
@@ -194,30 +176,19 @@ class ProductServiceTest {
     void testGetDetailsBySubcategory_WithExpectedDetailsAndExpectedSubcategoryDetails_ShouldCallProductCategoriesAndDetailsConverterMockConvertDetailsToDetailsDTOWithExpectedDetails(){
         long expectedSubcategoryId = 1;
 
-        Detail expectedDetail1 = new Detail();
-        expectedDetail1.setId(1);
-        expectedDetail1.setName("CPU");
+        Detail expectedDetail1 = getDetail(1, "CPU");
+        SubcategoryDetail expectedSubcategoryDetail1 = getSubcategoryDetail(1, expectedDetail1);
 
-        SubcategoryDetail expectedSubcategoryDetail1 = new SubcategoryDetail();
-        expectedSubcategoryDetail1.setId(1);
-        expectedSubcategoryDetail1.setDetail(expectedDetail1);
+        Detail expectedDetail2 = getDetail(2, "GPU");
+        SubcategoryDetail expectedSubcategoryDetail2 = getSubcategoryDetail(2, expectedDetail2);
 
-        Detail expectedDetail2 = new Detail();
-        expectedDetail2.setId(2);
-        expectedDetail2.setName("GPU");
-
-        SubcategoryDetail expectedSubcategoryDetail2 = new SubcategoryDetail();
-        expectedSubcategoryDetail2.setId(2);
-        expectedSubcategoryDetail2.setDetail(expectedDetail2);
 
         List<SubcategoryDetail> expectedSubcategoryDetails = List.of(
                 expectedSubcategoryDetail1,
                 expectedSubcategoryDetail2
         );
 
-        Subcategory expectedSubcategory = new Subcategory();
-        expectedSubcategory.setId(expectedSubcategoryId);
-        expectedSubcategory.setName("Laptop");
+        Subcategory expectedSubcategory = getSubcategory(expectedSubcategoryId, "Laptop");
         expectedSubcategory.setSubcategoryDetails(expectedSubcategoryDetails);
 
 
@@ -250,25 +221,22 @@ class ProductServiceTest {
         long expectedSubcategoryId = 1;
         PageRequest expectedPageRequest = PageRequest.of(0, SIMILAR_RECOMENDED_PRODUCTS_RESULT_COUNT);
 
+        Subcategory expectedSubcategory = getSubcategory(expectedSubcategoryId, "Test subcategory");
 
-        Subcategory expectedSubcategory = new Subcategory();
-        expectedSubcategory.setId(expectedSubcategoryId);
-        expectedSubcategory.setName("Test subcategory");
 
-        Product expectedProduct = new Product();
-        expectedProduct.setId(expectedProductFromId);
-        expectedProduct.setProductName("Test product");
-        expectedProduct.setSubcategory(expectedSubcategory);
+        Product expectedProduct = getProduct(expectedProductFromId, "Test product",expectedSubcategory);
 
-        Product expectedSimilarProduct1 = new Product();
-        expectedProduct.setId(2);
-        expectedProduct.setProductName("Test similar product 1");
-        expectedProduct.setSubcategory(expectedSubcategory);
+        Product expectedSimilarProduct1 = getProduct(
+                2,
+                "Test similar product 1",
+                expectedSubcategory
+        );
 
-        Product expectedSimilarProduct2 = new Product();
-        expectedProduct.setId(3);
-        expectedProduct.setProductName("Test similar product 2");
-        expectedProduct.setSubcategory(expectedSubcategory);
+        Product expectedSimilarProduct2 = getProduct(
+                3,
+                "Test similar product 2",
+                expectedSubcategory
+        );
 
         when(productRepositoryMock.findById(expectedProductFromId))
                 .thenReturn(Optional.of(expectedProduct));
@@ -308,15 +276,16 @@ class ProductServiceTest {
         long expectedSubcategoryId = 1;
         PageRequest expectedPageRequest = PageRequest.of(0, SIMILAR_RECOMENDED_PRODUCTS_RESULT_COUNT);
 
+        Subcategory expectedSubcategory = getSubcategory(
+                expectedSubcategoryId,
+                "Test subcategory"
+        );
 
-        Subcategory expectedSubcategory = new Subcategory();
-        expectedSubcategory.setId(expectedSubcategoryId);
-        expectedSubcategory.setName("Test subcategory");
-
-        Product expectedProduct = new Product();
-        expectedProduct.setId(expectedProductFromId);
-        expectedProduct.setProductName("Test product");
-        expectedProduct.setSubcategory(expectedSubcategory);
+        Product expectedProduct = getProduct(
+                expectedProductFromId,
+                "Test product",
+                expectedSubcategory
+        );
 
         when(productRepositoryMock.findById(expectedProductFromId))
                 .thenReturn(Optional.of(expectedProduct));
@@ -361,9 +330,7 @@ class ProductServiceTest {
         int expectedPageNumber = 1;
         int expectedPageSize = 5;
 
-        Subcategory expectedSubcategory = new Subcategory();
-        expectedSubcategory.setId(1);
-        expectedSubcategory.setName("Test category");
+        Subcategory expectedSubcategory = getSubcategory(1, "Test category");
 
         when(subcategoryRepositoryMock.findByName(searchedSubcategoryName))
                 .thenReturn(Optional.of(expectedSubcategory));
@@ -397,13 +364,7 @@ class ProductServiceTest {
 
         ProductUploadDTO expectedProductUpdateDTO = getProductUploadDTO(expectedUserUUID);
 
-        UserEntity expectedUser = new UserEntity();
-        expectedUser.setId(expectedUserUUID);
-        expectedUser.setFirstName("Test");
-        expectedUser.setLastName("User");
-        expectedUser.setRoles(
-                Set.of(Role.ROLE_CUSTOMER)
-        );
+        UserEntity expectedUser = getExpectedUserEntity(expectedUserUUID);
 
         when(userRepositoryMock.findById(expectedUserUUID))
                 .thenReturn(Optional.of(expectedUser));
@@ -418,11 +379,10 @@ class ProductServiceTest {
 
         ProductUploadDTO expectedProductUpdateDTO = getProductUploadDTO(expectedUserUUID);
 
-        UserEntity expectedUser = new UserEntity();
-        expectedUser.setId(expectedUserUUID);
-        expectedUser.setFirstName("Test");
-        expectedUser.setLastName("User");
-        expectedUser.setRoles(
+        UserEntity expectedUser = getExpectedUserEntity(
+                expectedUserUUID,
+                "Test",
+                "User",
                 Set.of(
                         Role.ROLE_CUSTOMER,
                         Role.ROLE_SELLER
@@ -444,12 +404,10 @@ class ProductServiceTest {
         long expectedSubcategoryId = 1;
 
         ProductUploadDTO expectedProductUpdateDTO = getProductUploadDTO(expectedUserUUID);
-
-        UserEntity expectedUser = new UserEntity();
-        expectedUser.setId(expectedUserUUID);
-        expectedUser.setFirstName("Test");
-        expectedUser.setLastName("User");
-        expectedUser.setRoles(
+        UserEntity expectedUser = getExpectedUserEntity(
+                expectedUserUUID,
+                "Test",
+                "User",
                 Set.of(
                         Role.ROLE_CUSTOMER,
                         Role.ROLE_SELLER
@@ -543,4 +501,71 @@ class ProductServiceTest {
         return expectedProducts;
     }
 
+    private Category getCategory(
+            long expectedCategoryId,
+            String categoryName,
+            List<Subcategory> subcategories
+    ) {
+        Category expectedCategory = new Category();
+        expectedCategory.setId(expectedCategoryId);
+        expectedCategory.setName(categoryName);
+        expectedCategory.setSubcategories(subcategories);
+        return expectedCategory;
+    }
+
+    private Subcategory getSubcategory(long expectedSubcategoryId, String subcategoryName) {
+        Subcategory expectedSubcategory = new Subcategory();
+        expectedSubcategory.setId(expectedSubcategoryId);
+        expectedSubcategory.setName(subcategoryName);
+        return expectedSubcategory;
+    }
+
+    private Detail getDetail(long detailId, String detailName) {
+        Detail expectedDetail = new Detail();
+        expectedDetail.setId(detailId);
+        expectedDetail.setName(detailName);
+        return expectedDetail;
+    }
+
+    private SubcategoryDetail getSubcategoryDetail(long subcategoryDetailId, Detail expectedDetail) {
+        SubcategoryDetail expectedSubcategoryDetail1 = new SubcategoryDetail();
+        expectedSubcategoryDetail1.setId(subcategoryDetailId);
+        expectedSubcategoryDetail1.setDetail(expectedDetail);
+        return expectedSubcategoryDetail1;
+    }
+
+    private Product getProduct(long expectedProductFromId, String productName, Subcategory expectedSubcategory) {
+        Product expectedProduct = new Product();
+        expectedProduct.setId(expectedProductFromId);
+        expectedProduct.setProductName(productName);
+        expectedProduct.setSubcategory(expectedSubcategory);
+        return expectedProduct;
+    }
+
+    private UserEntity getExpectedUserEntity(UUID expectedUserUUID){
+        UserEntity expectedUser = new UserEntity();
+        expectedUser.setId(expectedUserUUID);
+        expectedUser.setFirstName("Test");
+        expectedUser.setLastName("User");
+        expectedUser.setRoles(
+                Set.of(Role.ROLE_CUSTOMER)
+        );
+
+        return expectedUser;
+    }
+
+    private UserEntity getExpectedUserEntity(
+            UUID expectedUserUUID,
+            String firstName,
+            String lastName,
+            Set<Role> roles
+    ){
+        UserEntity expectedUser = new UserEntity();
+        expectedUser.setId(expectedUserUUID);
+        expectedUser.setFirstName(firstName);
+        expectedUser.setLastName(lastName);
+        expectedUser.setRoles(roles);
+
+        return expectedUser;
+    }
 }
