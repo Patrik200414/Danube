@@ -48,6 +48,8 @@ class CartServiceTest {
         cartService = new CartService(userRepositoryMock, productRepositoryMock, orderRepositoryMock, productViewConverterMock, imageUtilityMock);
     }
 
+
+
     @Test
     void testAddToCart_WithNonExistingUser_ShouldThrowNonExistingUserException(){
         UUID expectedCustomerId = UUID.randomUUID();
@@ -66,11 +68,7 @@ class CartServiceTest {
     @Test
     void testAddToCart_WithNotExistingProduct_ShouldThrowNonExistingProductException(){
         UUID expectedCustomerId = UUID.randomUUID();
-        UserEntity expectedUser = new UserEntity();
-        expectedUser.setEmail("test@gmail.com");
-        expectedUser.setId(expectedCustomerId);
-        expectedUser.setFirstName("Test");
-        expectedUser.setLastName("User");
+        UserEntity expectedUser = getExpectedUserEntity(expectedCustomerId);
 
         AddToCartDTO addToCartDTO = new AddToCartDTO(
                 expectedCustomerId,
@@ -89,17 +87,15 @@ class CartServiceTest {
         assertThrowsExactly(NonExistingProductException.class, () -> cartService.addToCart(addToCartDTO));
     }
 
+
+
     @Test
     void testAddToCart_WithXQuantityInAddToCartDTOIsLargerThanProductQuantity_ShouldThrowNotEnoughQuantityToOrderException(){
         UUID expectedCustomerId = UUID.randomUUID();
-        UserEntity expectedUser = new UserEntity();
-        expectedUser.setEmail("test@gmail.com");
-        expectedUser.setId(expectedCustomerId);
-        expectedUser.setFirstName("Test");
-        expectedUser.setLastName("User");
+        UserEntity expectedUser = getExpectedUserEntity(expectedCustomerId);
 
         Product expectedProduct = new Product();
-        expectedProduct.setQuantity(9);;
+        expectedProduct.setQuantity(9);
 
         AddToCartDTO addToCartDTO = new AddToCartDTO(
                 expectedCustomerId,
@@ -122,14 +118,9 @@ class CartServiceTest {
     @Test
     void addToCart_WithExistingUserAndExistingProductAndEnoughQuantityAndFindByCustomerAndProductAndIsOrderedFalseReturnsEmptyOptional_ShouldSaveOrder() throws DataFormatException, IOException {
         UUID expectedCustomerId = UUID.randomUUID();
-        UserEntity expectedUser = new UserEntity();
-        expectedUser.setEmail("test@gmail.com");
-        expectedUser.setId(expectedCustomerId);
-        expectedUser.setFirstName("Test");
-        expectedUser.setLastName("User");
+        UserEntity expectedUser = getExpectedUserEntity(expectedCustomerId);
 
-        Product expectedProduct = new Product();
-        expectedProduct.setQuantity(20);;
+        Product expectedProduct = getProduct(20, 1);
 
         AddToCartDTO addToCartDTO = new AddToCartDTO(
                 expectedCustomerId,
@@ -148,13 +139,10 @@ class CartServiceTest {
         when(orderRepositoryMock.findByCustomerAndProductAndIsOrderedFalse(expectedUser, expectedProduct))
                 .thenReturn(Optional.empty());
 
-        Order expectedOrder = new Order();
+        Order expectedOrder = getExpectedOrder(expectedProduct, addToCartDTO.quantity(), 0);
         expectedOrder.setCustomer(expectedUser);
-        expectedOrder.setProduct(expectedProduct);
-        expectedOrder.setQuantity(addToCartDTO.quantity());
 
         cartService.addToCart(addToCartDTO);
-
 
         expectedProduct.setQuantity(10);
         verify(productRepositoryMock, times(1)).save(expectedProduct);
@@ -164,48 +152,43 @@ class CartServiceTest {
     @Test
     void addToCart_WithExistingUserAndExistingProductAndEnoughQuantityAndFindByCustomerAndProductAndIsOrderedFalseReturns$_ShouldSaveOrder() throws DataFormatException, IOException {
         UUID expectedCustomerId = UUID.randomUUID();
-        UserEntity expectedUser = new UserEntity();
-        expectedUser.setEmail("test@gmail.com");
-        expectedUser.setId(expectedCustomerId);
-        expectedUser.setFirstName("Test");
-        expectedUser.setLastName("User");
+        UserEntity expectedUser = getExpectedUserEntity(expectedCustomerId);
+        int expectedProductQuantity = 20;
+        int addToCartQuantity = 10;
+        int expectedOrderQuantity = 5;
+        long productId = 1;
 
         Product expectedProduct = new Product();
-        expectedProduct.setQuantity(20);;
+        expectedProduct.setQuantity(expectedProductQuantity);
 
         AddToCartDTO addToCartDTO = new AddToCartDTO(
                 expectedCustomerId,
-                1,
-                10
+                productId,
+                addToCartQuantity
         );
 
-        Order expectedOrder = new Order();
-        expectedOrder.setCustomer(expectedUser);
-        expectedOrder.setProduct(expectedProduct);
-        expectedOrder.setQuantity(5);
+        Order expectedOrder = getExpectedOrder(expectedUser, expectedProduct, expectedOrderQuantity);
 
         when(userRepositoryMock.findById(expectedCustomerId))
                 .thenReturn(Optional.of(
                         expectedUser
                 ));
 
-        when(productRepositoryMock.findById(1L))
+        when(productRepositoryMock.findById(productId))
                 .thenReturn(Optional.of(expectedProduct));
 
         when(orderRepositoryMock.findByCustomerAndProductAndIsOrderedFalse(expectedUser, expectedProduct))
                 .thenReturn(Optional.of(expectedOrder));
 
-
-
         cartService.addToCart(addToCartDTO);
 
-
         expectedProduct.setQuantity(10);
-        expectedOrder.setQuantity(5 + addToCartDTO.quantity());
+        expectedOrder.setQuantity(expectedOrderQuantity + addToCartQuantity);
         verify(productRepositoryMock, times(1)).save(expectedProduct);
         verify(orderRepositoryMock, times(1)).save(expectedOrder);
-
     }
+
+
 
 
     @Test
@@ -225,64 +208,32 @@ class CartServiceTest {
     @Test
     void testIntegrateCartItemToUser_WithExistingUserAndExistingProductAndUserAlreadyHasItemsInThereCart_ShouldExecuteSaveAllOnProductAndOrderrepositoryWithExpectedValues() throws DataFormatException, IOException {
         UUID expectedCustomerId = UUID.randomUUID();
-        CartItemShowDTO firstExpectedIntegrityItem = new CartItemShowDTO(
-                1,
-                "Product 1",
-                50,
-                new ImageShow("testImage1.jpg", new byte[1]),
-                5,
-                4.5
-        );
-
-        CartItemShowDTO secondExpectedIntegrityItem = new CartItemShowDTO(
-                2,
-                "Product 2",
-                70,
-                new ImageShow("testImage2.jpg", new byte[1]),
-                3,
-                4.0
-        );
+        List<CartItemShowDTO> expectedIntegrityItems = getExpectedIntegrityItem();
 
         ItemIntegrationDTO expectedIntegration = new ItemIntegrationDTO(
                 expectedCustomerId,
-                List.of(
-                        firstExpectedIntegrityItem,
-                        secondExpectedIntegrityItem
-                )
+                expectedIntegrityItems
         );
 
-        UserEntity expectedUser = new UserEntity();
-        expectedUser.setEmail("test@gmail.com");
-        expectedUser.setId(expectedCustomerId);
-        expectedUser.setFirstName("Test");
-        expectedUser.setLastName("User");
+        UserEntity expectedUser = getExpectedUserEntity(expectedCustomerId);
 
-        Product firstProduct = new Product();
-        firstProduct.setQuantity(30);
-        firstProduct.setId(1);
-
-        Product secondProduct = new Product();
-        secondProduct.setQuantity(40);
-        secondProduct.setId(2);
+        Product firstProduct = getProduct(30, 1);
+        Product secondProduct = getProduct(40, 2);
 
         when(userRepositoryMock.findById(expectedCustomerId))
                 .thenReturn(Optional.of(expectedUser));
 
-        when(productRepositoryMock.findAllById(List.of(firstExpectedIntegrityItem.id(), secondExpectedIntegrityItem.id())))
+        when(productRepositoryMock.findAllById(List.of(
+                expectedIntegrityItems.getFirst().id(),
+                expectedIntegrityItems.getLast().id()))
+        )
                 .thenReturn(List.of(
                         firstProduct,
                         secondProduct
                 ));
 
-        Order firstExpectedOrder = new Order();
-        firstExpectedOrder.setQuantity(3);
-        firstExpectedOrder.setId(1);
-        firstExpectedOrder.setProduct(firstProduct);
-
-        Order secondExpectedOrder = new Order();
-        secondExpectedOrder.setQuantity(5);
-        secondExpectedOrder.setId(2);
-        secondExpectedOrder.setProduct(secondProduct);
+        Order firstExpectedOrder = getExpectedOrder(firstProduct, 3, 1);
+        Order secondExpectedOrder = getExpectedOrder(secondProduct, 5, 2);
 
         when(orderRepositoryMock.findAllByProductIsInAndCustomerAndNotOrdered(List.of(firstProduct, secondProduct), expectedUser))
                 .thenReturn(List.of(firstExpectedOrder, secondExpectedOrder));
@@ -290,76 +241,59 @@ class CartServiceTest {
 
         cartService.integrateCartItemsToUser(expectedIntegration);
 
-        firstProduct.setQuantity(firstProduct.getQuantity() - firstExpectedIntegrityItem.orderedQuantity());
-        secondProduct.setQuantity(secondProduct.getQuantity() - secondExpectedIntegrityItem.orderedQuantity());
+        setProductQuantity(
+                firstProduct,
+                secondProduct,
+                expectedIntegrityItems.getFirst(),
+                expectedIntegrityItems.getLast()
+        );
 
-        firstExpectedOrder.setQuantity(firstExpectedOrder.getQuantity() + expectedIntegration.products().getFirst().orderedQuantity());
-        secondProduct.setQuantity(secondProduct.getQuantity() + expectedIntegration.products().get(1).orderedQuantity());
+        setOrderQuantity(
+                firstExpectedOrder,
+                secondExpectedOrder,
+                expectedIntegration,
+                expectedIntegration
+        );
 
         verify(productRepositoryMock, times(1)).saveAll(List.of(firstProduct, secondProduct));
         verify(orderRepositoryMock, times(1)).saveAll(List.of(firstExpectedOrder, secondExpectedOrder));
     }
 
+    
+
+
     @Test
     void testIntegrateCartItemToUser_WithExistingUserAndExistingProductAndUserNotHaveItemsInThereCart_ShouldExecuteSaveAllOnProductAndOrderrepositoryWithExpectedValues() throws DataFormatException, IOException {
         UUID expectedCustomerId = UUID.randomUUID();
 
-        CartItemShowDTO firstExpectedIntegrityItem = new CartItemShowDTO(
-                1,
-                "Product 1",
-                50,
-                new ImageShow("testImage1.jpg", new byte[1]),
-                5,
-                4.5
-        );
-
-        CartItemShowDTO secondExpectedIntegrityItem = new CartItemShowDTO(
-                2,
-                "Product 2",
-                70,
-                new ImageShow("testImage2.jpg", new byte[1]),
-                3,
-                4.0
-        );
+        List<CartItemShowDTO> expectedIntegrityItems = getExpectedIntegrityItem();
 
         ItemIntegrationDTO expectedIntegration = new ItemIntegrationDTO(
                 expectedCustomerId,
-                List.of(
-                        firstExpectedIntegrityItem,
-                        secondExpectedIntegrityItem
-                )
+                expectedIntegrityItems
         );
 
-        UserEntity expectedUser = new UserEntity();
-        expectedUser.setEmail("test@gmail.com");
-        expectedUser.setId(expectedCustomerId);
-        expectedUser.setFirstName("Test");
-        expectedUser.setLastName("User");
+        UserEntity expectedUser = getExpectedUserEntity(expectedCustomerId);
 
-        Product firstProduct = new Product();
-        firstProduct.setQuantity(30);
-        firstProduct.setId(1);
-
-        Product secondProduct = new Product();
-        secondProduct.setQuantity(40);
-        secondProduct.setId(2);
+        Product firstProduct = getProduct(30, 1);
+        Product secondProduct = getProduct(40, 2);
 
         when(userRepositoryMock.findById(expectedCustomerId))
                 .thenReturn(Optional.of(expectedUser));
 
-        when(productRepositoryMock.findAllById(List.of(firstExpectedIntegrityItem.id(), secondExpectedIntegrityItem.id())))
+        when(productRepositoryMock.findAllById(List.of(
+                        expectedIntegrityItems.getFirst().id(),
+                        expectedIntegrityItems.getLast().id())
+                )
+        )
                 .thenReturn(List.of(
                         firstProduct,
                         secondProduct
                 ));
 
-        Order firstExpectedOrder = new Order();
-        firstExpectedOrder.setQuantity(3);
-        firstExpectedOrder.setProduct(firstProduct);
+        Order firstExpectedOrder = getExpectedOrder(firstProduct, 3, 0);
 
-        Order secondExpectedOrder = new Order();
-        secondExpectedOrder.setQuantity(5);
-        secondExpectedOrder.setProduct(secondProduct);
+        Order secondExpectedOrder = getExpectedOrder(secondProduct, 5, 0);
 
         when(orderRepositoryMock.findAllByProductIsInAndCustomerAndNotOrdered(List.of(firstProduct, secondProduct), expectedUser))
                 .thenReturn(List.of());
@@ -367,11 +301,19 @@ class CartServiceTest {
 
         cartService.integrateCartItemsToUser(expectedIntegration);
 
-        firstProduct.setQuantity(firstProduct.getQuantity() - firstExpectedIntegrityItem.orderedQuantity());
-        secondProduct.setQuantity(secondProduct.getQuantity() - secondExpectedIntegrityItem.orderedQuantity());
+        setProductQuantity(
+                firstProduct,
+                secondProduct,
+                expectedIntegrityItems.getFirst(),
+                expectedIntegrityItems.getLast()
+        );
 
-        firstExpectedOrder.setQuantity(firstExpectedOrder.getQuantity() + expectedIntegration.products().getFirst().orderedQuantity());
-        secondExpectedOrder.setQuantity(secondExpectedOrder.getQuantity() + expectedIntegration.products().get(1).orderedQuantity());
+        setOrderQuantity(
+                firstExpectedOrder,
+                secondExpectedOrder,
+                expectedIntegration,
+                expectedIntegration
+        );
 
         verify(productRepositoryMock, times(1)).saveAll(List.of(firstProduct, secondProduct));
         verify(orderRepositoryMock, times(1)).saveAll(List.of(firstExpectedOrder, secondExpectedOrder));
@@ -390,14 +332,8 @@ class CartServiceTest {
 
     @Test
     void testGetCartItems_WithExistingUser_ShouldExecuteOrderRepositoryFindAllByCustomerIsOrderedFalse() throws DataFormatException, IOException {
-        UserEntity expectedUser = new UserEntity();
-
         UUID expectedCustomerId = UUID.randomUUID();
-
-        expectedUser.setEmail("test@gmail.com");
-        expectedUser.setId(expectedCustomerId);
-        expectedUser.setFirstName("Test");
-        expectedUser.setLastName("User");
+        UserEntity expectedUser = getExpectedUserEntity(expectedCustomerId);
 
         when(userRepositoryMock.findById(expectedCustomerId))
                 .thenReturn(Optional.of(expectedUser));
@@ -416,12 +352,8 @@ class CartServiceTest {
 
     @Test
     void testDeleteOrder_WithExistingOrder_Should(){
-        Product expectedProduct = new Product();
-        expectedProduct.setQuantity(5);
-
-        Order expectedOrder = new Order();
-        expectedOrder.setQuantity(3);
-        expectedOrder.setProduct(expectedProduct);
+        Product expectedProduct = getProduct(5, 1);
+        Order expectedOrder = getExpectedOrder(expectedProduct, 3, 1);
 
         when(orderRepositoryMock.findById(1L))
                 .thenReturn(Optional.of(expectedOrder));
@@ -432,4 +364,92 @@ class CartServiceTest {
         verify(productRepositoryMock, times(1)).save(expectedProduct);
         verify(orderRepositoryMock, times(1)).delete(expectedOrder);
     }
+
+    private UserEntity getExpectedUserEntity(UUID expectedCustomerId) {
+        UserEntity expectedUser = new UserEntity();
+        expectedUser.setEmail("test@gmail.com");
+        expectedUser.setId(expectedCustomerId);
+        expectedUser.setFirstName("Test");
+        expectedUser.setLastName("User");
+        return expectedUser;
+    }
+
+    private Order getExpectedOrder(UserEntity expectedUser, Product expectedProduct, int expectedQuantity) {
+        Order expectedOrder = new Order();
+        expectedOrder.setCustomer(expectedUser);
+        expectedOrder.setProduct(expectedProduct);
+        expectedOrder.setQuantity(expectedQuantity);
+        return expectedOrder;
+    }
+
+    private Order getExpectedOrder(Product product, int quantity, long id) {
+        Order firstExpectedOrder = new Order();
+        firstExpectedOrder.setQuantity(quantity);
+        firstExpectedOrder.setId(id);
+        firstExpectedOrder.setProduct(product);
+        return firstExpectedOrder;
+    }
+
+    private Product getProduct(int quantity, long id) {
+        Product firstProduct = new Product();
+        firstProduct.setQuantity(quantity);
+        firstProduct.setId(id);
+        return firstProduct;
+    }
+
+    private void setOrderQuantityAfterModification(Order expectedOrder, ItemIntegrationDTO expectedIntegration) {
+        int orderExpectedQuantityAfterProductOrderAdded = expectedOrder.getQuantity() + expectedIntegration.products().getFirst().orderedQuantity();
+        expectedOrder.setQuantity(orderExpectedQuantityAfterProductOrderAdded);
+    }
+
+    private static void setProductQuantityAfterModification(Product product, CartItemShowDTO ExpectedIntegrityItem) {
+        int productExpectedQuantityAfterOrderSubtraction = product.getQuantity() - ExpectedIntegrityItem.orderedQuantity();
+        product.setQuantity(productExpectedQuantityAfterOrderSubtraction);
+    }
+
+    private List<CartItemShowDTO> getExpectedIntegrityItem(){
+        CartItemShowDTO firstExpectedIntegrityItem = new CartItemShowDTO(
+                1,
+                "Product 1",
+                50,
+                new ImageShow("testImage1.jpg", new byte[1]),
+                5,
+                4.5
+        );
+
+        CartItemShowDTO secondExpectedIntegrityItem = new CartItemShowDTO(
+                2,
+                "Product 2",
+                70,
+                new ImageShow("testImage2.jpg", new byte[1]),
+                3,
+                4.0
+        );
+
+        return List.of(
+                firstExpectedIntegrityItem,
+                secondExpectedIntegrityItem
+        );
+    }
+
+    private void setProductQuantity(
+            Product firstProduct,
+            Product secondProduct,
+            CartItemShowDTO firstIntegrityItem,
+            CartItemShowDTO secondIntegrityItem
+    ){
+        setProductQuantityAfterModification(firstProduct, firstIntegrityItem);
+        setProductQuantityAfterModification(secondProduct, secondIntegrityItem);
+    }
+
+    private void setOrderQuantity(
+            Order firstorder,
+            Order secondOrder,
+            ItemIntegrationDTO firstIntegration,
+            ItemIntegrationDTO secondIntegration
+    ){
+        setOrderQuantityAfterModification(firstorder, firstIntegration);
+        setOrderQuantityAfterModification(secondOrder, secondIntegration);
+    }
+
 }

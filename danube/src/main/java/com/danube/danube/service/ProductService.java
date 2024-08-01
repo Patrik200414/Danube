@@ -194,22 +194,6 @@ public class ProductService {
         return myProductInformationDTOs;
     }
 
-    private List<CategoryAndSubCategoryDTO> getCategoryAndSubCategories(List<Category> categories) {
-        List<CategoryAndSubCategoryDTO> categoriesAndSubCategories = new ArrayList<>();
-        for(Category category : categories){
-            List<String> subcategories = category.getSubcategories().stream()
-                    .map(Subcategory::getName)
-                    .toList();
-            CategoryAndSubCategoryDTO categoryAndSubCategoryDTO = new CategoryAndSubCategoryDTO(
-                    category.getName(),
-                    subcategories
-            );
-
-            categoriesAndSubCategories.add(categoryAndSubCategoryDTO);
-        }
-        return categoriesAndSubCategories;
-    }
-
     @Transactional
     public ProductItemDTO getProductItem(long id) throws DataFormatException, IOException {
         Product product = productRepository.findById(id).orElseThrow(NonExistingProductException::new);
@@ -310,7 +294,6 @@ public class ProductService {
     private void removeImage(ProductUpdateDTO updatedProductDetails, Product updatedProduct) {
         List<String> currentProductImages = updatedProduct.getImages().stream()
                 .map(Image::getFileName)
-                //.filter(fileName -> !updatedProductDetails.images().contains(fileName))
                 .toList();
 
         List<String> updatedDetailsImages = updatedProductDetails.images().stream()
@@ -328,23 +311,23 @@ public class ProductService {
 
 
     private void saveProductValues(Map<String, String> productInformation, Product product){
+        Set<String> detailNames = productInformation.keySet();
+        List<String> detailValues = productInformation.values().stream().toList();
+        List<Detail> details = detailRepository.findAllByNameIn(detailNames);
+
         List<Value> savedValues = new ArrayList<>();
         List<ProductValue> savedProductValue = new ArrayList<>();
-        for(Map.Entry<String, String> entry : productInformation.entrySet()){
-            Detail detail = detailRepository.findByName(entry.getKey()).orElseThrow(
-                    NonExistingDetailException::new
-            );
 
+        for(int i = 0; i < detailNames.size(); i++){
             Value value = new Value();
-            value.setDetail(detail);
-            value.setValue(entry.getValue());
+            value.setDetail(details.get(i));
+            value.setValue(detailValues.get(i));
             savedValues.add(value);
 
             ProductValue productValue = new ProductValue();
             productValue.setProduct(product);
             productValue.setValue(value);
             savedProductValue.add(productValue);
-
         }
         valueRepository.saveAll(savedValues);
         productValueRepository.saveAll(savedProductValue);
@@ -359,5 +342,21 @@ public class ProductService {
         }
 
         return user;
+    }
+
+    private List<CategoryAndSubCategoryDTO> getCategoryAndSubCategories(List<Category> categories) {
+        List<CategoryAndSubCategoryDTO> categoriesAndSubCategories = new ArrayList<>();
+        for(Category category : categories){
+            List<String> subcategories = category.getSubcategories().stream()
+                    .map(Subcategory::getName)
+                    .toList();
+            CategoryAndSubCategoryDTO categoryAndSubCategoryDTO = new CategoryAndSubCategoryDTO(
+                    category.getName(),
+                    subcategories
+            );
+
+            categoriesAndSubCategories.add(categoryAndSubCategoryDTO);
+        }
+        return categoriesAndSubCategories;
     }
 }

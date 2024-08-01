@@ -4,6 +4,8 @@ import com.danube.danube.model.product.Product;
 import com.danube.danube.model.product.value.Value;
 import jakarta.persistence.*;
 
+import java.util.Objects;
+
 @Entity
 public class ProductValue {
     @Id
@@ -58,5 +60,18 @@ public class ProductValue {
 
     public long getValueId(){
         return value.getId();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProductValue that = (ProductValue) o;
+        return id == that.id && Objects.equals(product, that.product) && Objects.equals(value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, product, value);
     }
 }
