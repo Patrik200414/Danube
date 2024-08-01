@@ -5,6 +5,7 @@ import com.danube.danube.model.product.detail.Detail;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Value {
@@ -62,5 +63,18 @@ public class Value {
 
     public String getDetailName(){
         return detail.getName();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Value value1 = (Value) o;
+        return id == value1.id && Objects.equals(value, value1.value) && Objects.equals(detail, value1.detail);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, value, detail);
     }
 }
