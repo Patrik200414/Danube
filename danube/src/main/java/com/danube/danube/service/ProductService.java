@@ -328,23 +328,23 @@ public class ProductService {
 
 
     private void saveProductValues(Map<String, String> productInformation, Product product){
+        Set<String> detailNames = productInformation.keySet();
+        List<String> detailValues = productInformation.values().stream().toList();
+        List<Detail> details = detailRepository.findAllByNameIn(detailNames);
+
         List<Value> savedValues = new ArrayList<>();
         List<ProductValue> savedProductValue = new ArrayList<>();
-        for(Map.Entry<String, String> entry : productInformation.entrySet()){
-            Detail detail = detailRepository.findByName(entry.getKey()).orElseThrow(
-                    NonExistingDetailException::new
-            );
 
+        for(int i = 0; i < detailNames.size(); i++){
             Value value = new Value();
-            value.setDetail(detail);
-            value.setValue(entry.getValue());
+            value.setDetail(details.get(i));
+            value.setValue(detailValues.get(i));
             savedValues.add(value);
 
             ProductValue productValue = new ProductValue();
             productValue.setProduct(product);
             productValue.setValue(value);
             savedProductValue.add(productValue);
-
         }
         valueRepository.saveAll(savedValues);
         productValueRepository.saveAll(savedProductValue);

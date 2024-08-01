@@ -86,8 +86,10 @@ function ProductUpload(){
     }
 
     async function handleSubmit(e){
+        debugger;
         e.preventDefault();
         
+        console.log(selectedSubcategoryId);
         
         const convertedDetails = details ? detailsConverter(details) : [];
         const errorFields = [
@@ -174,11 +176,11 @@ function ProductUpload(){
                     <ProductInformationForm onDetailsChange={handleProductChange} productDetail={product}/>
                     <ProductCategoryForm 
                         onSelectCategoryIdChange={(categoryId) => setSelectedCaegoryId(categoryId)} 
-                        onSelectedSubCategoryIdChange={(subcategoryId) => setSelectedSubcategoryId(subcategoryId)} 
+                        onSelectedSubCategoryIdChange={(subcategoryId) => setSelectedSubcategoryId(Number(subcategoryId))} 
                         selectedCategoryId={selectedCategoryId}
                         selectedSubcategoryId={selectedSubcategoryId}
                     />
-                    {selectedSubcategoryId &&
+                    {selectedSubcategoryId ?
                         <ProductDetailsForm 
                             details={details}
                             onDetailsChange={handleDetailChange}
@@ -187,6 +189,8 @@ function ProductUpload(){
                             onDetailsSet={(details) => setDetails(details)}
                             onImageUpload={handleImagesChange}
                         />
+                        :
+                        null
                     }
                     {images.length ? <UploadedImages onImageDeletion={handleImageDeletion} images={images}/> : null}
                     <p className="error-message">{error}</p>
