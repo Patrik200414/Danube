@@ -1,18 +1,19 @@
 package com.danube.danube.service;
 
 import com.danube.danube.custom_exception.login_registration.NonExistingUserException;
-import com.danube.danube.custom_exception.product.NonExistingProductCategoryException;
-import com.danube.danube.custom_exception.product.NonExistingProductException;
-import com.danube.danube.custom_exception.product.NonExistingSubcategoryException;
+import com.danube.danube.custom_exception.product.*;
 import com.danube.danube.custom_exception.user.InvalidUserCredentialsException;
-import com.danube.danube.model.dto.product.ProductDetailUploadDTO;
-import com.danube.danube.model.dto.product.ProductUploadDTO;
+import com.danube.danube.custom_exception.user.UserNotSellerException;
+import com.danube.danube.model.dto.image.ImageShow;
+import com.danube.danube.model.dto.product.*;
 import com.danube.danube.model.product.Product;
 import com.danube.danube.model.product.category.Category;
+import com.danube.danube.model.product.connection.ProductValue;
 import com.danube.danube.model.product.connection.SubcategoryDetail;
 import com.danube.danube.model.product.detail.Detail;
 import com.danube.danube.model.product.image.Image;
 import com.danube.danube.model.product.subcategory.Subcategory;
+import com.danube.danube.model.product.value.Value;
 import com.danube.danube.model.user.Role;
 import com.danube.danube.model.user.UserEntity;
 import com.danube.danube.repository.product.*;
@@ -29,6 +30,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -350,26 +352,26 @@ class ProductServiceTest {
     void testSaveProduct_WithUserRepositoryReturnsEmptyOptional_ShouldThrowNonExistingUserException() {
         UUID expectedUserUUID = UUID.randomUUID();
 
-        ProductUploadDTO expectedProductUpdateDTO = getProductUploadDTO(expectedUserUUID);
+        ProductUploadDTO expectedProductUploadDTO = getProductUploadDTO(expectedUserUUID, Map.of());
 
         when(userRepositoryMock.findById(expectedUserUUID))
                 .thenReturn(Optional.empty());
 
-        assertThrowsExactly(NonExistingUserException.class, () -> productService.saveProduct(expectedProductUpdateDTO));
+        assertThrowsExactly(NonExistingUserException.class, () -> productService.saveProduct(expectedProductUploadDTO));
     }
 
     @Test
     void testSaveProduct_WithUserRepositoryReturnsUserWithInvalidRole_ShouldThrowInvalidUserCredentialsException() throws IOException {
         UUID expectedUserUUID = UUID.randomUUID();
 
-        ProductUploadDTO expectedProductUpdateDTO = getProductUploadDTO(expectedUserUUID);
+        ProductUploadDTO expectedProductUploadDTO = getProductUploadDTO(expectedUserUUID, Map.of());
 
         UserEntity expectedUser = getExpectedUserEntity(expectedUserUUID);
 
         when(userRepositoryMock.findById(expectedUserUUID))
                 .thenReturn(Optional.of(expectedUser));
 
-        assertThrowsExactly(InvalidUserCredentialsException.class, () -> productService.saveProduct(expectedProductUpdateDTO));
+        assertThrowsExactly(InvalidUserCredentialsException.class, () -> productService.saveProduct(expectedProductUploadDTO));
     }
 
     @Test
@@ -377,7 +379,7 @@ class ProductServiceTest {
         UUID expectedUserUUID = UUID.randomUUID();
         long expectedSubcategoryId = 1;
 
-        ProductUploadDTO expectedProductUpdateDTO = getProductUploadDTO(expectedUserUUID);
+        ProductUploadDTO expectedProductUploadDTO = getProductUploadDTO(expectedUserUUID, Map.of());
 
         UserEntity expectedUser = getExpectedUserEntity(
                 expectedUserUUID,
@@ -395,15 +397,16 @@ class ProductServiceTest {
         when(subcategoryRepositoryMock.findById(expectedSubcategoryId))
                 .thenReturn(Optional.empty());
 
-        assertThrowsExactly(NonExistingSubcategoryException.class, () -> productService.saveProduct(expectedProductUpdateDTO));
+        assertThrowsExactly(NonExistingSubcategoryException.class, () -> productService.saveProduct(expectedProductUploadDTO));
     }
 
     @Test
     void testSaveProduct_With() throws IOException {
         UUID expectedUserUUID = UUID.randomUUID();
+        Map<String, String> expectedProductInformation = Map.of("Test", "Information");
         long expectedSubcategoryId = 1;
 
-        ProductUploadDTO expectedProductUpdateDTO = getProductUploadDTO(expectedUserUUID);
+        ProductUploadDTO expectedProductUploadDTO = getProductUploadDTO(expectedUserUUID, expectedProductInformation);
         UserEntity expectedUser = getExpectedUserEntity(
                 expectedUserUUID,
                 "Test",
@@ -422,31 +425,43 @@ class ProductServiceTest {
         when(subcategoryRepositoryMock.findById(expectedSubcategoryId))
                 .thenReturn(Optional.of(expectedSubcategory));
 
-        Product expectedProduct = new Product();
+        Product expectedProduct = productUploadDTOConverterToProduct(expectedProductUploadDTO);
 
-        when(productUploadConverterMock.convertProductDetailUploadDTOToProduct(expectedProductUpdateDTO.productDetail(), expectedUser, expectedSubcategory))
+        when(productUploadConverterMock.convertProductDetailUploadDTOToProduct(expectedProductUploadDTO.productDetail(), expectedUser, expectedSubcategory))
                 .thenReturn(expectedProduct);
 
         Image expectedImage = new Image();
         List<Image> expectedImages = List.of(expectedImage);
 
-        when(productUploadConverterMock.convertMultiPartFilesToListOfImages(expectedProductUpdateDTO.images(), expectedProduct, imageUtilityMock))
+        when(productUploadConverterMock.convertMultiPartFilesToListOfImages(expectedProductUploadDTO.images(), expectedProduct, imageUtilityMock))
                 .thenReturn(
                         expectedImages
                 );
 
         expectedProduct.setImages(expectedImages);
 
-        productService.saveProduct(expectedProductUpdateDTO);
+        Detail expectedDetail = getDetail(1, "Test Detail");
+
+        when(detailRepositoryMock.findAllByNameIn(expectedProductInformation.keySet()))
+                .thenReturn(List.of(
+                        expectedDetail
+                ));
+
+        String expectedDetailValueName = expectedProductUploadDTO.productInformation().values().stream().toList().getFirst();
+        Value expectedValue = getValue(expectedDetailValueName, expectedDetail);
+
+        ProductValue expectedproductValue = getProductValue(expectedProduct, expectedValue);
+
+        productService.saveProduct(expectedProductUploadDTO);
 
         verify(productUploadConverterMock).convertProductDetailUploadDTOToProduct(
-                expectedProductUpdateDTO.productDetail(),
+                expectedProductUploadDTO.productDetail(),
                 expectedUser,
                 expectedSubcategory
         );
 
         verify(productUploadConverterMock).convertMultiPartFilesToListOfImages(
-                expectedProductUpdateDTO.images(),
+                expectedProductUploadDTO.images(),
                 expectedProduct,
                 imageUtilityMock
         );
@@ -455,10 +470,367 @@ class ProductServiceTest {
 
         verify(productRepositoryMock).save(expectedProduct);
 
-        verify(valueRepositoryMock).saveAll(List.of());
+        verify(valueRepositoryMock).saveAll(List.of(
+                expectedValue
+        ));
 
-        verify(productValueRepositoryMock).saveAll(List.of());
+        verify(productValueRepositoryMock).saveAll(List.of(
+                expectedproductValue
+        ));
     }
+
+    @Test
+    void testGetMyProducts_WithNonExistingUser_ShouldThrowNonExistingUserException(){
+        UUID expectedUserId = UUID.randomUUID();
+        when(userRepositoryMock.findById(expectedUserId))
+                .thenReturn(Optional.empty());
+
+        assertThrowsExactly(NonExistingUserException.class, () -> productService.getMyProducts(expectedUserId));
+    }
+
+    @Test
+    void testGetMyProducts_UserWithOnlyCustomerRole_ShouldThrowUserNotSellerException(){
+        UUID expectedUserId = UUID.randomUUID();
+
+        UserEntity expectedUser = getExpectedUserEntity(
+                expectedUserId,
+                "Test",
+                "User",
+                Set.of(Role.ROLE_CUSTOMER)
+        );
+        when(userRepositoryMock.findById(expectedUserId))
+                .thenReturn(Optional.of(expectedUser));
+
+        assertThrowsExactly(UserNotSellerException.class, () -> productService.getMyProducts(expectedUserId));
+    }
+
+    @Test
+    void testGetMyProducts_WithCorrectValues_ShouldCallProductRepositoryFindBySellerAndProductViewConverterConvertProductToMyProductInformation() throws DataFormatException, IOException {
+        UUID expectedUserId = UUID.randomUUID();
+
+        UserEntity expectedUser = getExpectedUserEntity(
+                expectedUserId,
+                "Test",
+                "User",
+                Set.of(
+                        Role.ROLE_SELLER
+                )
+        );
+        when(userRepositoryMock.findById(expectedUserId))
+                .thenReturn(Optional.of(expectedUser));
+
+        Subcategory expectedSubcategory = getSubcategory(1, "Test subcategory");
+        List<Product> expectedProducts = List.of(
+                getProduct(1, "Test 1", expectedSubcategory),
+                getProduct(2, "Test 2", expectedSubcategory)
+        );
+        when(productRepositoryMock.findBySeller(expectedUser))
+                .thenReturn(expectedProducts);
+
+        productService.getMyProducts(expectedUserId);
+
+        verify(productRepositoryMock).findBySeller(expectedUser);
+        for(Product expectedProduct : expectedProducts){
+            verify(productViewConverterMock).convertProductToMyProductInformation(expectedProduct, imageUtilityMock);
+        }
+    }
+
+    @Test
+    void testGetProductItem_WithNonExistingProduct_ShouldThrowNonExistingProductException(){
+        long expectedProductId = 1;
+        when(productRepositoryMock.findById(expectedProductId))
+                .thenReturn(Optional.empty());
+
+        assertThrowsExactly(NonExistingProductException.class, () -> productService.getProductItem(expectedProductId));
+    }
+
+    @Test
+    void testGetProductItem_WithExistingProduct_ShouldIncreaseVisitNumberAndSaveProduct() throws DataFormatException, IOException {
+        long expectedProductId = 1;
+        Subcategory expectedSubcategory = getSubcategory(1, "Test Subcategory");
+        Product expectedProduct = getProduct(expectedProductId, "Test", expectedSubcategory);
+        when(productRepositoryMock.findById(expectedProductId))
+                .thenReturn(Optional.of(expectedProduct));
+
+        expectedProduct.setVisitNumber(1);
+        productService.getProductItem(expectedProductId);
+
+        verify(productRepositoryMock).save(expectedProduct);
+        verify(productViewConverterMock).convertProductToProductItemDTO(expectedProduct, imageUtilityMock, converterHelperMock);
+    }
+
+    @Test
+    void testUpdateProduct_WithNonExistingUser_ShouldThrowNonExistingUserException(){
+        UUID expectedUserId = UUID.randomUUID();
+        long updatableProductId = 1;
+
+        when(userRepositoryMock.findById(expectedUserId))
+                .thenReturn(Optional.empty());
+
+        ProductUpdateDTO expectedProductUpdateDTO = getProductUpdateDTO("Test");
+        assertThrowsExactly(NonExistingUserException.class,
+                () -> productService.updateProduct(
+                        expectedProductUpdateDTO,
+                        new MultipartFile[1],
+                        expectedUserId,
+                        updatableProductId
+                )
+        );
+    }
+
+    @Test
+    void testUpdateProduct_UserOnlyHasCustomerRole_ShouldThrowInvalidUserCredentialsException(){
+        UUID expectedUserId = UUID.randomUUID();
+        long expectedUpdatableProductId = 1;
+
+        UserEntity expectedUser = getExpectedUserEntity(expectedUserId);
+
+        ProductUpdateDTO expectedProductUpdateDTO = getProductUpdateDTO(expectedUser.getFullName());
+
+        when(userRepositoryMock.findById(expectedUserId))
+                .thenReturn(Optional.of(expectedUser));
+
+        assertThrowsExactly(InvalidUserCredentialsException.class,
+                () -> productService.updateProduct(
+                        expectedProductUpdateDTO,
+                        new MultipartFile[1],
+                        expectedUserId,
+                        expectedUpdatableProductId
+                )
+        );
+    }
+
+    @Test
+    void testUpdateProduct_WithNonExistingProduct_ShouldThrowNonExistingProductException(){
+        UUID expectedUserId = UUID.randomUUID();
+        long expectedUpdatableProductId = 1;
+
+        UserEntity expectedUser = getExpectedUserEntity(
+                expectedUserId,
+                "Test",
+                "User",
+                Set.of(
+                        Role.ROLE_SELLER
+                )
+        );
+        ProductUpdateDTO expectedProductUpdateDTO = getProductUpdateDTO(expectedUser.getFullName());
+
+        when(userRepositoryMock.findById(expectedUserId))
+                .thenReturn(Optional.of(expectedUser));
+
+        when(productRepositoryMock.findById(expectedUpdatableProductId))
+                .thenReturn(Optional.empty());
+
+        assertThrowsExactly(NonExistingProductException.class,
+                () -> productService.updateProduct(
+                        expectedProductUpdateDTO,
+                        new MultipartFile[1],
+                        expectedUserId,
+                        expectedUpdatableProductId
+                )
+        );
+    }
+
+    @Test
+    void testUpdateProduct_WithUserIdAndProductSellerIdNotTheSame_ShouldThrowIncorrectSellerException(){
+        UUID expectedUserId = UUID.randomUUID();
+        long expectedUpdatableProductId = 1;
+
+        UserEntity expectedUser = getExpectedUserEntity(
+                expectedUserId,
+                "Test",
+                "User",
+                Set.of(
+                        Role.ROLE_SELLER
+                )
+        );
+        ProductUpdateDTO expectedProductUpdateDTO = getProductUpdateDTO(expectedUser.getFullName());
+
+        when(userRepositoryMock.findById(expectedUserId))
+                .thenReturn(Optional.of(expectedUser));
+
+
+        Subcategory expectedSubcategory = getSubcategory(1, "Test Subcategory");
+        UserEntity otherSeller = getExpectedUserEntity(UUID.randomUUID());
+        Product expectedProduct = getProduct(1, "Test", expectedSubcategory);
+
+
+        expectedProduct.setSeller(otherSeller);
+        when(productRepositoryMock.findById(expectedUpdatableProductId))
+                .thenReturn(Optional.of(expectedProduct));
+
+        assertThrowsExactly(IncorrectSellerException.class,
+                () -> productService.updateProduct(
+                        expectedProductUpdateDTO,
+                        new MultipartFile[1],
+                        expectedUserId,
+                        expectedUpdatableProductId
+                )
+        );
+    }
+
+    @Test
+    void testUpdateProduct_WithNewImagesNullAndPreviousImagesAreEmpty_ShouldThrowMissingImageException(){
+        UUID expectedUserId = UUID.randomUUID();
+        long expectedUpdatableProductId = 1;
+
+        UserEntity expectedUser = getExpectedUserEntity(
+                expectedUserId,
+                "Test",
+                "User",
+                Set.of(
+                        Role.ROLE_SELLER
+                )
+        );
+        ProductUpdateDTO expectedProductUpdateDTO = getProductUpdateDTO(expectedUser.getFullName());
+
+        when(userRepositoryMock.findById(expectedUserId))
+                .thenReturn(Optional.of(expectedUser));
+
+
+        Subcategory expectedSubcategory = getSubcategory(1, "Test Subcategory");
+        Product expectedProduct = getProduct(1, "Test", expectedSubcategory);
+        expectedProduct.setSeller(expectedUser);
+        expectedProduct.setImages(List.of());
+
+        when(productRepositoryMock.findById(expectedUpdatableProductId))
+                .thenReturn(Optional.of(expectedProduct));
+
+        assertThrowsExactly(MissingImageException.class, () -> productService.updateProduct(
+                expectedProductUpdateDTO,
+                null,
+                expectedUserId,
+                expectedUpdatableProductId
+        ));
+    }
+
+    @Test
+    void testUpdateProduct_WithImageNameMissingFromUpdateDTO_ShouldRemoveImageAndShouldCallDeleteImagesByProductAndFileNameIn() throws IOException {
+        UUID expectedUserId = UUID.randomUUID();
+        long expectedUpdatableProductId = 1;
+
+        UserEntity expectedUser = getExpectedUserEntity(
+                expectedUserId,
+                "Test",
+                "User",
+                Set.of(
+                        Role.ROLE_SELLER
+                )
+        );
+
+        Image imageForProductAndProductUpdateDTO = new Image();
+        imageForProductAndProductUpdateDTO.setFileName("Test Image 1");
+        imageForProductAndProductUpdateDTO.setImageFile(new byte[0]);
+
+        ImageShow imageShowForExpectedProductUpdateDTO = new ImageShow(
+                imageForProductAndProductUpdateDTO.getFileName(),
+                imageForProductAndProductUpdateDTO.getImageFile()
+        );
+
+        ProductUpdateDTO expectedProductUpdateDTO = getProductUpdateDTO(
+                expectedUser.getFullName(),
+                List.of(imageShowForExpectedProductUpdateDTO),
+                List.of()
+        );
+
+        when(userRepositoryMock.findById(expectedUserId))
+                .thenReturn(Optional.of(expectedUser));
+
+
+        Subcategory expectedSubcategory = getSubcategory(1, "Test Subcategory");
+
+        Image expectedProductImage = new Image();
+        expectedProductImage.setFileName("Expected product's image");
+
+        Product expectedProduct = getProduct(1, "Test", expectedSubcategory);
+        expectedProduct.setSeller(expectedUser);
+        expectedProduct.setImages(List.of(
+                imageForProductAndProductUpdateDTO,
+                expectedProductImage
+        ));
+
+        when(productRepositoryMock.findById(expectedUpdatableProductId))
+                .thenReturn(Optional.of(expectedProduct));
+
+        productService.updateProduct(
+                expectedProductUpdateDTO,
+                new MultipartFile[0],
+                expectedUserId,
+                expectedUpdatableProductId
+        );
+
+        verify(imageRepositoryMock).deleteImagesByProductAndFileNameIn(expectedProduct, List.of(expectedProductImage.getFileName()));
+    }
+
+    @Test
+    void testUpdateProduct_WithNewImage_ShouldAddNewImageToTheListAndCallSaveAllAndFindAll() throws IOException {
+        UUID expectedUserId = UUID.randomUUID();
+        long expectedUpdatableProductId = 1;
+
+        UserEntity expectedUser = getExpectedUserEntity(
+                expectedUserId,
+                "Test",
+                "User",
+                Set.of(
+                        Role.ROLE_SELLER
+                )
+        );
+
+        Image imageForProductAndProductUpdateDTO = new Image();
+        imageForProductAndProductUpdateDTO.setFileName("Test Image 1");
+        imageForProductAndProductUpdateDTO.setImageFile(new byte[0]);
+
+
+        ProductUpdateDTO expectedProductUpdateDTO = getProductUpdateDTO(expectedUser.getFullName());
+
+        when(userRepositoryMock.findById(expectedUserId))
+                .thenReturn(Optional.of(expectedUser));
+
+
+        Subcategory expectedSubcategory = getSubcategory(1, "Test Subcategory");
+
+        Image newImage = new Image();
+        newImage.setFileName("This is a new Image");
+        newImage.setImageFile(new byte[0]);
+
+        Product expectedProduct = getProduct(1, "Test", expectedSubcategory);
+        expectedProduct.setSeller(expectedUser);
+        expectedProduct.setImages(List.of(
+                imageForProductAndProductUpdateDTO
+        ));
+
+        when(productRepositoryMock.findById(expectedUpdatableProductId))
+                .thenReturn(Optional.of(expectedProduct));
+
+        MultipartFile[] newImageUploadMultipartFile = new MultipartFile[]{
+                new MockMultipartFile(newImage.getFileName(), newImage.getImageFile())
+        };
+
+        List<Image> expectedConvertedImages = List.of(newImage);
+
+        when(productUploadConverterMock.convertMultiPartFilesToListOfImages(
+                newImageUploadMultipartFile,
+                expectedProduct,
+                imageUtilityMock)
+        )
+                .thenReturn(expectedConvertedImages);
+
+        productService.updateProduct(
+                expectedProductUpdateDTO,
+                newImageUploadMultipartFile,
+                expectedUserId,
+                expectedUpdatableProductId
+        );
+
+        verify(productUploadConverterMock).convertMultiPartFilesToListOfImages(
+                newImageUploadMultipartFile,
+                expectedProduct,
+                imageUtilityMock
+        );
+
+        verify(imageRepositoryMock).saveAll(expectedConvertedImages);
+    }
+
 
     private Subcategory createBasicSubcategory(long subcategoryId, String subcategoryName){
         Subcategory subcategory = new Subcategory();
@@ -468,7 +840,7 @@ class ProductServiceTest {
         return subcategory;
     }
 
-    private ProductUploadDTO getProductUploadDTO(UUID expectedUserUUID) {
+    private ProductUploadDTO getProductUploadDTO(UUID expectedUserUUID, Map<String, String> productInformation) {
         ProductDetailUploadDTO expectedProductDetailUploadDTO = new ProductDetailUploadDTO(
                 2,
                 2,
@@ -481,10 +853,44 @@ class ProductServiceTest {
         );
         return new ProductUploadDTO(
                 expectedProductDetailUploadDTO,
-                Map.of(),
+                productInformation,
                 expectedUserUUID,
                 new MultipartFile[10]
         );
+    }
+
+    private  ProductUpdateDTO getProductUpdateDTO(String sellerName){
+        ProductInformation productInformation = new ProductInformation(
+                "Test Product",
+                10,
+                7,
+                100,
+                4,
+                1.5,
+                5,
+                "Test Brand",
+                "This is a test",
+                sellerName,
+                1
+        );
+        return new ProductUpdateDTO(productInformation, List.of(), List.of());
+    }
+
+    private  ProductUpdateDTO getProductUpdateDTO(String sellerName, List<ImageShow> images, List<DetailValueDTO> detailValues){
+        ProductInformation productInformation = new ProductInformation(
+                "Test Product",
+                10,
+                7,
+                100,
+                4,
+                1.5,
+                5,
+                "Test Brand",
+                "This is a test",
+                sellerName,
+                1
+        );
+        return new ProductUpdateDTO(productInformation, images, detailValues);
     }
 
     private List<Product> createProductList(Subcategory expectedSubcategory) {
@@ -568,4 +974,34 @@ class ProductServiceTest {
 
         return expectedUser;
     }
+
+    private Product productUploadDTOConverterToProduct(ProductUploadDTO productUploadDTO){
+        Product product = new Product();
+        product.setProductName(productUploadDTO.productDetail().productName());
+        product.setQuantity(productUploadDTO.productDetail().quantity());
+        product.setBrand(productUploadDTO.productDetail().brand());
+        product.setDeliveryTimeInDay(productUploadDTO.productDetail().deliveryTimeInDay());
+        product.setDescription(productUploadDTO.productDetail().description());
+        product.setPrice(productUploadDTO.productDetail().price());
+        product.setShippingPrice(productUploadDTO.productDetail().shippingPrice());
+
+        return product;
+    }
+
+    private Value getValue(String valueName, Detail detail){
+        Value value = new Value();
+        value.setValue(valueName);
+        value.setDetail(detail);
+
+        return value;
+    }
+
+    private ProductValue getProductValue(Product product, Value value){
+        ProductValue productValue = new ProductValue();
+        productValue.setProduct(product);
+        productValue.setValue(value);
+
+        return productValue;
+    }
+
 }
