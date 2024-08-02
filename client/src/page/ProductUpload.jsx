@@ -4,11 +4,10 @@ import { useNavigate } from "react-router-dom";
 import ProductCategoryForm from "../component/product/ProductCategoryForm";
 import ProductDetailsForm from "../component/product/ProductDetailsForm";
 import UploadedImages from "../component/product/UploadedImages";
-import useVerifyUserRole from "../utility/customHook/useVerifyUserRole";
-import useVerifyUserAccess from "../utility/customHook/useVerifyUserAccess";
 import { fetchPostAuthorizationFetch } from "../utility/fetchUtilities";
 import { imageUpload } from "../utility/imageUtilities";
 import { appendFilesToFormData, changeProductDetail } from "../utility/componentUtilities";
+import { useVerifyUserAccess, useVerifyUserRole } from "../utility/customHook/verifyHooks";
 
 function ProductUpload(){
     const SUCCESS_MESSAGE_TIME_IN_SECONDS = 2;

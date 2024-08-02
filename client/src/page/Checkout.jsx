@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import ProductsTable from "../component/product/ProductsTable";
-import useVerifyUserAccess from "../utility/customHook/useVerifyUserAccess";
 import ShippingInformationForm from "../component/order/ShippingInformationForm";
 import { fetchGetAuthorization, fetchPatchAuthorizationFetch, fetchPostAuthorizationFetch } from "../utility/fetchUtilities";
+import { useVerifyUserAccess } from "../utility/customHook/verifyHooks";
 
 function Checkout(){
     const isVerified = useVerifyUserAccess('/verification/user/checkout', '/login');

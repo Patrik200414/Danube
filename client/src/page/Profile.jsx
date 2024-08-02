@@ -4,7 +4,7 @@ import seller from "../static/seller.svg";
 import settings from "../static/settings.svg"
 import sellProduct from "../static/sellProduct.svg";
 import updateProduct from "../static/updateProduct.svg";
-import useVerifyUserRole from "../utility/customHook/useVerifyUserRole";
+import { useVerifyUserRole } from "../utility/customHook/verifyHooks";
 
 function Profile(){
     const [user, ] = useVerifyUserRole('ROLE_CUSTOMER');

@@ -1,13 +1,12 @@
 import { useNavigate, useParams } from "react-router-dom";
-import useFetchGetAuthorization from "../utility/customHook/useFetchGetAuthorization";
-import useVerifyUserRole from "../utility/customHook/useVerifyUserRole";
 import ProductInformationForm from "../component/product/ProductInformationForm";
 import ProductDetailsForm from "../component/product/ProductDetailsForm";
 import UploadedImages from '../component/product/UploadedImages';
 import { useState } from "react";
-import useVerifyUserAccess from "../utility/customHook/useVerifyUserAccess";
 import { appendFilesToFormData, changeProductDetail } from "../utility/componentUtilities";
 import { imageUpload } from "../utility/imageUtilities";
+import { useFetchGetAuthorization } from "../utility/customHook/fetchHooks";
+import { useVerifyUserAccess, useVerifyUserRole } from "../utility/customHook/verifyHooks";
 
 function ProductUpdate(){
     const {productId} = useParams();
