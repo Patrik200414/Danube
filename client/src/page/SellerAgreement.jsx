@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import fetchPatchAuthorizationFetch from "../utility/fetchPatchAuthorizationFetch";
+import { fetchPatchAuthorizationFetch } from "../utility/fetchUtilities";
 
 function SellerAgreement(){
     const [user, ] = useState(JSON.parse(sessionStorage.getItem("USER_JWT")));

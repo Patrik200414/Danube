@@ -3,12 +3,11 @@ import useFetchGetAuthorization from "../utility/customHook/useFetchGetAuthoriza
 import useVerifyUserRole from "../utility/customHook/useVerifyUserRole";
 import ProductInformationForm from "../component/product/ProductInformationForm";
 import ProductDetailsForm from "../component/product/ProductDetailsForm";
-import changeProductDetail from '../utility/changeProductDetail';
 import UploadedImages from '../component/product/UploadedImages';
-import imageUpload from "../utility/imageUpload";
-import appendFilesToFormData from "../utility/appendFilesToFormData";
 import { useState } from "react";
 import useVerifyUserAccess from "../utility/customHook/useVerifyUserAccess";
+import { appendFilesToFormData, changeProductDetail } from "../utility/componentUtilities";
+import { imageUpload } from "../utility/imageUtilities";
 
 function ProductUpdate(){
     const {productId} = useParams();

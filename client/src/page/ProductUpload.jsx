@@ -4,12 +4,11 @@ import { useNavigate } from "react-router-dom";
 import ProductCategoryForm from "../component/product/ProductCategoryForm";
 import ProductDetailsForm from "../component/product/ProductDetailsForm";
 import UploadedImages from "../component/product/UploadedImages";
-import fetchPostAuthorizationFetch from '../utility/fetchPostAuthorizationFetch';
-import changeProductDetail from '../utility/changeProductDetail';
-import imageUpload from '../utility/imageUpload';
 import useVerifyUserRole from "../utility/customHook/useVerifyUserRole";
-import appendFilesToFormData from '../utility/appendFilesToFormData';
 import useVerifyUserAccess from "../utility/customHook/useVerifyUserAccess";
+import { fetchPostAuthorizationFetch } from "../utility/fetchUtilities";
+import { imageUpload } from "../utility/imageUtilities";
+import { appendFilesToFormData, changeProductDetail } from "../utility/componentUtilities";
 
 function ProductUpload(){
     const SUCCESS_MESSAGE_TIME_IN_SECONDS = 2;
@@ -86,7 +85,6 @@ function ProductUpload(){
     }
 
     async function handleSubmit(e){
-        debugger;
         e.preventDefault();
         
         console.log(selectedSubcategoryId);

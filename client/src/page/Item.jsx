@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types';
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import fetchGet from "../utility/fetchGet";
 import ItemImageViewer from "../component/item/ItemImageViewer";
 import ItemTableRow from '../component/item/ItemTableRow';
 import ItemTableContainer from '../component/item/ItemTableContainer';
 import ItemSimilarContainer from "../component/item/ItemSimilarContainer";
-import handlePromiseAllError from "../utility/handlePromiseAllError";
 import AddToCart from "../component/order/AddToCart";
+import { fetchGet } from '../utility/fetchUtilities';
+import { handlePromiseAllError } from '../utility/componentUtilities';
 
 
 function Item({onNavbarInformationChange}){

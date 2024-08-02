@@ -1,5 +1,5 @@
-import fetchGetAuthorization from "../fetchGetAuthorization";
 import { useEffect, useState } from "react";
+import { fetchGetAuthorization } from "../fetchUtilities";
 
 function useGetNavbarInformation(currUser){
     const [navbarResponse, setNavbarResponse] = useState({userFirstName: null, cartItemNumber: 0});

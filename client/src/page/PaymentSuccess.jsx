@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import fetchPatchAuthorizationFetch from "../utility/fetchPatchAuthorizationFetch";
 import PropTypes from "prop-types";
+import { fetchPatchAuthorizationFetch } from "../utility/fetchUtilities";
 
 function PaymentSuccess({onNavbarInformationChange}){
     const [orderSuccess, setOrderSucsess] = useState();

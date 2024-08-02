@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
-import fetchPostJSON from "../utility/fetchPostJSON";
+import { fetchPostJSON } from "../utility/fetchUtilities";
 
 function Registration(){
     const [firstName, setFirstName] = useState('');

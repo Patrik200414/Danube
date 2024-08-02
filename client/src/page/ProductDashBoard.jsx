@@ -1,9 +1,9 @@
 import ProductsTable from "../component/product/ProductsTable";
 
-import buttonObjectGenerator from '../utility/buttonObjectGenerator';
 import useVerifyUserRole from "../utility/customHook/useVerifyUserRole";
 import useFetchGetAuthorization from "../utility/customHook/useFetchGetAuthorization";
 import useVerifyUserAccess from '../utility/customHook/useVerifyUserAccess';
+import { buttonObjectGenerator } from "../utility/componentUtilities";
 
 function ProductUpdate(){
     useVerifyUserAccess('/verification/product/update');

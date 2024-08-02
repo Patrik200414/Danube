@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Proptypes from "prop-types";
-import fetchGet from "../../utility/fetchGet";
+import { fetchGet } from "../../utility/fetchUtilities";
 
 function ProductCategoryForm({onSelectCategoryIdChange, selectedCategoryId, selectedSubcategoryId, onSelectedSubCategoryIdChange}){
     const [avaibleCategories, setAvaibleCategories] = useState();
