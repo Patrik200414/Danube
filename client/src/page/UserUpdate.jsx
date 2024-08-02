@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { Link } from "react-router-dom";
 import UserUpdateForm from "../component/user/UserUpdateForm";
-import useVerifyUserAccess from "../utility/customHook/useVerifyUserAccess";
+import { useVerifyUserAccess } from '../utility/customHook/verifyHooks';
 
 function UserUpdate({onNavbarInformationChange}){
     const isAccessible = useVerifyUserAccess('/verification/user/update');

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Proptypes from 'prop-types';
-import convertBase64ToObjectUrlForImage from "../../utility/convertBase64ToObjectUrlForImage";
+import { convertBase64ToObjectUrlForImage } from "../../utility/imageUtilities";
+
 
 function ItemImageContainer({images}){
     const [currentImage, setCurrentImage] = useState(images.length ? convertBase64ToObjectUrlForImage(images[0].imageFile) : '');

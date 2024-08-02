@@ -2,8 +2,8 @@ import { useState } from 'react';
 import defaultProductImage from '../../static/defaultProduct.jpg';
 import Proptypes from 'prop-types';
 import ImageContainer from './ImageContainer';
-import convertBase64ToObjectUrlForImage from '../../utility/convertBase64ToObjectUrlForImage';
 import { Link } from 'react-router-dom';
+import { convertBase64ToObjectUrlForImage } from '../../utility/imageUtilities';
 
 function ProductCard({product}){
     const imagesLength = product.images.length;

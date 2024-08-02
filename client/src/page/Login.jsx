@@ -2,9 +2,7 @@ import PropTypes from "prop-types";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
-import fetchPostJSON from "../utility/fetchPostJSON";
-import fetchGetAuthorization from "../utility/fetchGetAuthorization";
-import fetchPostAuthorizationFetch from "../utility/fetchPostAuthorizationFetch";
+import { fetchGetAuthorization, fetchPostAuthorizationFetch, fetchPostJSON } from "../utility/fetchUtilities";
 
 function Login({onNavbarInformationChange}){
     const [email, setEmail] = useState('');

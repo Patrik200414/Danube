@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function useVerifyUserAccess(navigateUrl, fallBackUrl){
+export function useVerifyUserAccess(navigateUrl, fallBackUrl){
     const [isVerifed, setIsVerified] = useState(false);
     const navigate = useNavigate();
 
@@ -34,4 +34,26 @@ function useVerifyUserAccess(navigateUrl, fallBackUrl){
     return isVerifed;
 }
 
-export default useVerifyUserAccess;
+export function useVerifyUserRole(role){
+    const [user, setUser] = useState();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const currUser = sessionStorage.getItem('USER_JWT');
+
+        if(!currUser){
+            navigate('/');
+            return;
+        }
+
+        const userData = JSON.parse(currUser);
+        if(!userData.roles.includes(role)){
+            navigate('/');
+            return
+        }
+
+        setUser(userData);
+    }, [navigate, role]);
+
+    return [user];
+}

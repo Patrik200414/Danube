@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { useContext, useState } from "react";
-import fetchPostAuthorizationFetch from '../../utility/fetchPostAuthorizationFetch';
 import { NavbarContext } from "../../NavbarContext";
+import { fetchPostAuthorizationFetch } from "../../utility/fetchUtilities";
 
 function AddToCart({maxQuantity, productId, onNavbarInformationChange, onError, product}){
     const [selectedQuantity, setSelectedQuantity] = useState(1);

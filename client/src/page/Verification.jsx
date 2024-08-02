@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PropTypes from "prop-types";
 import UserAccountInformation from "../component/user/UserAccountInformation";
-import fetchPostAuthorizationFetch from "../utility/fetchPostAuthorizationFetch";
+import { fetchPostAuthorizationFetch } from "../utility/fetchUtilities";
 
 
 function Verification({verificationToPages}){

@@ -3,7 +3,7 @@ import { Link, Outlet } from "react-router-dom";
 import UserProfileImage from "./user/UserProfileImage";
 import ShoppingCart from "./ShoppingCart";
 import {NavbarContext} from "../NavbarContext";
-import fetchGet from "../utility/fetchGet";
+import { fetchGet } from "../utility/fetchUtilities";
 
 
 
