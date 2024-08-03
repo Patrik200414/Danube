@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import Proptypes from 'prop-types';
+import { convertBase64ToObjectUrlForImage } from "../../utility/imageUtilities";
 
-import convertBase64ToObjectUrlForImage from "../../utility/convertBase64ToObjectUrlForImage";
 
 function ProductsTable({products, buttons, keyName}){
 

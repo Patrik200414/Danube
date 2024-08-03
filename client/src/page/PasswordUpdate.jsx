@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import PasswordUpdateForm from "../component/user/PasswordUpdateForm";
-import useVerifyUserRole from "../utility/customHook/useVerifyUserRole";
-import useVerifyUserAccess from "../utility/customHook/useVerifyUserAccess";
+import { useVerifyUserAccess, useVerifyUserRole } from "../utility/customHook/verifyHooks";
 
 function PasswordUpdate(){
     const isAccessible = useVerifyUserAccess('/verification/user/password');

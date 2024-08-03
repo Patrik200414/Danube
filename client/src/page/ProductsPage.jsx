@@ -1,6 +1,6 @@
 import { useState } from "react";
 import ProductContainer from "../component/product/ProductContainer";
-import useFetch from "../utility/customHook/useFetch";
+import { useFetch } from "../utility/customHook/fetchHooks";
 
 function ProductsPage(){
     const itemPerPage = 9;

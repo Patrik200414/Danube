@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import ProductsTable from "../component/product/ProductsTable";
-import buttonObjectGenerator from "../utility/buttonObjectGenerator";
 import useGetCartItems from "../utility/customHook/useGetCartItems";
-import fetchDeleteAuthorization from "../utility/fetchDeleteAuthorization";
 import { useContext } from 'react';
 import { NavbarContext } from '../NavbarContext';
 import { Link } from 'react-router-dom';
+import { fetchDeleteAuthorization } from '../utility/fetchUtilities';
+import { buttonObjectGenerator } from '../utility/componentUtilities';
 
 
 function MyCart({onNavbarInformationChange}){

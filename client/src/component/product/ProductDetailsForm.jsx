@@ -1,6 +1,7 @@
 import Proptypes from "prop-types";
 import { useEffect } from "react";
-import fetchGetAuthorization from "../../utility/fetchGetAuthorization";
+import { fetchGetAuthorization } from "../../utility/fetchUtilities";
+
 
 function ProductDetailsForm({details, onDetailsChange, subCategoryId, user, onDetailsSet, onImageUpload}){
 

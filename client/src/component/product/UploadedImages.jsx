@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Proptypes from "prop-types";
-import convertBase64ToObjectUrlForImage from '../../utility/convertBase64ToObjectUrlForImage';
+import { convertBase64ToObjectUrlForImage } from "../../utility/imageUtilities";
 
 function UploadedImages({images, onImageDeletion}){
     const [imagesPreview, setImagesPreview] = useState([]);
