@@ -7,15 +7,13 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import InputBase from '@mui/material/InputBase';
 import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
 
 import { useContext, useEffect, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
-import UserProfileImage from "../user/UserProfileImage";
-import ShoppingCart from "../ShoppingCart";
 import { NavbarContext } from "../../NavbarContext";
 import { fetchGet } from "../../utility/fetchUtilities";
-import { Autocomplete, Button, colors, List, ListItem, ListItemText, TextField } from '@mui/material';
+import { Button, List, ListItem, ListItemText } from '@mui/material';
+import NavBarMenu from '../NavBarMenu';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -32,15 +30,6 @@ const Search = styled('div')(({ theme }) => ({
   },
 }));
 
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-}));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: 'inherit',
@@ -92,16 +81,19 @@ export default function SearchAppBar() {
   const [search, setSearch] = useState('');
   const [categories, setCategories] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
+  const [isMenuOpened, setIsMenuOpened] = useState(false);
   const navbarInfo = useContext(NavbarContext);
 
   const checkIfSearchResultEqualsToSearch = searchResults.length === 1 && searchResults[0].subcategoryName.toLowerCase() === search.toLocaleLowerCase();
 
   useEffect(() => {
     const getCategories = async () => {
-      const categoryData = await fetch('/api/product/category');
-      const categoryResponse = await categoryData.json();
-
-      setCategories(categoryResponse);
+      try {
+        const categoryResponse = await fetchGet('/api/product/category');
+        setCategories(categoryResponse);
+      } catch (error) {
+        console.log(error);
+      }
     }
 
     getCategories();
@@ -134,6 +126,7 @@ export default function SearchAppBar() {
               color="inherit"
               aria-label="open drawer"
               sx={{ mr: 2 }}
+              onClick={() => setIsMenuOpened(prev => !prev)}
             >
               <MenuIcon />
             </IconButton>
@@ -178,101 +171,17 @@ export default function SearchAppBar() {
             ))}
           </StyledList>
         }
+        {
+          isMenuOpened
+          &&
+          <NavBarMenu
+            shoppingCartItemCount={navbarInfo.cartItemNumber}
+            userFirstName={navbarInfo.userFirstName}
+            categories={categories}
+          />
+        }
       </Box>
       <Outlet />
     </>
   );
 }
-
-
-
-/* import { useContext, useEffect, useState } from "react";
-import { Link, Outlet } from "react-router-dom";
-import UserProfileImage from "./user/UserProfileImage";
-import ShoppingCart from "./ShoppingCart";
-import {NavbarContext} from "../NavbarContext";
-import { fetchGet } from "../utility/fetchUtilities";
-
-
-function NavBar(){
-    const [search, setSearch] = useState('');
-    const [categories, setCategories] = useState([]);
-    const [searchResults, setSearchResults] = useState([]);
-    const navbarInfo = useContext(NavbarContext);
-
-    useEffect(() => {
-        const getCategories = async () => {
-            const categoryData = await fetch('/api/product/category');
-            const categoryResponse = await categoryData.json();
-
-            setCategories(categoryResponse);
-        }
-
-        getCategories();
-    }, []);
-
-    useEffect(() => {
-        const getSearchResult = async () => {
-            const searchResultsData = await fetchGet(`/api/search/product?searchedProductName=${search}`);
-            const searchResultData = await searchResultsData.json();
-            setSearchResults(searchResultData);
-        }
-
-        if(search.length > 0){
-            getSearchResult();
-        } else{
-            setSearchResults([]);
-        }
-
-    }, [search])
-
-    return(
-        <>
-        {navbarInfo && 
-            <>
-            <nav className="nav-bar">
-                <div className="top-part">
-                    <h1 className="logo">
-                        <Link to='/'>Danube</Link>    
-                    </h1>
-                    <div className="input-container">
-                        <div className="search-holder">
-                            <input type="text" name="search" id="search" placeholder="Search Danube..." value={search} onChange={e => setSearch(e.target.value)}/>
-                            {searchResults.length > 0 && 
-                                <ul className="search-result-container">
-                                    {searchResults.map((searchResult, i) => <li onClick={() => setSearch(searchResult.subcategoryName)} key={`${searchResult.productName}-${i}`} className="searchResult">{searchResult.subcategoryName}</li>)}
-                                </ul>
-                            }
-                        </div>
-                        <Link to={`/product/${search}`}>
-                            <button>Search</button>
-                        </Link>
-                        
-                    </div>
-                    <div className="additional-information">
-                        {navbarInfo.userFirstName ? 
-                            <UserProfileImage userFirstName={navbarInfo.userFirstName} />
-                            :
-                            <Link to='/login'><button>Login</button></Link>
-                        }
-                        <ShoppingCart itemCount={navbarInfo.cartItemNumber}/>
-                    </div>
-                    
-                </div>
-                
-                <div className="bottom-part">
-                    <ul className="categories">
-                        <li>Categories: </li>
-                        {categories.map(category => <li key={category.categoryName} id={category.id}>{category.categoryName}</li>)}
-                    </ul>
-                </div>
-            </nav>
-            <Outlet />
-            </>
-        }
-        </>
-    )
-}
-
-
-export default NavBar; */
