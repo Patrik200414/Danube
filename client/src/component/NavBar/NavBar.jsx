@@ -14,6 +14,7 @@ import { NavbarContext } from "../../NavbarContext";
 import { fetchGet } from "../../utility/fetchUtilities";
 import { Button, List, ListItem, ListItemText } from '@mui/material';
 import NavBarMenu from '../NavBarMenu';
+import ErrorMessage from '../ErrorMessage';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -82,6 +83,7 @@ export default function SearchAppBar() {
   const [categories, setCategories] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [isMenuOpened, setIsMenuOpened] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const navbarInfo = useContext(NavbarContext);
 
   const checkIfSearchResultEqualsToSearch = searchResults.length === 1 && searchResults[0].subcategoryName.toLowerCase() === search.toLocaleLowerCase();
@@ -92,7 +94,8 @@ export default function SearchAppBar() {
         const categoryResponse = await fetchGet('/api/product/category');
         setCategories(categoryResponse);
       } catch (error) {
-        console.log(error);
+        console.log(error.message.errorMessage);
+        setErrorMessage(error.message.errorMessage);
       }
     }
 
@@ -101,9 +104,15 @@ export default function SearchAppBar() {
 
   useEffect(() => {
     const getSearchResult = async () => {
-      const searchResultsData = await fetchGet(`/api/search/product?searchedProductName=${search}`);
-      const searchResultData = await searchResultsData.json();
-      setSearchResults(searchResultData);
+      try{
+        const searchResultsData = await fetchGet(`/api/search/product?searchedProductName=${search}`);
+        const searchResultData = await searchResultsData.json();
+        setSearchResults(searchResultData);
+      } catch(error){
+        console.log(error.message.errorMessage);
+        setErrorMessage(error.message.errorMessage);
+      }
+      
     }
 
     if (search.length > 0) {
@@ -117,6 +126,7 @@ export default function SearchAppBar() {
 
   return (
     <>
+      {errorMessage && <ErrorMessage error={errorMessage}/>}
       <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">
           <Toolbar>

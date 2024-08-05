@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { fetchDeleteAuthorization } from '../utility/fetchUtilities';
 import { buttonObjectGenerator } from '../utility/componentUtilities';
 import { useGetCartItems } from '../utility/customHook/getInformationHooks';
+import ErrorMessageTitle from '../component/ErrorMessageTitle';
 
 
 function MyCart({onNavbarInformationChange}){
@@ -60,7 +61,7 @@ function MyCart({onNavbarInformationChange}){
 
     return (
         <div className="my-cart-dashboard">
-            {error && <h1 className="error-message">{error}</h1>}
+            {error && <ErrorMessageTitle error={error}/>}
             {cartItems?.length ? <>
                 <ProductsTable products={cartItems} buttons={[
                     buttonObjectGenerator('removeItem', 'Remove item', true, '', (id) => handleDeleteion(id))

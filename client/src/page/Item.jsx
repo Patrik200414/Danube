@@ -30,8 +30,8 @@ function Item({onNavbarInformationChange}){
         const getProduct = async () => {
             setIsLoading(true);
             const itemsAndSimilarItems = await Promise.all([
-                fetchGet(`/api/product/item/${id}`),
-                fetchGet(`/api/product/similar/${id}`)
+                fetch(`/api/product/item/${id}`),
+                fetch(`/api/product/similar/${id}`)
             ]);
 
             const errorHandlingResponse = await handlePromiseAllError(itemsAndSimilarItems, (resultErrors) => setErrors(resultErrors));

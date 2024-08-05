@@ -1,17 +1,22 @@
 import { useEffect, useState } from "react";
 import Proptypes from "prop-types";
 import { fetchGet } from "../../utility/fetchUtilities";
+import ErrorMessageTitle from "../ErrorMessageTitle";
 
 function ProductCategoryForm({onSelectCategoryIdChange, selectedCategoryId, selectedSubcategoryId, onSelectedSubCategoryIdChange}){
     const [avaibleCategories, setAvaibleCategories] = useState();
     const [avaibleSubCategories, setAvaibleSubCategories] = useState();
+    const [errorMessage, setErrorMessage] = useState('')
 
     useEffect(() => {
         const getCategories = async () => {
-            const categoryData = await fetchGet('/api/product/category');
-            const categoryResponse = await categoryData.json();
-
-            setAvaibleCategories(categoryResponse);
+            try{
+                const categoryResponse = await fetchGet('/api/product/category');
+                setAvaibleCategories(categoryResponse);
+            } catch(error){
+                console.log(error.message.errorMessage);
+                setErrorMessage(error.message.errorMessage);
+            }
         }
 
         getCategories();
@@ -24,10 +29,13 @@ function ProductCategoryForm({onSelectCategoryIdChange, selectedCategoryId, sele
         }
 
         const getSubCategories = async () => {
-            const subCategoryData = await fetchGet(`/api/product/subcategory/${selectedCategoryId}`)
-            const subCategoryResponse = await subCategoryData.json();
-
-            setAvaibleSubCategories(subCategoryResponse);
+            try{
+                const subCategoryResponse = await fetchGet(`/api/product/subcategory/${selectedCategoryId}`);
+                setAvaibleSubCategories(subCategoryResponse);
+            } catch(error){
+                console.log(error.message.errorMessage);
+                setErrorMessage(error.message.errorMessage);
+            }
         }
 
         if(selectedCategoryId){
@@ -37,6 +45,7 @@ function ProductCategoryForm({onSelectCategoryIdChange, selectedCategoryId, sele
 
     return(
         <>
+        {errorMessage && <ErrorMessageTitle error={errorMessage}/>}
         {avaibleCategories && 
                 <div className="product-category-form">
                     <div>
