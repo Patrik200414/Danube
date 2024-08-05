@@ -88,7 +88,7 @@ public class ProductService {
 
     @Transactional
     public PageProductDTO getProductsBySubcategory(int pageNumber, int itemPerPage, String subcategoryName) throws DataFormatException, IOException {
-        Subcategory searchedSubcategory = subcategoryRepository.findByName(subcategoryName).orElseThrow(
+        Subcategory searchedSubcategory = subcategoryRepository.findByNameLikeIgnoreCase(subcategoryName).orElseThrow(
                 NonExistingSubcategoryException::new
         );
         PageRequest pageRequest = PageRequest.of(pageNumber, itemPerPage);
