@@ -12,7 +12,7 @@ import Verification from './page/Verification';
 import ProductUpload from './page/ProductUpload';
 import UserUpdate from './page/UserUpdate';
 import PasswordUpdate from './page/PasswordUpdate';
-import NavBar from './component/NavBar/NavBar';
+import NavBar from './component/nav/NavBar/NavBar';
 import Item from './page/Item';
 import NotFound from './page/NotFound';
 import ProductDashBoard from './page/ProductDashBoard';
