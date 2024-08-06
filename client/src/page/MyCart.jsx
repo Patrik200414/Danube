@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { fetchDeleteAuthorization } from '../utility/fetchUtilities';
 import { buttonObjectGenerator } from '../utility/componentUtilities';
 import { useGetCartItems } from '../utility/customHook/getInformationHooks';
-import ErrorMessageTitle from '../component/ErrorMessageTitle';
+import ErrorMessageTitle from '../component/error/ErrorMessageTitle/ErrorMessageTitle';
 
 
 function MyCart({onNavbarInformationChange}){

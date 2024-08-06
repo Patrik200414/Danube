@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Proptypes from "prop-types";
 import { fetchGet } from "../../utility/fetchUtilities";
-import ErrorMessageTitle from "../ErrorMessageTitle";
+import ErrorMessageTitle from "../error/ErrorMessageTitle/ErrorMessageTitle";
 
 function ProductCategoryForm({onSelectCategoryIdChange, selectedCategoryId, selectedSubcategoryId, onSelectedSubCategoryIdChange}){
     const [avaibleCategories, setAvaibleCategories] = useState();

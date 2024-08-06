@@ -14,7 +14,7 @@ import { NavbarContext } from "../../../NavbarContext";
 import { fetchGet } from "../../../utility/fetchUtilities";
 import { Button, List, ListItem, ListItemText } from '@mui/material';
 import NavBarMenu from '../NavBarMenu';
-import ErrorMessage from '../../ErrorMessage';
+import ErrorMessage from '../../error/ErrorMessage/ErrorMessage';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
