@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import PropTypes from "prop-types";
 import UserAccountInformation from "../component/user/UserAccountInformation";
 import { fetchPostAuthorizationFetch } from "../utility/fetchUtilities";
+import ErrorMessage from "../component/error/ErrorMessage/ErrorMessage";
 
 
 function Verification({verificationToPages}){
@@ -74,7 +75,7 @@ function Verification({verificationToPages}){
                         <br />
                         <input onChange={(e) => setPassword(e.target.value)} type="password" id="password" name="password" className="password" value={password}/>
                         <br />
-                        {error && <p className="error-message">{error}</p>}
+                        {error && <ErrorMessage error={error}/>}
                         <button>Verify</button>
                     </form>
                 </>

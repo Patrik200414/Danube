@@ -152,7 +152,7 @@ input[type="text"] {
     border-radius: 5px 0 0 5px;
 }
 
-.input-container button, .additional-information button{
+.input-container button{
     background-color: var(--button-color);
     color: #232f3e;
     border: none;

@@ -10,7 +10,9 @@ export async function fetchDeleteAuthorization(url, token){
 }
 
 export async function fetchGet(url){
-    return await fetch(url);    
+    const getRequest = await fetch(url);
+    const getResponse = await getRequest.json();
+    return getResponse;    
 }
 
 export async function fetchGetAuthorization(url, token){

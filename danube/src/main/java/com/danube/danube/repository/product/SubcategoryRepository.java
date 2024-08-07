@@ -11,6 +11,7 @@ import java.util.Optional;
 
 public interface SubcategoryRepository extends JpaRepository<Subcategory, Long> {
     Optional<Subcategory> findByName(String subcategoryName);
+    Optional<Subcategory> findByNameLikeIgnoreCase(String subcategoryName);
     List<Subcategory> findAllByCategory(Category category);
     List<Subcategory> findByNameContainingIgnoreCaseOrderByNameAsc(String subcategoryName);
 }
