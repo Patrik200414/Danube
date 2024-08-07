@@ -106,8 +106,7 @@ export default function SearchAppBar() {
     const getSearchResult = async () => {
       try{
         const searchResultsData = await fetchGet(`/api/search/product?searchedProductName=${search}`);
-        const searchResultData = await searchResultsData.json();
-        setSearchResults(searchResultData);
+        setSearchResults(searchResultsData);
       } catch(error){
         console.log(error.message.errorMessage);
         setErrorMessage(error.message.errorMessage);
