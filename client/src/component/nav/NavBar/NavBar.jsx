@@ -10,11 +10,11 @@ import MenuIcon from '@mui/icons-material/Menu';
 
 import { useContext, useEffect, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
-import { NavbarContext } from "../../NavbarContext";
-import { fetchGet } from "../../utility/fetchUtilities";
+import { NavbarContext } from "../../../NavbarContext";
+import { fetchGet } from "../../../utility/fetchUtilities";
 import { Button, List, ListItem, ListItemText } from '@mui/material';
 import NavBarMenu from '../NavBarMenu';
-import ErrorMessage from '../ErrorMessage';
+import ErrorMessage from '../../error/ErrorMessage/ErrorMessage';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -106,8 +106,7 @@ export default function SearchAppBar() {
     const getSearchResult = async () => {
       try{
         const searchResultsData = await fetchGet(`/api/search/product?searchedProductName=${search}`);
-        const searchResultData = await searchResultsData.json();
-        setSearchResults(searchResultData);
+        setSearchResults(searchResultsData);
       } catch(error){
         console.log(error.message.errorMessage);
         setErrorMessage(error.message.errorMessage);

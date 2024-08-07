@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import PropTypes from "prop-types";
 import UserAccountInformation from "../component/user/UserAccountInformation";
 import { fetchPostAuthorizationFetch } from "../utility/fetchUtilities";
-import ErrorMessage from "../component/ErrorMessage";
+import ErrorMessage from "../component/error/ErrorMessage/ErrorMessage";
 
 
 function Verification({verificationToPages}){

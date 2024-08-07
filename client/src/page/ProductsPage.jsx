@@ -1,13 +1,14 @@
 import { useState } from "react";
 import ProductContainer from "../component/product/ProductContainer";
 import { useFetch } from "../utility/customHook/fetchHooks";
-import ErrorMessage from "../component/ErrorMessage";
+import ErrorMessage from "../component/error/ErrorMessage/ErrorMessage";
+import styled from "styled-components";
+
 
 function ProductsPage(){
     const itemPerPage = 9;
     const [pageNumber, setPageNumber] = useState(0);
     const [pageProducts, , error] = useFetch(`/api/product?pageNumber=${pageNumber}&itemPerPage=${itemPerPage}`);
-
 
     return(
         <div className="home">

@@ -1,6 +1,6 @@
 import { Avatar, Button, Divider, MenuItem, MenuList } from "@mui/material";
 import styled from "styled-components";
-import ShoppingCart from "../ShoppingCart";
+import ShoppingCart from "../../ShoppingCart";
 import { Link } from "react-router-dom";
 
 const StyledMenuList = styled(MenuList)({
