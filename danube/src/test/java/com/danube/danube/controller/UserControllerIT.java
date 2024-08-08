@@ -1,36 +1,29 @@
 package com.danube.danube.controller;
 
-import com.danube.danube.model.dto.user.UserRegistrationDTO;
-import com.danube.danube.model.error.UserErrorMessage;
+import com.danube.danube.model.user.Role;
+import com.danube.danube.security.jwt.JwtUtils;
 import com.google.gson.JsonObject;
-import org.h2.util.json.JSONObject;
-import org.json.JSONException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.event.annotation.BeforeTestMethod;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.sql.Connection;
+import java.util.List;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static  org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("dev")
@@ -40,6 +33,8 @@ class UserControllerIT {
     private WebApplicationContext webApplicationContext;
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @MockBean
+    private JwtUtils jwtUtilsMock;
 
     @BeforeEach
     public void setUp(){
@@ -145,18 +140,7 @@ class UserControllerIT {
 
     @Test
     void testRegistration_WithValidRegistrationInformation_ShouldReturnStatus200() throws Exception {
-        URI endPointUri = new URI("/api/user/registration");
-
-        JsonObject expectedRegistrationRequest = getRegistrationJSONObject(
-                "Test",
-                "User",
-                "test@example.com",
-                "password"
-        );
-
-        mockMvc.perform(post(endPointUri)
-                .content(expectedRegistrationRequest.toString())
-        ).andExpect(status().isOk());
+        createValidUser();
     }
 
 
@@ -226,6 +210,65 @@ class UserControllerIT {
     }
 
     @Test
+    void testLogin_NonExistingEmail_ShouldReturnErrorMessageWithStatus404() throws Exception {
+        URI endPointUri = new URI("/api/user/login");
+
+        String expectedEmail = "test@example.com";
+        JsonObject expectedLoginRequest = getLoginRequestJSONObject(expectedEmail, "password");
+
+        JsonObject expectedResponse = getErrorMessageJSONObject("Authentication failed!");
+
+        mockMvc.perform(post(endPointUri)
+                .content(expectedLoginRequest.toString())
+        ).andExpect(
+                status().isNotFound()
+        ).andExpect(content().json(expectedResponse.toString()));
+    }
+
+    @Test
+    void testLogin_WithValidLoginRequest_ResponseShouldContainExpectedValuesAndReturnsWithStatus200() throws Exception {
+        createValidUser();
+
+        URI endPointUri = new URI("/api/user/login");
+        String expectedFirstName = "Test";
+        String expectedLastName = "User";
+        String expectedJwtToken = "TestToken";
+        String expectedLoginEmail = "test@example.com";
+        List<String> expectedRoles = List.of(Role.ROLE_CUSTOMER.name());
+
+        JsonObject expectedLoginRequest = getLoginRequestJSONObject(expectedLoginEmail, "password");
+
+        when(jwtUtilsMock.generateJwtToken(expectedLoginEmail))
+                .thenReturn(expectedJwtToken);
+
+        mockMvc.perform(post(endPointUri)
+                .content(expectedLoginRequest.toString())
+        ).andExpect(
+                status().isOk()
+        ).andExpect(jsonPath("$.jwt", is(expectedJwtToken))
+        ).andExpect(jsonPath("$.firstName", is(expectedFirstName))
+        ).andExpect(jsonPath("$.lastName", is(expectedLastName))
+        ).andExpect(jsonPath("$.email", is(expectedLoginEmail))
+        ).andExpect(jsonPath("$.roles", is(expectedRoles)));
+    }
+
+    @Test
+    void testLogin_WithInvalidPasswordCredentail_ShouldReturnErrorMessageWithInvalidPasswordAndStatus401() throws Exception {
+        createValidUser();
+        URI endPointUri = new URI("/api/user/login");
+
+        JsonObject expectedLoginRequest = getLoginRequestJSONObject("test@example.com", "NotCorrectPassword");
+
+        JsonObject expectedResponse = getErrorMessageJSONObject("Invalid password! This account has different password!");
+
+        mockMvc.perform(post(endPointUri)
+                .content(expectedLoginRequest.toString())
+        ).andExpect(
+                status().isUnauthorized()
+        ).andExpect(content().json(expectedResponse.toString()));
+    }
+
+    @Test
     void updateUserRole() {
     }
 
@@ -267,5 +310,20 @@ class UserControllerIT {
         JsonObject expectedResponse = new JsonObject();
         expectedResponse.addProperty("errorMessage", message);
         return expectedResponse;
+    }
+
+    private void createValidUser() throws Exception {
+        URI endPointUri = new URI("/api/user/registration");
+
+        JsonObject expectedRegistrationRequest = getRegistrationJSONObject(
+                "Test",
+                "User",
+                "test@example.com",
+                "password"
+        );
+
+        mockMvc.perform(post(endPointUri)
+                .content(expectedRegistrationRequest.toString())
+        ).andExpect(status().isOk());
     }
 }
